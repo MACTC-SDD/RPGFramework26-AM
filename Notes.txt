@@ -1,0 +1,10 @@
+﻿To Do
+Add comments about usability, editability, etc. to each class file
+
+Cleanup any redundant things
+
+Add user creation and add appropriate Player methods (for adding existing vs creating new)
+
+
+Expansion Ideas
+Instance dungeons (instance per running session?, something else?)
