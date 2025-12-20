@@ -19,7 +19,6 @@ namespace RPGFramework.Commands
                 // Add more builder commands here as needed
             };
         }
-
     }
 
     /// <summary>
