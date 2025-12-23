@@ -25,9 +25,9 @@ namespace RPGFramework
         public bool IsOnline { get; set; }
         
         // Properties
-        public DateTime LastLogin { get; set; }
-        public TimeSpan PlayTime { get; set; } = new TimeSpan();
-        public PlayerRole PlayerRole { get; set; } = PlayerRole.Player;
+        public DateTime LastLogin { get; private set; }
+        public TimeSpan PlayTime { get; private set; } = new TimeSpan();
+        public PlayerRole PlayerRole { get; private set; } = PlayerRole.Player;
         #endregion
 
         public string DisplayName()
@@ -81,8 +81,11 @@ namespace RPGFramework
         }
 
         
-        // This is just for convenience, we could access the Network.Writer directly
-        // Should this be done throught the Comm class instead so it's all in one place?
+        /// <summary>
+        /// Writes the specified message to the output, followed by a line terminator.
+        /// </summary>
+        /// <param name="message">The message to write. This value can include marku
+        /// p formatting supported by the output system.</param>
         public void WriteLine(string message)
         {
             Console.MarkupLine(message);

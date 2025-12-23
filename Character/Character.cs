@@ -22,13 +22,13 @@ namespace RPGFramework
         public string Name { get; set; } = "";
         public int XP { get; set; } = 0;
 
-        // --- Skill Attributes ---
-        public int Strength { get; set; } = 0;
-        public int Dexterity { get; set; } = 0;
-        public int Constitution { get; set; } = 0;
-        public int Intelligence { get; set; } = 0;
-        public int Wisdom { get; set; } = 0;
-        public int Charisma { get; set; } = 0;
+        // --- Skill Attributes --- (0-20)
+        public int Strength { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
+        public int Dexterity { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
+        public int Constitution { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
+        public int Intelligence { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
+        public int Wisdom { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
+        public int Charisma { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
 
         // --- Custom objects, move these to the main attributes list later ---
         public CharacterClass Class { get; set; } = new CharacterClass();
@@ -57,21 +57,16 @@ namespace RPGFramework
         {
             // Doesn't make sense if player is dead
             if (Alive == false)
-            {
                 return;
-            }
+            
 
             // Can't have health < 0
             if (health < 0)
-            {
-                health = 0;
-            }
+                health = 0;           
 
             // Can't have health > MaxHealth
             if (health > MaxHealth)
-            {
                 health = MaxHealth;
-            }
 
             Health = health;
 

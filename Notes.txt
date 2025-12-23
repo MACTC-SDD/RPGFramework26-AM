@@ -1,7 +1,10 @@
-﻿To Do
+﻿Project Layout
+  Character - All classes related to players and NPCs
+  Commands - All command classes for player actions
+  Display - UI components and rendering classes
+  Engine - Core game engine classes (things we won't modify much)
+  Enums - Enumerations used throughout the game
+  Geography - Classes related to the game world, maps, and locations
+  Items - Classes for items, inventory, and equipment
+  Persistence - Saving and loading game state
 
-Add user creation and add appropriate Player methods (for adding existing vs creating new)
-
-
-Expansion Ideas
-Instance dungeons (instance per running session?, something else?)
