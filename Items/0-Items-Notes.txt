@@ -1,1 +1,4 @@
-﻿
+﻿First steps are probably creating a GameState Dictionary/List to hold an item catalog
+Then we'll need commands to create items/weapson/armor in that catalog
+
+After that we can start creating instances of items and putting them in rooms/inventories
