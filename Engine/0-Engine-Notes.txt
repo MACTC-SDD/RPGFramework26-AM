@@ -1,0 +1,6 @@
+﻿Add a GameConfiguration class to manage game settings and preferences.
+  Initially, set values within the class and attach it to GameState
+  Later, add functionality to save/load settings from a file.
+
+  Game Name
+  Debugging Level (move from GameState)

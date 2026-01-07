@@ -1,6 +1,6 @@
 ﻿
 using System.Text.Json.Serialization;
-
+using RPGFramework.Engine;
 using RPGFramework.Geography;
 using RPGFramework.Persistence;
 
@@ -40,6 +40,9 @@ namespace RPGFramework
         [JsonIgnore]
         public Dictionary<int, Area> Areas { get; set; } =
             new Dictionary<int, Area>();
+
+        // TODO: Move this to configuration settings class
+        public DebugLevel DebugLevel { get; set; } = DebugLevel.All;
 
         /// <summary>
         /// The date of the game world. This is used for time of day, etc.

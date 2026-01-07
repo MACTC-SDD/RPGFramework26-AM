@@ -6,6 +6,7 @@ using RPGFramework;
 using RPGFramework.Display;
 using RPGFramework.Commands;
 using RPGFramework.Geography;
+using RPGFramework.Workflows;
 
 internal class TelnetServer
 {
@@ -59,13 +60,15 @@ internal class TelnetServer
             // If existing player
             if (GameState.Instance.Players.ContainsKey(playerName))
             {
-                player = GameState.Instance.Players[playerName];
+                player = GameState.Instance.Players[playerName];                
             }
             else
             {
-                // TODO: New player creation (class, etc)
+                // New player creation (class, etc)
                 player = new Player(client, playerName);
+                player.CurrentWorkflow = new WorkflowOnboarding();
                 GameState.Instance.AddPlayer(player);
+                player.WriteLine("Welcome, new adventurer! Type start and hit enter to get going");
             }
 
             player.Network = pn;
