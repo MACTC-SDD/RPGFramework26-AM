@@ -27,3 +27,4 @@ namespace RPGFramework.Items.ItemDefinitions
             };
         }
     }
+}
