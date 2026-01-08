@@ -21,6 +21,8 @@ namespace RPGFramework.Items.ItemDefinitions
                 Name = "Rusty Sword",
                 UsesRemaining = 0,
                 Value = 0,
+                Type = Weapon.WeaponType.Sword,
+                Material = Weapon.WeaponMaterial.rusty
                 
             };
         } 
