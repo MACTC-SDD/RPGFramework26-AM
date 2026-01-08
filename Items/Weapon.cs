@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace RPGFramework
 {
     internal class Weapon : Item
@@ -39,6 +41,7 @@ namespace RPGFramework
         internal enum WeaponMaterial
         {
             Wood,
+            rusty,
             stone,
             Iron,
             Steel,
