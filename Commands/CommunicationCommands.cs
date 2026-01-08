@@ -7,11 +7,30 @@ namespace RPGFramework.Commands
         {
             return new List<ICommand>
             {
+                new IventoryCommand(),
                 // Add other communication commands here as they are implemented
             };
         }
 
 
+    }
+
+    internal class IventoryCommand : ICommand
+    {
+        public string Inventory => "equip";
+        public IEnumerable<string> Aliases => new List<string> { };
+
+        public string Name => throw new NotImplementedException();
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is Player player)
+            {
+                player.WriteLine($"Your Inventory is....");
+                return true;
+            }
+            return false;
+        }
     }
 
     internal class SocialCommand : ICommand
