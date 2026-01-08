@@ -3,7 +3,6 @@ namespace RPGFramework
 {
     internal class Armor : Item
     {
-        public string Name { get; set; }
         public ArmorMaterial Material { get; set; }
         public ArmorSlot Slot { get; set; }
         public ArmorType Type { get; set; }

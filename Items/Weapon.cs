@@ -3,15 +3,14 @@ namespace RPGFramework
 {
     internal class Weapon : Item
     {
-        public double onehandDamage { get; set; } = 0;
+
+        public double OnehandDamage { get; set; } = 0;
 
         public double AttackTime { get; set; } = 1.0;
 
-        public required string name { get; set; }
+        public double TwohandDamage { get; set; }
 
-        public double twohandDamage { get; set; }
-
-        public double heavyAttack {  get; set; }
+        public double HeavyAttack {  get; set; }
 
         public double LightAttack { get; set; }
 
