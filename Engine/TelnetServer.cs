@@ -6,6 +6,7 @@ using RPGFramework;
 using RPGFramework.Display;
 using RPGFramework.Commands;
 using RPGFramework.Geography;
+using RPGFramework.Workflows;
 
 internal class TelnetServer
 {
@@ -38,11 +39,6 @@ internal class TelnetServer
     {
         using (client)
         {
-
-            // TODO: Handle Login (Authentication)
-            // Populate player object and attach to client
-
-            // Loop here until player name is entered
             // Create PlayerNetwork object, once logged in we'll attach it to player
             PlayerNetwork pn = new PlayerNetwork(client);
             pn.Writer.WriteLine("Username: ");
@@ -59,20 +55,21 @@ internal class TelnetServer
             // If existing player
             if (GameState.Instance.Players.ContainsKey(playerName))
             {
-                player = GameState.Instance.Players[playerName];
+                player = GameState.Instance.Players[playerName];                
             }
             else
             {
-                // TODO: New player creation (class, etc)
+                // New player creation (class, etc)
                 player = new Player(client, playerName);
+                player.CurrentWorkflow = new WorkflowOnboarding();
                 GameState.Instance.AddPlayer(player);
+                player.WriteLine("Welcome, new adventurer! Type start and hit enter to get going");
             }
 
             player.Network = pn;
             player.Login();
-           
 
-            await player.Network.Writer.WriteLineAsync("MOTD");
+            // MOTD Should Be Settable in Game Settings
             player.Write(RPGPanel.GetPanel("Welcome to the game!", "Welcome!"));
             MapRenderer.RenderLocalMap(player);
 

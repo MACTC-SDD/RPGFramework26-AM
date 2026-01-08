@@ -92,6 +92,14 @@ namespace RPGFramework.Commands
         /// <returns></returns>
         public static bool Execute(Character character, List<string> parameters)
         {
+            // If Player.Workflow is not null, send command to specific workflow handler
+            // This allows for multi-step commands (like onboarding, building, trading, banking, etc)
+            if (character is Player p && p.CurrentWorkflow != null)
+            {
+                p.CurrentWorkflow.Execute(p, parameters);
+                return true;
+            }
+
             if (parameters == null || parameters.Count == 0)
             {
                 return false;
