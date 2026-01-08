@@ -16,15 +16,17 @@ namespace RPGFramework
         public int CurrentAgressionLevel { get; private set; } = 0; // (the higher the value, the more aggressive actions can be taken)
         public int MaxAgressionLevel { get; private set; } = 10; // (the maximum aggression level for this NPC)
         public int MinAgressionLevel { get; private set; } = 0; // (the minimum aggression level for this NPC)
+        public Dictionary<string, string[]> DialogOptions { get; set; } //Dialog options, added at creation time.
 
-        public NonPlayer(string name, string shortDesc, string longDesc, int level)
+        public NonPlayer(string name, string shortDesc, string longDesc, int level, Dictionary<string, string[]> DialogOptions)
         {
             Name = name;
             ShortDescription = shortDesc;
             LongDescription = longDesc;
             Level = level;
+            this.DialogOptions = DialogOptions;
         }
-
+        
         public void IncrimentAgressionLevel(int amount)
         {
             if (amount < MaxAgressionLevel || amount > -MaxAgressionLevel)
