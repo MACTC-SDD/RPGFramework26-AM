@@ -1,4 +1,6 @@
 ﻿
+using RPGFramework;
+
 namespace RPGFramework
 {
     internal class Item
@@ -8,10 +10,11 @@ namespace RPGFramework
         public string DisplayText { get; set; } = ""; // How it appears when in a room
         public bool IsDroppable { get; set; } // Can the item be dropped
         public bool IsGettable { get; set; } // Can the item be picked up
+        public bool IsStackable { get; set; } = false;
 
         public int Level { get; set; } = 0;
         public string Name { get; set; } = "";
-        List<string> Tags { get; set; } = new List<string>();
+        public List<string> Tags { get; set; } = new List<string>();
         public int UsesRemaining { get; set; } = -1; // -1 means unlimited uses
         public double Value { get; set; } = 0;
         public double Weight { get; set; } = 0;
