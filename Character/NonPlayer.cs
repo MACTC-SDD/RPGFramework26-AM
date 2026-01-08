@@ -13,7 +13,13 @@ namespace RPGFramework
         //additional variables from NPCs
         public string ShortDescription { get; private set; } = "";
         public string LongDescription { get; private set; } = "";
-        public int CurrentAgressionLevel { get; private set { field = Math.Clamp(value, 0, 10); } } = 0; // (the higher the value, the more aggressive actions can be taken)
+
+        //Next to are paired together, the private in order to hold the actual value, the public to enforce clamping
+        private int _currentAggressionLevel;
+        public int CurrentAggressionLevel{
+            get => _currentAggressionLevel;
+            private set => _currentAggressionLevel = Math.Clamp(value, 0, 10);
+        }
         public Dictionary<string, string[]> DialogOptions { get; set; } //Dialog options, added at creation time.
 
         public NonPlayer(string name, string shortDesc, string longDesc, int level, Dictionary<string, string[]> DialogOptions)
@@ -25,13 +31,14 @@ namespace RPGFramework
             this.DialogOptions = DialogOptions;
         }
         
+        //incriments the agression level by a set amount (negative values allowed)
         public void IncrimentAgressionLevel(int amount)
         {
-            CurrentAgressionLevel += amount;
+            CurrentAggressionLevel += amount;
         }
 
         //feels self explanitory
-        public int GetAgressionLevel(){return CurrentAgressionLevel;}
+        public int GetAggressionLevel(){return CurrentAggressionLevel;}
 
         //returns the two different descriptions
         public string GetShortDescription() { return ShortDescription; }
