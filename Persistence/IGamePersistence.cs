@@ -11,6 +11,12 @@ namespace RPGFramework.Persistence
     internal interface IGamePersistence
     {
         /// <summary>
+        /// Ensures the persistence store is ready to be used (directories exist, database created/migrated, seed data copied, etc.).
+        /// Implementations that do not require initialization can implement this as a no-op.
+        /// </summary>
+        Task EnsureInitializedAsync(GamePersistenceInitializationOptions options);
+
+        /// <summary>
         /// Asynchronously loads all available areas and returns them as a read-only dictionary.
         /// </summary>
         /// <returns>A task that represents the asynchronous operation. 
@@ -60,5 +66,37 @@ namespace RPGFramework.Persistence
         /// <param name="player">The <see cref="Player"/> instance to save. Cannot be <c>null</c>.</param>
         /// <returns>A task that represents the asynchronous save operation.</returns>
         Task SavePlayerAsync(Player player);
+    }
+
+    /// <summary>
+    /// Provides configuration options for initializing game persistence, including paths for runtime and seed data
+    /// folders and behavior for creating a starter area.
+    /// </summary>
+    /// <remarks>Use this type to specify how the game should locate and prepare its data directories during
+    /// startup. The options control where live game data is stored, whether initial seed data should be copied, and
+    /// whether a minimal starter area is automatically created if no area data is present. All paths are relative to
+    /// the application's base directory.</remarks>
+    internal sealed class GamePersistenceInitializationOptions
+    {
+        /// <summary>
+        /// Runtime data folder relative to <see cref="AppContext.BaseDirectory"/>.
+        /// This is where the game reads/writes live data.
+        /// Default: "data"
+        /// </summary>
+        public string RuntimeDataRelativePath { get; init; } = "data";
+
+        /// <summary>
+        /// Optional seed folder relative to <see cref="AppContext.BaseDirectory"/>.
+        /// If present, files are copied into the runtime data folder only when missing.
+        /// Default: "data_seed"
+        /// </summary>
+        public string? SeedDataRelativePath { get; init; } = "data_seed";
+
+        /// <summary>
+        /// If true, creates a minimal starter area if the runtime areas folder has no area json files
+        /// after seed copy.
+        /// Default: true
+        /// </summary>
+        public bool CreateStarterAreaIfMissing { get; init; } = true;
     }
 }

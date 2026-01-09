@@ -9,12 +9,12 @@ namespace RPGFramework.Geography
     {
         // North = y - 1, South = y + 1, East = x + 1, West = x - 1
         private static readonly Dictionary<Direction, (int dx, int dy)> Offsets = new()
-    {
-        { Direction.North, (0, -1) },
-        { Direction.South, (0,  1) },
-        { Direction.East,  (1,  0) },
-        { Direction.West,  (-1, 0) },
-    };
+        {
+            { Direction.North, (0, -1) },
+            { Direction.South, (0,  1) },
+            { Direction.East,  (1,  0) },
+            { Direction.West,  (-1, 0) },
+        };
 
         public static void RenderLocalMap(Player player, int radius = 2)
         {

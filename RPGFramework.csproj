@@ -13,13 +13,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="data\**" />
     <Compile Remove="RPGLocalTesting\**" />
+    <EmbeddedResource Remove="data\**" />
     <EmbeddedResource Remove="RPGLocalTesting\**" />
+    <None Remove="data\**" />
     <None Remove="RPGLocalTesting\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Spectre.Console" Version="0.54.0" />
   </ItemGroup>
+	
+  <ItemGroup>
+	<Content Include="data_seed\**\*">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Content>
+  </ItemGroup>
+
 
 </Project>

@@ -83,7 +83,7 @@ namespace RPGFramework.Commands
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 

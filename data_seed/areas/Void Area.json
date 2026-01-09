@@ -1,0 +1,144 @@
+{
+  "Id": 0,
+  "Name": "Void Area",
+  "Description": "Start Area",
+  "Exits": {
+    "0": {
+      "Id": 0,
+      "ExitDirection": 0,
+      "ExitType": 0,
+      "Name": "",
+      "Description": "A path heads to the North",
+      "SourceRoomId": 0,
+      "DestinationRoomId": 1
+    },
+    "1": {
+      "Id": 1,
+      "ExitDirection": 1,
+      "ExitType": 0,
+      "Name": "",
+      "Description": "A path heads to the South",
+      "SourceRoomId": 1,
+      "DestinationRoomId": 0
+    },
+    "2": {
+      "Id": 2,
+      "ExitDirection": 2,
+      "ExitType": 0,
+      "Name": "",
+      "Description": "A road goes off",
+      "SourceRoomId": 1,
+      "DestinationRoomId": 2
+    },
+    "3": {
+      "Id": 3,
+      "ExitDirection": 3,
+      "ExitType": 0,
+      "Name": "",
+      "Description": "A road goes off",
+      "SourceRoomId": 2,
+      "DestinationRoomId": 1
+    },
+    "4": {
+      "Id": 4,
+      "ExitDirection": 2,
+      "ExitType": 0,
+      "Name": "",
+      "Description": "The road continues",
+      "SourceRoomId": 2,
+      "DestinationRoomId": 3
+    },
+    "5": {
+      "Id": 5,
+      "ExitDirection": 3,
+      "ExitType": 0,
+      "Name": "",
+      "Description": "The road continues",
+      "SourceRoomId": 3,
+      "DestinationRoomId": 2
+    },
+    "6": {
+      "Id": 6,
+      "ExitDirection": 2,
+      "ExitType": 0,
+      "Name": "",
+      "Description": "The road continues",
+      "SourceRoomId": 3,
+      "DestinationRoomId": 4
+    },
+    "7": {
+      "Id": 7,
+      "ExitDirection": 3,
+      "ExitType": 0,
+      "Name": "",
+      "Description": "The road continues",
+      "SourceRoomId": 4,
+      "DestinationRoomId": 3
+    }
+  },
+  "Rooms": {
+    "0": {
+      "Id": 0,
+      "AreaId": 0,
+      "Description": "You are in a void. There is not much here.",
+      "MapIcon": "[green]\u25A0[/]",
+      "MapColor": "[green]",
+      "Name": "The Void",
+      "Tags": [],
+      "ExitIds": [
+        0
+      ]
+    },
+    "1": {
+      "Id": 1,
+      "AreaId": 0,
+      "Description": "The room of testing",
+      "MapIcon": "[red]\u25A0[/]",
+      "MapColor": "[green]",
+      "Name": "Testing",
+      "Tags": [],
+      "ExitIds": [
+        1,
+        2
+      ]
+    },
+    "2": {
+      "Id": 2,
+      "AreaId": 0,
+      "Description": "The east road begins.",
+      "MapIcon": "[green]\u25A0[/]",
+      "MapColor": "[green]",
+      "Name": "East Road",
+      "Tags": [],
+      "ExitIds": [
+        3,
+        4
+      ]
+    },
+    "3": {
+      "Id": 3,
+      "AreaId": 0,
+      "Description": "The east road stretches on.",
+      "MapIcon": "\u25A0",
+      "MapColor": "[green]",
+      "Name": "EASTROAD2",
+      "Tags": [],
+      "ExitIds": [
+        5,
+        6
+      ]
+    },
+    "4": {
+      "Id": 4,
+      "AreaId": 0,
+      "Description": "The far end of the east road.",
+      "MapIcon": "\u25A0",
+      "MapColor": "[green]",
+      "Name": "EASTROAD3",
+      "Tags": [],
+      "ExitIds": [
+        7
+      ]
+    }
+  }
+}

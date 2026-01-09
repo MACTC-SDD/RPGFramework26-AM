@@ -1,0 +1,10 @@
+﻿Add a GameConfiguration class to manage game settings and preferences.
+  Initially, set values within the class and attach it to GameState
+  Later, add functionality to save/load settings from a file.
+
+  Game Name
+  Debugging Level (move from GameState)
+
+  Make A Console Logging Class With A Method Like
+    Log(string message, LogLevel level)
+    And let it handle different levels of logging (Info, Warning, Error)
