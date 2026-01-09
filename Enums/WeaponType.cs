@@ -1,7 +1,7 @@
 ﻿
 namespace RPGFramework.Enums
 {
-    internal enum WeaponType
+    internal enum Weapon
     {
         Sword,
     }

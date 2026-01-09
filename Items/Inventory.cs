@@ -1,6 +1,8 @@
-﻿using System;
+﻿using RPGFramework;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Linq;
 
 
 
@@ -62,12 +64,6 @@ public class Equipment : EquipmentBase
         {
             slots.Remove(slot);
         }
-    }
-
-    public RPGFramework.Item GetItem(EquipmentSlot slot)
-    {
-        slots.TryGetValue(slot, out Item item);
-        return item;
     }
 }
 

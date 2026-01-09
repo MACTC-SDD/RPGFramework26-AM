@@ -23,6 +23,14 @@ namespace RPGFramework
         public WeaponType Type { get; set; }
 
         public WeaponMaterial Material { get; set; }
+        public bool IsTwoHanded { get; private set; }
+
+        public Weapon (string name, int damage, bool isTwoHanded)
+        {
+            Name = name;
+            Damage = damage;
+            IsTwoHanded = isTwoHanded;
+        }
         internal enum WeaponType
         {
             Sword,
@@ -49,14 +57,7 @@ namespace RPGFramework
             Obsidian
         }
 
-            public bool IsTwoHanded { get; private set; }
 
-            public Weapon(string name, int damage, bool isTwoHanded)
-            {
-                Name = name;
-                Damage = damage;
-                IsTwoHanded = isTwoHanded;
-            }
         
         // TODO
         // Add attack properties (damage, speed, etc.)

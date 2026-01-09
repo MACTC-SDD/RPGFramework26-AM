@@ -12,13 +12,21 @@ namespace RPGFramework
         public float DodgeChance { get; set; }
         public float HealthBonus { get; set; }
 
+        public EquipmentSlot EquipmentSlot { get; private set; }
+        public int Defense { get; private set; }
+
+        public Armor(string name, EquipmentSlot slot, int defense)
+        {
+            Name = name;
+            EquipmentSlot = slot;
+            Defense = defense;
+        }
 
 
     }
     internal enum ArmorMaterial
     {
         Cloth,
-
         Leather,
         Iron,
         Steel,
@@ -37,4 +45,8 @@ namespace RPGFramework
         Medium,
         Heavy
     }
+   
+    
+     
+    
 }
