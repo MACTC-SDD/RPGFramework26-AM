@@ -8,7 +8,9 @@ namespace RPGFramework.Items.ItemDefinitions
 {
     internal static class RustySword
     {
-        public static Weapon Create() => new Weapon
+        public static Weapon Create() 
+        {
+            return new Weapon
         {
             Id = 1,
             Description = "Watch your toes for tetanus",
@@ -22,7 +24,6 @@ namespace RPGFramework.Items.ItemDefinitions
             Value = 0,
             Type = Weapon.WeaponType.Sword,
             Material = Weapon.WeaponMaterial.rusty,
-
         };
     } 
 }

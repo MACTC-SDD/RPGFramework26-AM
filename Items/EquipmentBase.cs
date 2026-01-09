@@ -12,7 +12,6 @@ public class EquipmentBase
         OffHand
     }
 
-
     public class Equipment : EquipmentBase
     {
         private Dictionary<EquipmentSlot, Item> slots =
