@@ -22,7 +22,7 @@ namespace RPGFramework
         public int MapRadius { get; set; } = 2; // How far the player can see on the map
         public string Password { get; private set; } = "SomeGarbage";
         public TimeSpan PlayTime { get; set; } = new TimeSpan();
-        public PlayerRole Role { get; set; }
+        public PlayerRole PlayerRole { get; set; }
         #endregion
 
         public string DisplayName()

@@ -107,7 +107,7 @@ namespace RPGFramework
             foreach (var kvp in loaded)
             {
                 Areas.Add(kvp.Key, kvp.Value);
-                GameState.Log(DebugLevel.Alert, $"Loaded area: {kvp.Value.Name}");
+                GameState.Log(DebugLevel.Alert, $"Area '{kvp.Value.Name}' loaded successfully.");
             }
         }
 
@@ -128,8 +128,10 @@ namespace RPGFramework
             foreach (var kvp in loaded)
             {
                 Players.Add(kvp.Key, kvp.Value);
-                GameState.Log(DebugLevel.Debug, $"Loaded player: {kvp.Value.Name}");
+                GameState.Log(DebugLevel.Debug, $"Player '{kvp.Value.Name}' loaded successfully.");
             }
+
+            GameState.Log(DebugLevel.Alert, $"{Players.Count} players loaded.");
         }
 
         /// <summary>
