@@ -23,6 +23,7 @@ namespace RPGFramework
         public WeaponType Type { get; set; }
 
         public WeaponMaterial Material { get; set; }
+
         public bool IsTwoHanded { get; private set; }
 
         public Weapon (string name, int damage, bool isTwoHanded)
@@ -31,6 +32,11 @@ namespace RPGFramework
             Damage = damage;
             IsTwoHanded = isTwoHanded;
         }
+
+        public Weapon()
+        {
+        }
+
         internal enum WeaponType
         {
             Sword,
