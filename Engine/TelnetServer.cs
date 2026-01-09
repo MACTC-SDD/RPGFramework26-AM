@@ -5,8 +5,11 @@ using Spectre.Console;
 using RPGFramework;
 using RPGFramework.Display;
 using RPGFramework.Commands;
+using RPGFramework.Enums;
 using RPGFramework.Geography;
 using RPGFramework.Workflows;
+using System.Text;
+
 
 internal class TelnetServer
 {
@@ -23,7 +26,7 @@ internal class TelnetServer
     {
         _listener.Start();
         _isRunning = true;
-        Console.WriteLine("Telnet Server is running...");
+        GameState.Log(DebugLevel.Alert, "Telnet Server is running...");
 
         while (_isRunning && GameState.Instance.IsRunning)
         {
@@ -31,7 +34,7 @@ internal class TelnetServer
             _ = HandleClientAsync(client);
         }
 
-        Console.WriteLine("Telnet Server is stopped...");
+        GameState.Log(DebugLevel.Alert, "Shutting down Telnet Server...");
         _listener.Stop();
     }
 
@@ -41,8 +44,11 @@ internal class TelnetServer
         {
             // Create PlayerNetwork object, once logged in we'll attach it to player
             PlayerNetwork pn = new PlayerNetwork(client);
+            var telnetConnection = new TelnetConnection(client.GetStream(), Encoding.UTF8);
+
             pn.Writer.WriteLine("Username: ");
-            string? playerName = pn.Reader.ReadLine();
+            //string? playerName = pn.Reader.ReadLine();
+            string? playerName = telnetConnection.ReadLine();
             
             while (string.IsNullOrEmpty(playerName))
             {
@@ -50,15 +56,18 @@ internal class TelnetServer
                 playerName = pn.Reader.ReadLine();
             }
             
+            GameState.Log(DebugLevel.Debug, $"Player '{playerName}' is connecting...");
             Player player;
 
             // If existing player
             if (GameState.Instance.Players.ContainsKey(playerName))
             {
+                GameState.Log(DebugLevel.Debug, $"Existing player '{playerName}' found, loading data...");
                 player = GameState.Instance.Players[playerName];                
             }
             else
             {
+                GameState.Log(DebugLevel.Debug, $"No existing player '{playerName}' found, creating new player...");
                 // New player creation (class, etc)
                 player = new Player(client, playerName);
                 player.CurrentWorkflow = new WorkflowOnboarding();
@@ -73,9 +82,10 @@ internal class TelnetServer
             player.Write(RPGPanel.GetPanel("Welcome to the game!", "Welcome!"));
             MapRenderer.RenderLocalMap(player);
 
-            Console.WriteLine("New client connected!");
+            GameState.Log(DebugLevel.Alert, $"Player '{playerName}' has connected successfully.");
 
             // Listen for and process commands
+            // TODO We might want to use TelnetConnection instead if we want to fully support telnet protocol
             try
             {
                 while (client.Connected)
@@ -84,18 +94,18 @@ internal class TelnetServer
                     if (command == null)
                         break;
 
-                    Console.WriteLine($"Received command: {command}");
+                    GameState.Log(DebugLevel.Debug, $"Received command from '{player.Name}': {command}");
                     CommandManager.Process(player, command);
                 }
             }
             catch (Exception ex)
             {
-                //Console.WriteLine($"Connection error: {ex.Message}");
+                // Should this use GameState.Log instead?
                 AnsiConsole.WriteException(ex);
             }
             finally
             {
-                Console.WriteLine("Client disconnected");
+                GameState.Log(DebugLevel.Alert, $"Player '{playerName}' has disconnected.");
             }
         } // end using client
     }

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RPGFramework.Engine
+namespace RPGFramework.Enums
 {
     internal enum DebugLevel
     {
-        None,
-        Warnings,
-        Alerts,
-        All
+        Error,
+        Warning,
+        Alert,
+        Info,
+        Debug
     }
 }

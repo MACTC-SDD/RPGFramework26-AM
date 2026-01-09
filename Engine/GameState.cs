@@ -1,6 +1,6 @@
 ﻿
 using System.Text.Json.Serialization;
-using RPGFramework.Engine;
+using RPGFramework.Enums;
 using RPGFramework.Geography;
 using RPGFramework.Persistence;
 
@@ -41,7 +41,7 @@ namespace RPGFramework
             new Dictionary<int, Area>();
 
         // TODO: Move this to configuration settings class
-        public DebugLevel DebugLevel { get; set; } = DebugLevel.All;
+        public DebugLevel DebugLevel { get; set; } = DebugLevel.Verbose;
 
         /// <summary>
         /// The date of the game world. This is used for time of day, etc.
@@ -87,7 +87,7 @@ namespace RPGFramework
                 else
                     Areas.Add(area.Id, area);
 
-                Console.WriteLine($"Loaded area: {area.Name}");
+                GameState.Log(DebugLevel.Alert, $"Area '{area.Name}' loaded successfully.");
             }
 
             return Task.CompletedTask;
@@ -103,7 +103,7 @@ namespace RPGFramework
             foreach (var kvp in loaded)
             {
                 Areas.Add(kvp.Key, kvp.Value);
-                Console.WriteLine($"Loaded area: {kvp.Value.Name}");
+                GameState.Log(DebugLevel.Alert, $"Area '{kvp.Value.Name}' loaded successfully.");
             }
         }
 
@@ -124,8 +124,10 @@ namespace RPGFramework
             foreach (var kvp in loaded)
             {
                 Players.Add(kvp.Key, kvp.Value);
-                Console.WriteLine($"Loaded player: {kvp.Value.Name}");
+                GameState.Log(DebugLevel.Debug, $"Player '{kvp.Value.Name}' loaded successfully.");
             }
+
+            GameState.Log(DebugLevel.Alert, $"{Players.Count} players loaded.");
         }
 
         /// <summary>
@@ -253,6 +255,17 @@ namespace RPGFramework
 
         #endregion --- Methods ---
 
+        #region --- Static Methods ---
+        internal static void Log(DebugLevel level, string message)
+        {
+            if (level <= GameState.Instance.DebugLevel)
+            {
+                Console.WriteLine($"[{level}] {message}");
+            }
+        }
+
+        #endregion
+
         #region --- Thread Methods ---
         /// <summary>
         /// Things that need to be saved periodically
@@ -266,7 +279,7 @@ namespace RPGFramework
                 await SaveAllAreas();
 
                 Thread.Sleep(interval);
-                Console.WriteLine("Autosave complete.");
+                GameState.Log(DebugLevel.Alert, "Autosave complete.");
             }
         }
 
@@ -280,7 +293,7 @@ namespace RPGFramework
         {
             while (IsRunning)
             {
-                Console.WriteLine("Updated time.");
+                GameState.Log(DebugLevel.Debug, "Updating time...");
                 double hours = (double)interval / 60000;
                 GameState.Instance.GameDate = GameState.Instance.GameDate.AddHours(hours);
                 Thread.Sleep(interval);
