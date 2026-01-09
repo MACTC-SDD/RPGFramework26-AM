@@ -153,7 +153,7 @@ namespace RPGFramework.Commands
 
         private static void DeleteRoom(Player player, List<string> parameters)
         {
-            if (!Utility.CheckPermission(player, PlayerRole.Player))
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
                 return;
