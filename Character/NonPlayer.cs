@@ -22,13 +22,14 @@ namespace RPGFramework
         }
         public Dictionary<string, string[]> DialogOptions { get; set; } //Dialog options, added at creation time.
 
-        public NonPlayer(string name, string shortDesc, string longDesc, int level, Dictionary<string, string[]> DialogOptions)
+        public NonPlayer(string name, string shortDesc, string longDesc, int level, Dictionary<string, string[]> DialogOptions, int locationID)
         {
             Name = name;
             ShortDescription = shortDesc;
             LongDescription = longDesc;
             Level = level;
             this.DialogOptions = DialogOptions;
+            LocationId = locationID;
         }
         
         //incriments the agression level by a set amount (negative values allowed)
