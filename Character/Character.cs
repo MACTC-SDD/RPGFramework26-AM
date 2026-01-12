@@ -14,6 +14,13 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character
     {
+        enum CharacterState { 
+            Idle, 
+            Moving, 
+            Attacking, 
+            Dead 
+        }
+
         #region --- Properties ---
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
@@ -23,6 +30,8 @@ namespace RPGFramework
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
+        public List<string> Tags { get; set; } = new List<string>(); // (for scripting or special behavior)
+        public Character Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = new List<Armor>();

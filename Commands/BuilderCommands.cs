@@ -49,6 +49,9 @@ namespace RPGFramework.Commands
                 case "create":
                     RoomCreate(player, parameters);
                     break;
+                case "delete":
+                    DeleteRoom(player, parameters);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -64,6 +67,16 @@ namespace RPGFramework.Commands
             player.WriteLine("/room name '<set room name to this>'");
             player.WriteLine("/room create '<name>' '<description>' <exit direction> '<exit description>'");
         }
+
+        private static void WriteDeleteUsage(Player player)
+        {
+            player.WriteLine("Usage:");
+            player.WriteLine("/room delete here");
+            player.WriteLine("/room delete here confirm");
+            player.WriteLine("/room delete <roomId>");
+            player.WriteLine("/room delete <roomId> confirm");
+        }
+
 
         private static void RoomCreate(Player player, List<string> parameters)
         {
@@ -137,5 +150,88 @@ namespace RPGFramework.Commands
                 player.WriteLine("Room name set.");
             }
         }
+
+        private static void DeleteRoom(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            if (parameters.Count < 3)
+            {
+                WriteDeleteUsage(player);
+                return;
+            }
+
+            // Determine room to delete
+
+            Room roomToDelete = null;
+
+            if (parameters[2].Equals("here", StringComparison.OrdinalIgnoreCase))
+            {
+                roomToDelete = player.GetRoom();
+            }
+            else if (int.TryParse(parameters[2], out int roomId))
+            {
+                if (!GameState.Instance.Areas[player.AreaId].Rooms.TryGetValue(roomId, out roomToDelete))
+                {
+                    player.WriteLine("Room not found in this area.");
+                    return;
+                }
+            }
+            else
+            {
+                WriteDeleteUsage(player);
+                return;
+            }
+
+            //  confirm
+            
+            bool confirmed = parameters.Count >= 4 &&
+                             parameters[3].Equals("confirm", StringComparison.OrdinalIgnoreCase);
+
+            if (!confirmed)
+            {
+                player.WriteLine($"[red]WARNING:[/]");
+                player.WriteLine($"You are about to permanently delete:");
+                player.WriteLine($"Room {roomToDelete.Id}: {roomToDelete.Name}");
+                player.WriteLine($"Type:");
+                player.WriteLine($"/room delete {(parameters[2])} confirm");
+                return;
+            }
+
+            int areaId = roomToDelete.AreaId;
+
+            // Safety checks
+
+            if (GameState.Instance.Areas[areaId].Rooms.Count <= 1)
+            {
+                player.WriteLine("You cannot delete the last room in an area.");
+                return;
+            }
+
+
+            // Move players out of the room
+ 
+            int fallbackRoomId = GameState.Instance.Areas[areaId].Rooms.Keys
+                .First(id => id != roomToDelete.Id);
+
+            foreach (Player p in Room.GetPlayersInRoom(roomToDelete))
+            {
+                p.WriteLine("The room dissolves around you!");
+                p.LocationId = fallbackRoomId;
+            }
+
+            // Delete room + exits
+
+            Room.DeleteRoom(roomToDelete);
+
+            player.WriteLine($"Room {roomToDelete.Id} deleted.");
+        }
+
     }
 }
+
+

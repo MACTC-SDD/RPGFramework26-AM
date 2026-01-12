@@ -1,4 +1,4 @@
-﻿using RPGFramework.Engine;
+﻿using RPGFramework.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,13 +32,12 @@ namespace RPGFramework.Workflows
                     player.WriteLine(Name + ": Hello and welcome to the RPG World!");
                     player.WriteLine("Let's secure your account first. Please enter a password.");
 
-                    if (GameState.Instance.DebugLevel >= DebugLevel.All)
-                        Console.WriteLine($"{player.Name} started onboarding!");
+                    GameState.Log(DebugLevel.Debug, $"{player.Name} is starting onboarding workflow.");
                     CurrentStep++;
                     break;
                 case 1:
                     if (parameters.Count == 0)
-                        Console.WriteLine("No blank passwords allowed!");
+                        player.WriteLine("No blank passwords allowed!");
                     else
                     {
                         player.SetPassword(parameters[0]);

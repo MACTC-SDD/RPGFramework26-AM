@@ -1,0 +1,33 @@
+﻿Our output uses Spectre.Console so that we can format things nicely in the terminal.
+
+Spectre Color reference:
+https://spectreconsole.net/console/reference/color-reference
+
+Color and styling can be set using Spectre's markup language. Here are some examples:
+[red]This text is red[/] - Notice how we need to close the tag with [/]
+[blue on yellow]This text is blue on yellow background[/]
+
+
+Spectre also supports using Style objects, which might be better for most things
+because they can be reused. Here's an example of creating a Style object:
+var warningStyle = new Style(foreground: Color.Yellow, decoration: Decoration.Bold);
+
+Spectre Markup reference:
+https://spectreconsole.net/console/reference/markup-reference
+You can also format text with decorators like bold, italic, etc.
+
+[bold]This text is bold[/]
+[bold red]This text is bold and red[/]
+
+The full list is:
+[bold] - Bold text
+[dim] - Dimmed/faint text
+[italic] - Italic text
+[underline] - Underlined text
+[strikethrough] - Strikethrough text
+[invert] - Inverted colors
+[conceal] - Concealed text (hidden)
+[slowblink] - Slow blinking text
+[rapidblink] - Rapid blinking text
+
+
