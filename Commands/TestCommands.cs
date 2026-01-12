@@ -12,6 +12,37 @@
         }
     }
 
+    // To add a command, create a new ICommand class for it like the example below,
+    // then add it to the list in GetAllCommands
+    //   MAKE SURE you are adding your acommand and editing GetAllCommands in the correct file!
+
+    /// <summary>
+    /// You can use this as a template for creating new commands.
+    /// Feel free to copy/paste and modify class name, Name, Aliases, and Execute as needed.
+    /// </summary>
+    internal class ExampleCommand : ICommand
+    {
+        // This is the command a player would type to execute this command
+        public string Name => "example";
+
+        // These are the aliases that can also be used to execute this command. This can be empty.
+        public IEnumerable<string> Aliases => new List<string>() { "ex" };
+
+        // What will happen when the command is executed
+        public bool Execute(Character character, List<string> parameters)
+        {
+            // A lot of times we want to make sure it's a Player issuing the command, but not always
+            if (character is Player player)
+            {
+                player.WriteLine("This is an example command.");
+            }
+
+            // If the command failed to run for some reason, return false
+            return true;
+        }
+    }
+
+
     /// <summary>
     /// Measures the memory usage of creating a large number of <see cref="Item"/> instances.
     /// </summary>

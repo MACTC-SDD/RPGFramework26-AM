@@ -1,6 +1,6 @@
 ﻿
 using System.Text.Json.Serialization;
-using RPGFramework.Engine;
+using RPGFramework.Enums;
 using RPGFramework.Geography;
 using RPGFramework.Persistence;
 
@@ -27,12 +27,15 @@ namespace RPGFramework
 
         public bool IsRunning { get; private set; } = false;
 
-        // Fields
-        //private bool IsRunning = false;
-        private Thread? _saveThread;
-        private Thread? _timeOfDayThread;
-
         #region --- Properties ---
+
+        #region --- Fields ---
+        private CancellationTokenSource? _saveCts;
+        private Task? _saveTask;
+        private CancellationTokenSource? _timeOfDayCts;
+        private Task? _timeOfDayTask;
+
+        #endregion
 
         /// <summary>
         /// All Areas are loaded into this dictionary
@@ -41,7 +44,7 @@ namespace RPGFramework
             new Dictionary<int, Area>();
 
         // TODO: Move this to configuration settings class
-        public DebugLevel DebugLevel { get; set; } = DebugLevel.All;
+        public DebugLevel DebugLevel { get; set; } = DebugLevel.Debug;
 
         /// <summary>
         /// The date of the game world. This is used for time of day, etc.
@@ -93,7 +96,7 @@ namespace RPGFramework
                 else
                     Areas.Add(area.Id, area);
 
-                Console.WriteLine($"Loaded area: {area.Name}");
+                GameState.Log(DebugLevel.Alert, $"Area '{area.Name}' loaded successfully.");
             }
 
             return Task.CompletedTask;
@@ -109,7 +112,7 @@ namespace RPGFramework
             foreach (var kvp in loaded)
             {
                 Areas.Add(kvp.Key, kvp.Value);
-                Console.WriteLine($"Loaded area: {kvp.Value.Name}");
+                GameState.Log(DebugLevel.Alert, $"Area '{kvp.Value.Name}' loaded successfully.");
             }
         }
 
@@ -130,8 +133,10 @@ namespace RPGFramework
             foreach (var kvp in loaded)
             {
                 Players.Add(kvp.Key, kvp.Value);
-                Console.WriteLine($"Loaded player: {kvp.Value.Name}");
+                GameState.Log(DebugLevel.Debug, $"Player '{kvp.Value.Name}' loaded successfully.");
             }
+
+            GameState.Log(DebugLevel.Alert, $"{Players.Count} players loaded.");
         }
 
         /// <summary>
@@ -200,20 +205,17 @@ namespace RPGFramework
             // Load Item (Weapon/Armor/Consumable/General) catalogs
             // Load NPC (Mobs/Shop/Guild/Quest) catalogs
 
-            this.TelnetServer = new TelnetServer(5555);
-            await this.TelnetServer.StartAsync();
+
 
 
             // TODO: Consider moving thread methods to their own class
 
             // Start threads that run periodically
-            _saveThread = new Thread(() => SaveTask(10000));
-            _saveThread.IsBackground = true;
-            _saveThread.Start();
+            _saveCts = new CancellationTokenSource();
+            _saveTask = RunAutosaveLoopAsync(TimeSpan.FromMilliseconds(10000), _saveCts.Token);
 
-            _timeOfDayThread = new Thread(() => TimeOfDayTask(15000));
-            _timeOfDayThread.IsBackground = true;
-            _timeOfDayThread.Start();
+            _timeOfDayCts = new CancellationTokenSource();
+            _timeOfDayTask = RunTimeOfDayLoopAsync(TimeSpan.FromMilliseconds(15000), _timeOfDayCts.Token);
 
             // Other threads will go here
             // Weather?
@@ -221,7 +223,9 @@ namespace RPGFramework
             // NPC threads?
             // Room threads?
 
-
+            // This needs to be last
+            this.TelnetServer = new TelnetServer(5555);
+            await this.TelnetServer.StartAsync();
         }
 
         /// <summary>
@@ -250,8 +254,8 @@ namespace RPGFramework
             IsRunning = false;
 
             // Wait for threads to finish
-            _saveThread?.Join();
-            _timeOfDayThread?.Join();
+            _saveCts?.Cancel();
+            _timeOfDayCts?.Cancel();
 
             // Exit program
             Environment.Exit(0);
@@ -259,21 +263,43 @@ namespace RPGFramework
 
         #endregion --- Methods ---
 
+        #region --- Static Methods ---
+        internal static void Log(DebugLevel level, string message)
+        {
+            if (level <= GameState.Instance.DebugLevel)
+            {
+                Console.WriteLine($"[{level}] {message}");
+            }
+        }
+
+        #endregion
+
         #region --- Thread Methods ---
         /// <summary>
         /// Things that need to be saved periodically
         /// </summary>
         /// <param name="interval"></param>
-        private async void SaveTask(int interval)
+        private async Task RunAutosaveLoopAsync(TimeSpan interval, CancellationToken ct)
         {
-            while (IsRunning)
+            GameState.Log(DebugLevel.Alert, "Autosave thread started.");
+            while (!ct.IsCancellationRequested && IsRunning)
             {
-                await SaveAllPlayers();
-                await SaveAllAreas();
+                try
+                {
+                    await SaveAllPlayers();
+                    await SaveAllAreas();
 
-                Thread.Sleep(interval);
-                Console.WriteLine("Autosave complete.");
+                    GameState.Log(DebugLevel.Info, "Autosave complete.");
+                }
+                catch (Exception ex)
+                {
+                    GameState.Log(DebugLevel.Error, $"Error during autosave: {ex.Message}");
+                }
+
+                await Task.Delay(interval, ct);
             }
+
+            GameState.Log(DebugLevel.Alert, "Autosave thread stopping.");
         }
 
         /// <summary>
@@ -282,15 +308,25 @@ namespace RPGFramework
         /// and how much time should pass each time. For now it adds 1 hour / minute.
         /// </summary>
         /// <param name="interval"></param>
-        private void TimeOfDayTask(int interval)
+        private async Task RunTimeOfDayLoopAsync(TimeSpan interval, CancellationToken ct)
         {
-            while (IsRunning)
+            GameState.Log(DebugLevel.Alert, "Time of Day thread started.");
+            while (!ct.IsCancellationRequested && IsRunning)
             {
-                Console.WriteLine("Updated time.");
-                double hours = (double)interval / 60000;
-                GameState.Instance.GameDate = GameState.Instance.GameDate.AddHours(hours);
-                Thread.Sleep(interval);
+                try
+                {
+                    GameState.Log(DebugLevel.Debug, "Updating time...");
+                    double hours = interval.TotalMinutes * 60;
+                    GameState.Instance.GameDate = GameState.Instance.GameDate.AddHours(hours);
+                }
+                catch (Exception ex)
+                {
+                    GameState.Log(DebugLevel.Error, $"Error during time update: {ex.Message}");
+                }
+
+                await Task.Delay(interval, ct);
             }
+            GameState.Log(DebugLevel.Alert, "Time of Day thread stopping.");
         }
         #endregion --- Thread Methods ---
 
