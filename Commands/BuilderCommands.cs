@@ -46,6 +46,9 @@ namespace RPGFramework.Commands
                 case "name":
                     RoomSetName(player, parameters);
                     break;
+                case "color":
+                    RoomSetColor(player, parameters);
+                    break;
                 case "create":
                     RoomCreate(player, parameters);
                     break;
@@ -106,7 +109,7 @@ namespace RPGFramework.Commands
             }
         }
 
-        private static void RoomSetDescription(Player player, List<string> parameters)
+        /*private static void RoomSetDescription(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
@@ -123,7 +126,7 @@ namespace RPGFramework.Commands
                 player.GetRoom().Description = parameters[2];
                 player.WriteLine("Room description set.");
             }
-        }
+        }*/
 
         private static void RoomSetName(Player player, List<string> parameters)
         {
@@ -137,5 +140,39 @@ namespace RPGFramework.Commands
                 player.WriteLine("Room name set.");
             }
         }
+
+        private static void RoomSetColor(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 3)
+            {
+                player.WriteLine(player.GetRoom().MapColor.Replace("[","").Replace("]",""));
+            }
+            else
+            {
+                player.GetRoom().MapColor = parameters[2];
+                player.WriteLine("Room color set.");                
+            }
+        }
+
+        private static void RoomSetDescription(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            if (parameters.Count < 3)
+            {
+                player.WriteLine(player.GetRoom().Description);
+            }
+            else
+            {
+                string desc = string.Join(" ", parameters.Skip(2));
+                player.GetRoom().Description = desc;
+                player.WriteLine("Room description set.");
+            }
+        }
+/*permission check to color? Needed??*/
     }
 }
