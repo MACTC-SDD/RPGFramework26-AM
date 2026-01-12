@@ -58,25 +58,25 @@ public class EquipmentBase
                 Defense = 0;
 
                 foreach (Item item in Equipment.GetEquippedItems())
-            {
+                {
                     Strength += item.StrengthBonus;
                     Defense += item.DefenseBonus;
                 }
             }
-            }
+        }
 
         private IEnumerable<Item> GetEquippedItems()
         {
             throw new NotImplementedException();
         }
-    
+
         public abstract class Item
         {
             public EquipmentSlot Slot { get; protected set; }
 
             public int StrengthBonus { get; set; }
             public int DefenseBonus { get; set; }
-            public object Name { get; internal set; }
+            public object? Name { get; internal set; }
         }
         public class Weapon : Item
         {
@@ -117,6 +117,6 @@ public class EquipmentBase
             player.Equipment.Unequip(EquipmentSlot.Head);
             player.RecalculateStats();
         }
-        
+
     }
 }
