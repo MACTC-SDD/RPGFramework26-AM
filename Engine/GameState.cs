@@ -34,7 +34,8 @@ namespace RPGFramework
         private Task? _saveTask;
         private CancellationTokenSource? _timeOfDayCts;
         private Task? _timeOfDayTask;
-
+        private CancellationTokenSource? _saveCatalogCts;
+        private Task? _saveCatalogTask;
         #endregion
 
         /// <summary>
@@ -165,6 +166,10 @@ namespace RPGFramework
 
             return Persistence.SavePlayersAsync(toSave);
         }
+        private Task SaveAllCatalogs() 
+        {
+            return Persistence.SaveItemCatalogAsync(ItemCatalog);
+        }
 
         /// <summary>
         /// Saves the specified player to persistent storage asynchronously.
@@ -288,6 +293,7 @@ namespace RPGFramework
                 {
                     await SaveAllPlayers();
                     await SaveAllAreas();
+                    await SaveAllCatalogs();
 
                     GameState.Log(DebugLevel.Info, "Autosave complete.");
                 }
