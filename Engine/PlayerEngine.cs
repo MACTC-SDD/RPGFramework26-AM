@@ -15,6 +15,8 @@ namespace RPGFramework
 
         [JsonIgnore]
         public IAnsiConsole Console { get; set; }
+        public object Equipment { get; internal set; }
+        public object Inventory { get; internal set; }
 
         #region --- Constructors ---
         // Constructor (creates a new player)

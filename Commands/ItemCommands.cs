@@ -13,7 +13,7 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new ListInventoryCommand(),
-                
+                new ListRoomItemCommand(),
                 // Add more builder commands here as needed
             };
         }
@@ -31,6 +31,20 @@ namespace RPGFramework.Commands
             }
             player.WriteLine("");
                 return true;
+        }
+    }
+    internal class ListRoomItemCommand : ICommand
+    {
+        public string Name => "roomitems";
+        public IEnumerable<string> Aliases => new List<string>() { "ri" };
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+            {
+                return false;
+            }
+            player.WriteLine("");
+            return true;
         }
     }
 }

@@ -1,4 +1,8 @@
-﻿namespace RPGFramework.Commands
+﻿using RPGFramework.Items;
+using System.Runtime.InteropServices;
+using static RPGFramework.Commands.TestItemSizeCommand;
+
+namespace RPGFramework.Commands
 {
     internal class TestCommands
     {
@@ -7,6 +11,7 @@
             return new List<ICommand>
             {
                 new TestItemSizeCommand(),
+                new JoeCommand(),
                 // Add more test commands here as needed
             };
         }
@@ -83,6 +88,31 @@
                 player.WriteLine($"Average per item: {(endMem - startMem) / (double)items.Count} bytes.");
             }
             return true;
+        }
+        internal class JoeCommand : ICommand
+        {
+            // This is the command a player would type to execute this command
+            public string Name => "/joe";
+
+            // These are the aliases that can also be used to execute this command. This can be empty.
+            public IEnumerable<string> Aliases => new List<string>() {};
+
+            // What will happen when the command is executed
+            public bool Execute(Character character, List<string> parameters)
+            {
+                // A lot of times we want to make sure it's a Player issuing the command, but not always
+                if (character is Player player)
+                {
+                    player.WriteLine($"{player.PrimaryWeapon.Name}");
+                    Weapon w = new StarterBow();
+                    player.PrimaryWeapon = StarterBow.Create();
+                    player.WriteLine($"{player.PrimaryWeapon.Name}");
+                    //player.WriteLine("/joe equipment <item> | /joe unequipment <slot>");
+                }
+                
+                // If the command failed to run for some reason, return false
+                return true;
+            }
         }
     }
 }

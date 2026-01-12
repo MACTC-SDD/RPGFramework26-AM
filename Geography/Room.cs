@@ -28,6 +28,9 @@ namespace RPGFramework.Geography
         public List<int> ExitIds { get; set; } = new List<int>();
         #endregion --- Properties ---
 
+        // Items in the room
+        List<Item> RoomItems = new List<Item>();
+
         #region --- Methods ---
         /// <summary>
         /// This is for creating a new exit (and return exit), not linking existing exit items.

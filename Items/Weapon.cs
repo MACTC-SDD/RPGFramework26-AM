@@ -18,11 +18,25 @@ namespace RPGFramework
 
         public double Range { get; set; }
 
-        public double Abilies { get; set; }
+        public double Abilities { get; set; }
 
         public WeaponType Type { get; set; }
 
         public WeaponMaterial Material { get; set; }
+
+        public bool IsTwoHanded { get; private set; }
+
+        public Weapon (string name, int damage, bool isTwoHanded)
+        {
+            Name = name;
+            Damage = damage;
+            IsTwoHanded = isTwoHanded;
+        }
+
+        public Weapon()
+        {
+        }
+
         internal enum WeaponType
         {
             Sword,
@@ -48,6 +62,9 @@ namespace RPGFramework
             Mythril,
             Obsidian
         }
+
+
+        
         // TODO
         // Add attack properties (damage, speed, etc.)
         // Implement attack methods
