@@ -102,7 +102,9 @@ namespace RPGFramework.Commands
             catch (Exception ex)
             {
                 player.WriteLine($"Error creating room: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
+#pragma warning disable CS8604 // Possible null reference argument.
+                player.WriteLine(message: ex.StackTrace);
+#pragma warning restore CS8604 // Possible null reference argument.
             }
         }
 
@@ -136,6 +138,11 @@ namespace RPGFramework.Commands
                 player.GetRoom().Name = parameters[2];
                 player.WriteLine("Room name set.");
             }
+        }
+
+        public bool Execute(Character character, List<int> parameters)
+        {
+            throw new NotImplementedException();
         }
     }
 }

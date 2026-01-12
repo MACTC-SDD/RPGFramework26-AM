@@ -1,4 +1,5 @@
 ﻿using RPGFramework.Display;
+using RPGFramework.Enums;
 using RPGFramework.Items;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new ListInventoryCommand(),
-                
+                new ItemBuildCommand(),
                 // Add more builder commands here as needed
             };
         }
@@ -36,6 +37,129 @@ namespace RPGFramework.Commands
             }
             return true;
         }
+
+        public bool Execute(Character character, List<int> parameters)
+        {
+            throw new NotImplementedException();
+        }
     }
+    internal class ItemBuildCommand : ICommand
+    {
+        public string Name => "/item";
+
+        public IEnumerable<string> Aliases => Array.Empty<string>();
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+            {
+                return false;
+            }
+
+            if (parameters.Count < 2)
+            {
+                WriteUsage(player);
+                return false;
+            }
+
+            switch (parameters[1].ToLower())
+            {
+                case "description":
+                    ItemSetDescription(player, parameters);
+                    break;
+                case "name":
+                    ItemSetName(player, parameters);
+                    break;
+                case "create":
+                    ItemCreate(player, parameters);
+                    break;
+                default:
+                    WriteUsage(player);
+                    break;
+            }
+
+            return true;
+        }
+
+        private static void WriteUsage(Player player)
+        {
+            player.WriteLine("Usage: ");
+            player.WriteLine("/item description '<set item desc to this>'");
+            player.WriteLine("/item name '<set item name to this>'");
+            player.WriteLine("/item create '<name>' '<description>''");
+        }
+
+        private static void ItemCreate(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+
+            // 0: /item
+            // 1: create
+            // 2: name
+            // 3: description
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /item create '<name>' '<description>'");
+                return;
+            }
+                Item newItem = new Item
+                {
+                    Name = parameters[2],
+                    Description = parameters[3]
+                };
+
+                // Here you would typically add the item to a database or game world
+                player.WriteLine($"Item '{newItem.Name}' created successfully with description: {newItem.Description}");
+            
+        }
+
+        private static void ItemSetDescription(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            if (parameters.Count < 3)
+            {
+                //player.WriteLine(player.GetItem().Description);
+            }
+            else
+            {
+                //player.GetItem().Description = parameters[2];
+                player.WriteLine("Room description set.");
+            }
+        }
+
+        private static void ItemSetName(Player player, List<string> parameters)
+        {
+
+            if (parameters.Count < 3)
+            {
+                player.WriteLine(player.GetRoom().Name);
+            }
+            else
+            {
+                //player.GetItem().Name = parameters[2];
+                player.WriteLine("Item name set.");
+            }
+        }
+
+        public bool Execute(Character character, List<int> parameters)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+
+
+
 }
 
