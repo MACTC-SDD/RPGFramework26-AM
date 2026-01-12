@@ -1,4 +1,8 @@
-﻿namespace RPGFramework.Commands
+﻿using RPGFramework.Items;
+using System.Runtime.InteropServices;
+using static RPGFramework.Commands.TestItemSizeCommand;
+
+namespace RPGFramework.Commands
 {
     internal class TestCommands
     {
@@ -7,6 +11,7 @@
             return new List<ICommand>
             {
                 new TestItemSizeCommand(),
+                new JoeCommand(),
                 // Add more test commands here as needed
             };
         }
@@ -99,12 +104,12 @@
                 if (character is Player player)
                 {
                     player.WriteLine($"{player.PrimaryWeapon.Name}");
-                    Weapon w = new RustySword();
-                    player.PrimaryWeapon = RustySword.Create();
+                    Weapon w = new StarterBow();
+                    player.PrimaryWeapon = StarterBow.Create();
                     player.WriteLine($"{player.PrimaryWeapon.Name}");
                     //player.WriteLine("/joe equipment <item> | /joe unequipment <slot>");
                 }
-
+                
                 // If the command failed to run for some reason, return false
                 return true;
             }

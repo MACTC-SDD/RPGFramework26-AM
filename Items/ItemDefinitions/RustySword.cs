@@ -4,7 +4,7 @@ using System.Text;
 using RPGFramework.Enums;
 using RPGFramework.Items;
 
-namespace RPGFramework.Items.ItemDefinitions
+namespace RPGFramework.Items
 {
     internal static class RustySword
     {
