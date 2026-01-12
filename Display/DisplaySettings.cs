@@ -1,6 +1,6 @@
 ﻿
-namespace RPGFramework.Display
-{
+
+
     internal static class DisplaySettings
     {
         public static string AnnouncementColor { get; set; } = "[red]";
@@ -12,4 +12,8 @@ namespace RPGFramework.Display
         public static string YouAreHereMapIconColor { get; set; } = "[bold black]";
         #endregion
     }
-}
+
+
+
+
+

@@ -20,6 +20,7 @@ namespace RPGFramework.Display
             {
                 Header = new PanelHeader($"{HeaderColor}Welcome[/]"),
                 Border = Border
+
             };
         }
     }

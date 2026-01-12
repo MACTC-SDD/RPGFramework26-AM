@@ -7,8 +7,23 @@
             return new List<ICommand>
             {
                 new TestItemSizeCommand(),
+                new LadCommand()
                 // Add more test commands here as needed
             };
+        }
+    }
+
+    internal class LadCommand : ICommand
+    {
+        public string Name => "play" ;
+        public IEnumerable<string> Aliases => new List<string>() { };
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is Player player)
+            {
+                player.WriteLine("                                                                                           MENU\r\n========================================================================\r\n\r\n                                   TITLE\r\n========================================================================\r\n\r\n                                                        ( SETTINGS)      START        (HELP) \r\n                                                                                               QUIT\r\n\r\n\r\n                ============================================================\r\n");
+            }
+            return true;
         }
     }
 
