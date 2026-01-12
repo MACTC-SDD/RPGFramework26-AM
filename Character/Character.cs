@@ -14,6 +14,14 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character
     {
+        enum CharacterState { 
+            Idle, 
+            Moving, 
+            Attacking, 
+            Dead 
+        }
+
+        #region --- Properties ---
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
         public int Gold { get; set; } = 0;
@@ -22,20 +30,23 @@ namespace RPGFramework
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
+        public List<string> Tags { get; set; } = new List<string>(); // (for scripting or special behavior)
+        public Character Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
+        public CharacterClass Class { get; set; } = new CharacterClass();
+        public List<Armor> EquippedArmor { get; set; } = new List<Armor>();
+        public Weapon PrimaryWeapon { get; set; }
+        #endregion
 
-        // --- Skill Attributes --- (0-20)
+        #region --- Skill Attributes --- (0-20)
         public int Strength { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
         public int Dexterity { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
         public int Constitution { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
         public int Intelligence { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
         public int Wisdom { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
         public int Charisma { get; private set { field = Math.Clamp(value, 0, 20); } } = 0;
+        #endregion
 
-        // --- Custom objects, move these to the main attributes list later ---
-        public CharacterClass Class { get; set; } = new CharacterClass();
-        public List<Armor> EquippedArmor { get; set; } = new List<Armor>();
-        public Weapon PrimaryWeapon { get; set; }
 
         public Character()
         {
