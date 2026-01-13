@@ -1,8 +1,8 @@
-﻿
 using RPGFramework.Enums;
 using System;
 
 namespace RPGFramework
+
 {
     internal class Weapon : Item
     {

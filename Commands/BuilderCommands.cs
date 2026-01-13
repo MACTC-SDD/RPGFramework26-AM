@@ -117,7 +117,9 @@ namespace RPGFramework.Commands
             catch (Exception ex)
             {
                 player.WriteLine($"Error creating room: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
+#pragma warning disable CS8604 // Possible null reference argument.
+                player.WriteLine(message: ex.StackTrace);
+#pragma warning restore CS8604 // Possible null reference argument.
             }
         }
 
@@ -174,9 +176,13 @@ namespace RPGFramework.Commands
             Room room = player.GetRoom();
             Area area = GameState.Instance.Areas[player.AreaId];
 
+            var exits = room.GetExits();
+
+            /* CODE-REVIEW: This works, but we should let the Room method handle it with .GetExits()
             var exits = area.Exits.Values
-       .Where(e => e.SourceRoomId == room.Id)
-       .ToList();
+                .Where(e => e.SourceRoomId == room.Id)
+                .ToList();
+            */
 
             if (exits.Count == 0)
             {
