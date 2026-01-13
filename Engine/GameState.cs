@@ -34,7 +34,8 @@ namespace RPGFramework
         private Task? _saveTask;
         private CancellationTokenSource? _timeOfDayCts;
         private Task? _timeOfDayTask;
-
+        private CancellationTokenSource? _saveCatalogCts;
+        private Task? _saveCatalogTask;
         #endregion
 
         /// <summary>
@@ -55,6 +56,12 @@ namespace RPGFramework
         /// All Players are loaded into this dictionary, with the player's name as the key 
         /// </summary>
         [JsonIgnore] public Dictionary<string, Player> Players { get; set; } = new Dictionary<string, Player>();
+
+        [JsonIgnore] public Dictionary<int, Item> ItemCatalog { get; set; } = new Dictionary<int, Item>();
+        [JsonIgnore] public Dictionary<int, Weapon> WeaponCatalog { get; set; } = new Dictionary<int, Weapon>();
+        [JsonIgnore] public Dictionary<int, Armor> ArmorCatalog { get; set; } = new Dictionary<int, Armor>();
+
+
 
         // Move starting area/room to configuration settings
         public int StartAreaId { get; set; } = 0;
@@ -158,6 +165,10 @@ namespace RPGFramework
                 : Players.Values.Where(p => p.IsOnline);
 
             return Persistence.SavePlayersAsync(toSave);
+        }
+        private Task SaveAllCatalogs() 
+        {
+            return Persistence.SaveItemCatalogAsync(ItemCatalog);
         }
 
         /// <summary>
@@ -282,6 +293,7 @@ namespace RPGFramework
                 {
                     await SaveAllPlayers();
                     await SaveAllAreas();
+                    await SaveAllCatalogs();
 
                     GameState.Log(DebugLevel.Info, "Autosave complete.");
                 }

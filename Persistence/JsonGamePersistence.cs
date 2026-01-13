@@ -153,6 +153,11 @@ namespace RPGFramework.Persistence
             ObjectStorage.SaveObject(player, "data/players/", $"{player.Name}.json");
             return Task.CompletedTask;
         }
+        public Task SaveItemCatalogAsync(Dictionary<int, Item> catalog) 
+        {
+            ObjectStorage.SaveObject(catalog, "data/catalogs", $"ItemCatalog.json");
+            return Task.CompletedTask;
+        }
         #endregion
     }
 }

@@ -1,6 +1,8 @@
 ﻿
 using RPGFramework.Enums;
 using RPGFramework.Geography;
+using System.Diagnostics;
+using System.Formats.Asn1;
 
 namespace RPGFramework.Commands
 {
@@ -49,8 +51,8 @@ namespace RPGFramework.Commands
                 case "create":
                     RoomCreate(player, parameters);
                     break;
-                case "delete":
-                    DeleteRoom(player, parameters);
+                case "show":
+                    RoomShow(player, parameters);
                     break;
                 default:
                     WriteUsage(player);
@@ -149,6 +151,46 @@ namespace RPGFramework.Commands
                 player.GetRoom().Name = parameters[2];
                 player.WriteLine("Room name set.");
             }
+        }
+        
+        private static void RoomShow(Player player, List<string> parameters)
+        {
+            Room r = player.GetRoom();
+            player.Write($"Room name: {r.Name}  Room description: {r.Description}  Room Id: {r.Id} Tags:");
+            
+            if (r.Tags.Count == 0)
+            {
+                player.WriteLine("  None");
+            }
+            else
+            {
+                foreach (var tag in r.Tags)
+                {
+                    player.WriteLine($"  {tag}");
+                }
+            }
+
+            // until end is commented, the following code is generated, but understood in how it does what it does.
+            Room room = player.GetRoom();
+            Area area = GameState.Instance.Areas[player.AreaId];
+
+            var exits = area.Exits.Values
+       .Where(e => e.SourceRoomId == room.Id)
+       .ToList();
+
+            if (exits.Count == 0)
+            {
+                player.WriteLine("There are no exits, forces beyond this realm are at play...");
+                return;
+            }
+
+            foreach (var exit in exits)
+            {
+                player.WriteLine(
+                    $" Room Exit(s): {exit.ExitDirection} -> Room {exit.DestinationRoomId} ({exit.Description})"
+                );
+            }
+            //end
         }
 
         private static void DeleteRoom(Player player, List<string> parameters)

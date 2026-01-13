@@ -66,6 +66,7 @@ namespace RPGFramework.Persistence
         /// <param name="player">The <see cref="Player"/> instance to save. Cannot be <c>null</c>.</param>
         /// <returns>A task that represents the asynchronous save operation.</returns>
         Task SavePlayerAsync(Player player);
+        Task SaveItemCatalogAsync(Dictionary<int, Item> catalog);
     }
 
     /// <summary>
