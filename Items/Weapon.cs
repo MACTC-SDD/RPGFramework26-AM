@@ -1,4 +1,5 @@
 ﻿
+using RPGFramework.Enums;
 using System;
 
 namespace RPGFramework
@@ -23,31 +24,7 @@ namespace RPGFramework
         public WeaponType Type { get; set; }
 
         public WeaponMaterial Material { get; set; }
-        internal enum WeaponType
-        {
-            Sword,
-            Axe,
-            Mace,
-            staff,
-            Wands,
-            Dagger,
-            Spear,
-            Bow,
-            Magicbook,
-            shield,
-            crossbow,
-        }
-
-        internal enum WeaponMaterial
-        {
-            Wood,
-            rusty,
-            stone,
-            Iron,
-            Steel,
-            Mythril,
-            Obsidian
-        }
+        
         // TODO
         // Add attack properties (damage, speed, etc.)
         // Implement attack methods
