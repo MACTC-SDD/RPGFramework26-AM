@@ -45,7 +45,7 @@ public class EquipmentBase
             }
         }
         //the below is the code equipment weapon/Armor
-            public class Player
+        public class Player
         {
             public Equipment Equipment { get; } = new Equipment();
 

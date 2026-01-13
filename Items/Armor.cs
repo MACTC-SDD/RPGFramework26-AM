@@ -1,4 +1,7 @@
 ﻿
+using RPGFramework.Enums;
+using static EquipmentBase;
+
 namespace RPGFramework
 {
     internal class Armor : Item
@@ -13,7 +16,7 @@ namespace RPGFramework
         public float HealthBonus { get; set; }
 
         public EquipmentSlot EquipmentSlot { get; private set; }
-        public int Defense { get; private set; }
+        public int Defense { get; private set; } = 0;
 
         public Armor(string name, EquipmentSlot slot, int defense)
         {
@@ -24,29 +27,4 @@ namespace RPGFramework
 
 
     }
-    internal enum ArmorMaterial
-    {
-        Cloth,
-        Leather,
-        Iron,
-        Steel,
-        Mythril
-    }
-    internal enum ArmorSlot
-    {
-        Head,
-        Chest,
-        Legs,
-        back
-    }
-    internal enum ArmorType
-    {
-        Light,
-        Medium,
-        Heavy
-    }
-   
-    
-     
-    
 }
