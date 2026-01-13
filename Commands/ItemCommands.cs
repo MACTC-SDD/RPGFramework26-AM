@@ -15,6 +15,8 @@ namespace RPGFramework.Commands
             {
                 new ListInventoryCommand(),
                 new ItemBuildCommand(),
+                new ArmorBuildCommand(),
+                new WeaponBuildCommand(),
                 // Add more builder commands here as needed
             };
         }
@@ -156,8 +158,232 @@ namespace RPGFramework.Commands
             throw new NotImplementedException();
         }
     }
+    internal class ArmorBuildCommand : ICommand
+    {
+        public string Name => "/Armor";
 
+        public IEnumerable<string> Aliases => Array.Empty<string>();
 
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+            {
+                return false;
+            }
+
+            if (parameters.Count < 2)
+            {
+                WriteUsage(player);
+                return false;
+            }
+
+            switch (parameters[1].ToLower())
+            {
+                case "description":
+                    ArmorSetDescription(player, parameters);
+                    break;
+                case "name":
+                    ArmorSetName(player, parameters);
+                    break;
+                case "create":
+                    ArmorCreate(player, parameters);
+                    break;
+                default:
+                    WriteUsage(player);
+                    break;
+            }
+
+            return true;
+        }
+
+        private static void WriteUsage(Player player)
+        {
+            player.WriteLine("Usage: ");
+            player.WriteLine("/armor description '<set item desc to this>'");
+            player.WriteLine("/armor name '<set item name to this>'");
+            player.WriteLine("/armor create '<name>' '<description>''");
+        }
+
+        private static void ArmorCreate(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+
+            // 0: /item
+            // 1: create
+            // 2: name
+            // 3: description
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /armor create '<name>' '<description>'");
+                return;
+            }
+            Armor newArmor = new Armor
+            {
+                Name = parameters[2],
+                Description = parameters[3]
+            };
+
+            // Here you would typically add the item to a database or game world
+            player.WriteLine($"Armor '{newArmor.Name}' created successfully with description: {newArmor.Description}");
+
+        }
+
+        private static void ArmorSetDescription(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            if (parameters.Count < 3)
+            {
+                //player.WriteLine(player.GetArmor().Description);
+            }
+            else
+            {
+                //player.GetArmor().Description = parameters[2];
+                player.WriteLine("Armor description set.");
+            }
+        }
+
+        private static void ArmorSetName(Player player, List<string> parameters)
+        {
+
+            if (parameters.Count < 3)
+            {
+                // player.WriteLine(player.GetArmor().Name);
+            }
+            else
+            {
+                //player.GetItem().Name = parameters[2];
+                player.WriteLine("Item name set.");
+            }
+        }
+
+        public bool Execute(Character character, List<int> parameters)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    internal class WeaponBuildCommand : ICommand
+    {
+        public string Name => "/weapon";
+
+        public IEnumerable<string> Aliases => Array.Empty<string>();
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+            {
+                return false;
+            }
+
+            if (parameters.Count < 2)
+            {
+                WriteUsage(player);
+                return false;
+            }
+
+            switch (parameters[1].ToLower())
+            {
+                case "description":
+                    ArmorSetDescription(player, parameters);
+                    break;
+                case "name":
+                    ArmorSetName(player, parameters);
+                    break;
+                case "create":
+                    ArmorCreate(player, parameters);
+                    break;
+                default:
+                    WriteUsage(player);
+                    break;
+            }
+
+            return true;
+        }
+
+        private static void WriteUsage(Player player)
+        {
+            player.WriteLine("Usage: ");
+            player.WriteLine("/armor description '<set item desc to this>'");
+            player.WriteLine("/armor name '<set item name to this>'");
+            player.WriteLine("/armor create '<name>' '<description>''");
+        }
+
+        private static void ArmorCreate(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+
+            // 0: /item
+            // 1: create
+            // 2: name
+            // 3: description
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /armor create '<name>' '<description>'");
+                return;
+            }
+            Armor newArmor = new Armor
+            {
+                Name = parameters[2],
+                Description = parameters[3]
+            };
+
+            // Here you would typically add the item to a database or game world
+            player.WriteLine($"Armor '{newArmor.Name}' created successfully with description: {newArmor.Description}");
+
+        }
+
+        private static void ArmorSetDescription(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            if (parameters.Count < 3)
+            {
+                //player.WriteLine(player.GetArmor().Description);
+            }
+            else
+            {
+                //player.GetArmor().Description = parameters[2];
+                player.WriteLine("Armor description set.");
+            }
+        }
+
+        private static void ArmorSetName(Player player, List<string> parameters)
+        {
+
+            if (parameters.Count < 3)
+            {
+                // player.WriteLine(player.GetArmor().Name);
+            }
+            else
+            {
+                //player.GetArmor().Name = parameters[2];
+                player.WriteLine("Armor name set.");
+            }
+        }
+
+        public bool Execute(Character character, List<int> parameters)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 
 
