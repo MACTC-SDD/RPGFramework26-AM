@@ -30,6 +30,11 @@
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</Content>
   </ItemGroup>
+	
+  <ItemGroup>
+    <Compile Remove="data_seed\COmbat-Team\attackRes.cs" />
+    <Compile Remove="data_seed\COmbat-Team\StoredActions.cs" />
+  </ItemGroup>
 
 
 </Project>
