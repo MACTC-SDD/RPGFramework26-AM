@@ -1,4 +1,6 @@
 ﻿
+using RPGFramework.Enums;
+
 namespace RPGFramework
 {
     internal class Armor : Item
@@ -11,26 +13,5 @@ namespace RPGFramework
         public int MaxDurability { get; set; }
         public float DodgeChance { get; set; }
 
-    }
-    internal enum ArmorMaterial
-    {
-        Cloth,
-        Leather,
-        Iron,
-        Steel,
-        Mythril
-    }
-    internal enum ArmorSlot
-    {
-        Head,
-        Chest,
-        Legs,
-        back
-    }
-    internal enum ArmorType
-    {
-        Light,
-        Medium,
-        Heavy
     }
 }
