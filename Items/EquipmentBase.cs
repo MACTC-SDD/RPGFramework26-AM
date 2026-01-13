@@ -117,6 +117,5 @@ public class EquipmentBase
             player.Equipment.Unequip(EquipmentSlot.Head);
             player.RecalculateStats();
         }
-
     }
 }
