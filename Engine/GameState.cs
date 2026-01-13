@@ -59,6 +59,12 @@ namespace RPGFramework
         [JsonIgnore] public Dictionary<int, Armor> ArmorCatalog { get; set; } = new Dictionary<int, Armor>();
         [JsonIgnore] public Dictionary<int, Weapon> WeaponCatalog { get; set; } = new Dictionary<int, Weapon>();
 
+        [JsonIgnore] public Dictionary<string, Item> ItemCatalog { get; set; } = new Dictionary<string, Item>();
+        [JsonIgnore] public Dictionary<string, Weapon> WeaponCatalog { get; set; } = new Dictionary<string, Weapon>();
+        [JsonIgnore] public Dictionary<string, Armor> ArmorCatalog { get; set; } = new Dictionary<string, Armor>();
+
+
+
         // Move starting area/room to configuration settings
         public int StartAreaId { get; set; } = 0;
         public int StartRoomId { get; set; } = 0;
@@ -136,6 +142,17 @@ namespace RPGFramework
             GameState.Log(DebugLevel.Alert, $"{Players.Count} players loaded.");
         }
 
+        private async Task LoadAllCatalogs()
+        {
+            ItemCatalog.Clear();
+            var items = await Persistence.LoadItemsAsync();
+            foreach ( var kvp in items)
+            {
+                ItemCatalog.Add(kvp.Key, kvp.Value);
+            }
+            GameState.Log(DebugLevel.Alert, $"{ItemCatalog.Count} items loaded.");
+        }
+
         /// <summary>
         /// Saves all area entities asynchronously to the persistent storage.
         /// </summary>
@@ -173,6 +190,11 @@ namespace RPGFramework
             return Persistence.SavePlayerAsync(p);
         }
 
+        public Task SaveAllCatalogs()
+        {
+            return Persistence.SaveItemCatalogAsync(ItemCatalog);
+        }
+
         /// <summary>
         /// Initializes and starts the game server 
         ///   loading all areas
@@ -198,7 +220,7 @@ namespace RPGFramework
 
             await LoadAllAreas();
             await LoadAllPlayers();
-
+            await LoadAllCatalogs();
             // Load Item (Weapon/Armor/Consumable/General) catalogs
             // Load NPC (Mobs/Shop/Guild/Quest) catalogs
 
@@ -285,6 +307,7 @@ namespace RPGFramework
                 {
                     await SaveAllPlayers();
                     await SaveAllAreas();
+                    await SaveAllCatalogs();
 
                     GameState.Log(DebugLevel.Info, "Autosave complete.");
                 }

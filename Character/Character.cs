@@ -103,5 +103,10 @@ namespace RPGFramework
         {
             SetHealth(Health + heal);
         }
+
+        internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
