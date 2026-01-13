@@ -32,8 +32,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <Compile Remove="data_seed\COmbat-Team\attackRes.cs" />
-    <Compile Remove="data_seed\COmbat-Team\StoredActions.cs" />
+    <Folder Include="data_seed\catalogs\" />
   </ItemGroup>
 
 
