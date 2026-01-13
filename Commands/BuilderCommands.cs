@@ -117,7 +117,9 @@ namespace RPGFramework.Commands
             catch (Exception ex)
             {
                 player.WriteLine($"Error creating room: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
+#pragma warning disable CS8604 // Possible null reference argument.
+                player.WriteLine(message: ex.StackTrace);
+#pragma warning restore CS8604 // Possible null reference argument.
             }
         }
 
