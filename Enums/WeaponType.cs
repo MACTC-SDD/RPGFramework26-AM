@@ -31,6 +31,7 @@ namespace RPGFramework.Enums
     {
         Cloth,
         Leather,
+        chainmail,
         Iron,
         Steel,
         Mythril
