@@ -11,10 +11,9 @@ namespace RPGFramework
     internal class NonPlayer : Character
     {
         //additional variables from NPCs
-        public string ShortDescription { get; private set; } = "";
-        public string LongDescription { get; private set; } = "";
+        public string Description { get; protected set; } = "";
 
-        //Next to are paired together, the private in order to hold the actual value, the public to enforce clamping
+        //Next two are paired together, the private in order to hold the actual value, the public to enforce clamping
         private int _currentAggressionLevel;
         public int CurrentAggressionLevel{
             get => _currentAggressionLevel;
@@ -22,16 +21,23 @@ namespace RPGFramework
         }
         public Dictionary<string, string[]> DialogOptions { get; set; } //Dialog options, added at creation time.
         public int PreviousAreaId { get; private set; } = 0;
-        public NonPlayer(string name, string shortDesc, string longDesc, int level, Dictionary<string, string[]> DialogOptions, int locationID)
+        public NonPlayer(string name, string Desc, int level, Dictionary<string, string[]> DialogOptions, int locationID)
         {
             Name = name;
-            ShortDescription = shortDesc;
-            LongDescription = longDesc;
+            Description = Desc;
             Level = level;
             this.DialogOptions = DialogOptions;
             LocationId = locationID;
         }
-        
+
+        public NonPlayer()
+        {
+            Name ="Generic NPC";
+            Level = 1;
+            DialogOptions = new Dictionary<string, string[]>();
+            LocationId = 0;
+        }
+
         //incriments the agression level by a set amount (negative values allowed)
         public void IncrimentAgressionLevel(int amount)
         {
