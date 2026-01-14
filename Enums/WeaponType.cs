@@ -31,7 +31,13 @@ namespace RPGFramework.Enums
         Trident,
         WarScythe,
         MilitaryFork,
-
+        pocketofsand,
+        chair,
+        fryingpan,
+        Wakizashi,
+        TableLeg,
+        Saber,
+        FlintLock
     }
 
     internal enum WeaponMaterial
