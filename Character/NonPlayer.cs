@@ -11,7 +11,7 @@ namespace RPGFramework
     internal class NonPlayer : Character
     {
         //additional variables from NPCs
-        public string Description { get; protected set; } = "";
+
 
         //Next two are paired together, the private in order to hold the actual value, the public to enforce clamping
         private int _currentAggressionLevel;

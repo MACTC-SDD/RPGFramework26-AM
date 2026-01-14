@@ -72,21 +72,22 @@ namespace RPGFramework.Commands
             {
                 Mob m = new Mob();
                 m.Name = parameters[2];
+                m.Description = parameters[3];
+
                 // Use a method or constructor to set Description, since the setter is protected
                 // Assuming a method like SetDescription exists in NonPlayer or Mob
-                if (m is NonPlayer nonPlayer)
+
+                // check if key in dictionary
+                if (GameState.Instance.Mobs.ContainsKey(m.Name))
                 {
-                    // If a method to set description exists, use it:
-                    // nonPlayer.SetDescription(parameters[3]);
-                    // If not, you need to add such a method to NonPlayer or Mob.
-                    throw new InvalidOperationException("Cannot set Description. No accessible setter or method found.");
+                    player.WriteLine("A mob with that name already exists.");
+                }
+                else
+                {
+                    GameState.Instance.Mobs.Add(m.Name, m);
                 }
 
-                // The following line is unrelated to Mob creation and seems to be a copy-paste error:
-                // player.GetRoom().AddExits(player, exitDirection, parameters[5], room);
-                // Remove or replace with actual mob placement logic if needed.
-
-                player.WriteLine("Mob created.");
+                    player.WriteLine("Mob created.");
             }
             catch (Exception ex)
             {
