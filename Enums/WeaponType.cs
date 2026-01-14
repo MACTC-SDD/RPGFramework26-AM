@@ -3,8 +3,14 @@ namespace RPGFramework.Enums
 {
     internal enum WeaponType
     {
-        Sword,
-        Axe,
+        LongSword,
+        Shortsword,
+        Claymore,
+        Cutlass,
+        Claw,
+        Gauntlet,
+        BattleAxe,
+        Hatchet,
         Mace,
         staff,
         Wands,
@@ -12,8 +18,24 @@ namespace RPGFramework.Enums
         Spear,
         Bow,
         Magicbook,
-        shield,
-        crossbow,
+        Shield,
+        DualShield,
+        Crossbow,
+        Slings,
+        Throwingknives,
+        Clubs,
+        Halberd,
+        Whip,
+        Kusarigama,
+        Katana,
+        Wakizashi,
+        Chair,
+        Rapier,
+        Trident,
+        WarScythe,
+        MilitaryFork,
+        FryingPan
+
     }
 
     internal enum WeaponMaterial
@@ -41,12 +63,23 @@ namespace RPGFramework.Enums
         Head,
         Chest,
         Legs,
-        back
+        back,
+        boots
     }
     internal enum ArmorType
     {
         Light,
         Medium,
         Heavy
+    }
+    public enum EquipmentSlot
+    {
+        Head,
+        Chest,
+        Legs,
+        Back,
+        Boots,
+        MainHand,
+        OffHand
     }
 }
