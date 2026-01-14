@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using RPGFramework.Enums;
 
 namespace RPGFramework.Persistence
 {
@@ -32,7 +33,7 @@ namespace RPGFramework.Persistence
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving object: {ex.Message}");
+                GameState.Log(DebugLevel.Error, $"Error saving object:\n{ex.Message}");
             }
         }
 
