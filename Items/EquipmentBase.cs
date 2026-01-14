@@ -1,18 +1,9 @@
 ﻿using RPGFramework;
+using RPGFramework.Enums;
 
 public class EquipmentBase
 {
-    private object? slots;
-
-    public void Unequip(EquipmentSlot slot)
-    {
-        Head,
-        Chest,
-        Legs,
-        Back,
-        MainHand,
-        OffHand
-    }
+  
 
     public class Equipment : EquipmentBase
     {
@@ -74,12 +65,7 @@ public class EquipmentBase
 
         public abstract class Item
         {
-            public EquipmentSlot? Slot { get; protected set; }
-
-            public(EquipmentSlot? slot)
-            {
-                Slot = slot;
-            }
+            public EquipmentSlot Slot { get; protected set; }
 
             public int StrengthBonus { get; set; }
             public int DefenseBonus { get; set; }

@@ -3,12 +3,12 @@ namespace RPGFramework.Enums
 {
     internal enum WeaponType
     {
-        longSword,
-        shortsword,
-        claymore,
-        cutlass,
-        battleAxe,
-        hatchet,
+        LongSword,
+        Shortsword,
+        Claymore,
+        Cutlass,
+        BattleAxe,
+        Hatchet,
         Mace,
         Warhammer,
         staff,
@@ -17,36 +17,36 @@ namespace RPGFramework.Enums
         Spear,
         Bow,
         Magicbook,
-        shield,
+        Shield,
         DualShield,
-        crossbow,
-        slings,
+        Crossbow,
+        Slings,
         Throwingknives,
-        clubs,
-        halberd,
-        whip,
+        Clubs,
+        Halberd,
+        Whip,
         Kusarigama,
-        katana,
+        Katana,
         Rapier,
         Trident,
-        Warscythe,
-        Militaryfork,
+        WarScythe,
+        MilitaryFork,
 
     }
 
     internal enum WeaponMaterial
     {
         Wood,
-        bone,
-        rusty,
-        stone,
+        Bone,
+        Rusty,
+        Stone,
         Iron,
         Steel,
         Mythril,
         Obsidian,
-        copper,
+        Copper,
         Bronze,
-        dragonbone,
+        DragonBone,
         Crystal,
         Tungsten,
         VoidMetal,
@@ -59,11 +59,11 @@ namespace RPGFramework.Enums
     internal enum ArmorMaterial
     {
         Cloth,
-        bronze,
-        bone,
-        rusty,
+        Bronze,
+        Bone,
+        Rusty,
         DragonScale,
-        Enchantedsteel,
+        EnchantedSteel,
         Crystal,
         Leather,
         Iron,
@@ -71,7 +71,7 @@ namespace RPGFramework.Enums
         Mythril,
         Obsidian,
         Tungsten,
-        Starmetal,
+        StarMetal,
         MeteorSteel,
         VoidStone,
         MoonSilver
@@ -88,5 +88,14 @@ namespace RPGFramework.Enums
         Light,
         Medium,
         Heavy
+    }
+    public enum EquipmentSlot
+    {
+        Head,
+        Chest,
+        Legs,
+        Back,
+        MainHand,
+        OffHand
     }
 }
