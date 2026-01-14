@@ -37,6 +37,7 @@ namespace RPGFramework.Commands
                 return false;
             }
 
+            //Switches between the second parameter to determine command.
             switch (parameters[1].ToLower())
             {
                 case "create":
@@ -46,9 +47,13 @@ namespace RPGFramework.Commands
                     MobDelete(player, parameters);
                     break;
                 case "set":
-                    if (parameters[2] == "name")
+                    if (parameters[2].ToLower() == "name")
                     {
                         SetMobName(player, parameters);
+                    }
+                    else if (parameters[2].ToLower() == "desc")
+                    {
+                        SetMobDescription(player, parameters);
                     }
                     break;
                 default:
@@ -58,6 +63,8 @@ namespace RPGFramework.Commands
 
             return true;
         }
+
+        //Creates empty mob
         private static void MobCreate(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
@@ -104,10 +111,13 @@ namespace RPGFramework.Commands
                 player.WriteLine(ex.StackTrace);
             }
         }
+
+        //Prints all available commands.
         private static void WriteUsage(Player player)
         {
             player.WriteLine("Usage: ");
-            player.WriteLine("/mob set '<name>' '<NewName>'");
+            player.WriteLine("/mob set '<desc>' <'Name'> '<Description>'");
+            player.WriteLine("/mob set '<name>' <'CurrentName'> '<NewName>'");
             player.WriteLine("/mob create '<name>' '<description>'");
             player.WriteLine("/mob delete '<name>'");
         }
@@ -140,13 +150,30 @@ namespace RPGFramework.Commands
                 return;
             }
 
-            Mob temp = GameState.Instance.Mobs[parameters[2]];
+            Mob temp = GameState.Instance.Mobs[parameters[3]];
             temp.Name = parameters[3];
 
-            GameState.Instance.Mobs.Remove(parameters[2]);
+            GameState.Instance.Mobs.Remove(parameters[3]);
 
-            GameState.Instance.Mobs.Add(parameters[3], temp);
+            GameState.Instance.Mobs.Add(parameters[4], temp);
 
+
+        }
+
+
+        //Sets mob description that currently exists.
+        private static void SetMobDescription(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+            if (GameState.Instance.Mobs.ContainsKey(parameters[3]))
+            {
+                GameState.Instance.Mobs[parameters[3]].Description = parameters[4];
+            }
 
         }
     }
