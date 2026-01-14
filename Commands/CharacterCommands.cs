@@ -42,6 +42,9 @@ namespace RPGFramework.Commands
                 case "create":
                     MobCreate(player, parameters);
                     break;
+                case "delete":
+                    MobDelete(player, parameters);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -101,6 +104,27 @@ namespace RPGFramework.Commands
             player.WriteLine("/mob description '<set mob>'");
             player.WriteLine("/mob name '<set mob name to this>'");
             player.WriteLine("/mob create '<name>' '<description>'");
+            player.WriteLine("/mob delete '<name>'");
+        }
+
+        //Deletes a mob from the catalogue.
+        private static void MobDelete(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+
+            if (GameState.Instance.Mobs.ContainsKey(parameters[2]))
+            {
+                GameState.Instance.Mobs.Remove(parameters[2]);
+            }
+            else
+            {
+                player.WriteLine("A mob with that name doesn't exist.");
+            }
         }
     }
 }

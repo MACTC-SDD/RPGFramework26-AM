@@ -48,8 +48,6 @@ namespace RPGFramework
         public int GetAggressionLevel(){return CurrentAggressionLevel;}
 
         //returns the two different descriptions
-        public string GetShortDescription() { return ShortDescription; }
-        public string GetLongDescription() { return LongDescription; }
         
     }
 }

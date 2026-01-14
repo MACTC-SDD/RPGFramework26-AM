@@ -101,5 +101,6 @@ namespace RPGFramework
         {
             SetHealth(Health + heal);
         }
+        public void SetDescription(string Desc) { Description = Desc; }
     }
 }
