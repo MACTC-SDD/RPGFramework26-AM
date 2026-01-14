@@ -141,6 +141,8 @@ namespace RPGFramework.Commands
                 player.WriteLine("A mob with that name doesn't exist.");
             }
         }
+
+        //Set mobs name
         private static void SetMobName(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
