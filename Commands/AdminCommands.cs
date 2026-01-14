@@ -37,7 +37,7 @@ namespace RPGFramework.Commands
             Comm.Broadcast($"{DisplaySettings.AnnouncementColor}[[WARNING]]: [/][white]" +
                 $"Server is shutting down. All data will be saved.[/]");
 
-            GameState.Instance.Stop();
+            using var _ = GameState.Instance.Stop();
             return true;
         }
     }

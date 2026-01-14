@@ -15,7 +15,7 @@ internal class TelnetServer
 {
     private TcpListener _listener;
     private bool _isRunning;
-    
+
 
     public TelnetServer(int port)
     {
@@ -44,18 +44,18 @@ internal class TelnetServer
         {
             // Create PlayerNetwork object, once logged in we'll attach it to player
             PlayerNetwork pn = new PlayerNetwork(client);
-            var telnetConnection = new TelnetConnection(client.GetStream(), Encoding.UTF8);
+
 
             pn.Writer.WriteLine("Username: ");
             //string? playerName = pn.Reader.ReadLine();
-            string? playerName = telnetConnection.ReadLine();
-            
+            string? playerName = await pn.TelnetConnection.ReadLineAsync();
+
             while (string.IsNullOrEmpty(playerName))
             {
                 pn.Writer.WriteLine("Username: ");
-                playerName = pn.Reader.ReadLine();
+                playerName = pn.TelnetConnection.ReadLine();
             }
-            
+
             GameState.Log(DebugLevel.Debug, $"Player '{playerName}' is connecting...");
             Player player;
 
@@ -63,7 +63,7 @@ internal class TelnetServer
             if (GameState.Instance.Players.ContainsKey(playerName))
             {
                 GameState.Log(DebugLevel.Debug, $"Existing player '{playerName}' found, loading data...");
-                player = GameState.Instance.Players[playerName];                
+                player = GameState.Instance.Players[playerName];
             }
             else
             {
@@ -90,7 +90,8 @@ internal class TelnetServer
             {
                 while (client.Connected)
                 {
-                    string command = await player.Network.Reader.ReadLineAsync();
+                    //string command = await player.Network.Reader.ReadLineAsync();
+                    string? command = await player.Network.TelnetConnection.ReadLineAsync();
                     if (command == null)
                         break;
 
