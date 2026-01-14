@@ -25,6 +25,7 @@ namespace RPGFramework
         #region --- Properties ---
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
+        public string Description { get; set; } = "";
         public int Gold { get; set; } = 0;
         public int Health { get; protected set; } = 0;
         public int Level { get; protected set; } = 1;
@@ -67,6 +68,11 @@ namespace RPGFramework
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
         }
 
+        public void SetRoom(int id)
+        {
+            LocationId = id;
+        }
+
         // Set Health to a specific value
         public void SetHealth(int health)
         {
@@ -103,6 +109,7 @@ namespace RPGFramework
         {
             SetHealth(Health + heal);
         }
+        public void SetDescription(string Desc) { Description = Desc; }
 
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
         {

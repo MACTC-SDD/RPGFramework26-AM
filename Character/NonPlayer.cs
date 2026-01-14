@@ -1,4 +1,6 @@
 ﻿
+using RPGFramework.Enums;
+
 namespace RPGFramework
 {
     /// <summary>
