@@ -57,9 +57,11 @@ namespace RPGFramework
         /// </summary>
         [JsonIgnore] public Dictionary<string, Player> Players { get; set; } = new Dictionary<string, Player>();
 
-        [JsonIgnore] public Dictionary<int, Item> ItemCatalog { get; set; } = new Dictionary<int, Item>();
-        [JsonIgnore] public Dictionary<int, Weapon> WeaponCatalog { get; set; } = new Dictionary<int, Weapon>();
-        [JsonIgnore] public Dictionary<int, Armor> ArmorCatalog { get; set; } = new Dictionary<int, Armor>();
+        [JsonIgnore] public Dictionary<string, Mob> Mobs { get; set; } = new Dictionary<string, Mob>();
+        [JsonIgnore] public Dictionary<string, NonPlayer> Npcs { get; set; } = new Dictionary<string, NonPlayer>();
+        [JsonIgnore] public Dictionary<string, Item> ItemCatalog { get; set; } = new Dictionary<string, Item>();
+        [JsonIgnore] public Dictionary<string, Weapon> WeaponCatalog { get; set; } = new Dictionary<string, Weapon>();
+        [JsonIgnore] public Dictionary<string, Armor> ArmorCatalog { get; set; } = new Dictionary<string, Armor>();
 
 
 
@@ -140,6 +142,64 @@ namespace RPGFramework
             GameState.Log(DebugLevel.Alert, $"{Players.Count} players loaded.");
         }
 
+        private async Task LoadAllCatalogs()
+        {
+            // Load Items
+            ItemCatalog.Clear();
+
+            try
+            {
+                var items = await Persistence.LoadItemsAsync();
+                foreach (var kvp in items)
+                {
+                    ItemCatalog.Add(kvp.Key, kvp.Value);
+                }
+
+                GameState.Log(DebugLevel.Alert, $"{ItemCatalog.Count} items loaded.");
+
+            }
+            catch (FileNotFoundException)
+            {
+                GameState.Log(DebugLevel.Warning, $"Item catalog file not found, creating blank.");                
+            }
+            // Load Weapons
+            ArmorCatalog.Clear();
+
+            try
+            {
+                var armor = await Persistence.LoadArmorAsync();
+                foreach (var kvp in armor)
+                {
+                    ArmorCatalog.Add(kvp.Key, kvp.Value);
+                }
+
+                GameState.Log(DebugLevel.Alert, $"{ArmorCatalog.Count} armor loaded.");
+
+            }
+            catch (FileNotFoundException)
+            {
+                GameState.Log(DebugLevel.Warning, $"Armor catalog file not found, creating blank.");
+            }
+            // Load Armor
+            WeaponCatalog.Clear();
+
+            try
+            {
+                var weapons = await Persistence.LoadWeaponsAsync();
+                foreach (var kvp in weapons)
+                {
+                    WeaponCatalog.Add(kvp.Key, kvp.Value);
+                }
+
+                GameState.Log(DebugLevel.Alert, $"{WeaponCatalog.Count} weapons loaded.");
+
+            }
+            catch (FileNotFoundException)
+            {
+                GameState.Log(DebugLevel.Warning, $"Weapon catalog file not found, creating blank.");
+            }
+        }
+
         /// <summary>
         /// Saves all area entities asynchronously to the persistent storage.
         /// </summary>
@@ -181,6 +241,13 @@ namespace RPGFramework
             return Persistence.SavePlayerAsync(p);
         }
 
+        public async Task SaveAllCatalogs()
+        {
+            await Persistence.SaveItemCatalogAsync(ItemCatalog);
+            await Persistence.SaveArmorCatalogAsync(ArmorCatalog);
+            await Persistence.SaveWeaponCatalogAsync(WeaponCatalog);
+        }
+
         /// <summary>
         /// Initializes and starts the game server 
         ///   loading all areas
@@ -206,7 +273,7 @@ namespace RPGFramework
 
             await LoadAllAreas();
             await LoadAllPlayers();
-
+            await LoadAllCatalogs();
             // Load Item (Weapon/Armor/Consumable/General) catalogs
             // Load NPC (Mobs/Shop/Guild/Quest) catalogs
 

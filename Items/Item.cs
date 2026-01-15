@@ -3,7 +3,7 @@ using RPGFramework;
 
 namespace RPGFramework
 {
-    internal class Item
+    internal class Item : IDescribable
     {
         internal EquipmentBase.EquipmentSlot slot;
 
@@ -20,6 +20,11 @@ namespace RPGFramework
         public int UsesRemaining { get; set; } = -1; // -1 means unlimited uses
         public double Value { get; set; } = 0;
         public double Weight { get; set; } = 0;
+
+        internal static Item ItemCreation(int areaId, int v1, int v2)
+        {
+            throw new NotImplementedException();
+        }
         public int StrengthBonus { get; internal set; }
         public int DefenseBonus { get; internal set; }
     }
