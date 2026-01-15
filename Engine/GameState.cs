@@ -234,9 +234,11 @@ namespace RPGFramework
             return Persistence.SavePlayerAsync(p);
         }
 
-        public Task SaveAllCatalogs()
+        public async Task SaveAllCatalogs()
         {
-            return Persistence.SaveItemCatalogAsync(ItemCatalog);
+            await Persistence.SaveItemCatalogAsync(ItemCatalog);
+            await Persistence.SaveArmorCatalogAsync(ArmorCatalog);
+            await Persistence.SaveWeaponCatalogAsync(WeaponCatalog);
         }
 
         /// <summary>
