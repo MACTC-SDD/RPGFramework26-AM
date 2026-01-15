@@ -3,38 +3,86 @@ namespace RPGFramework.Enums
 {
     internal enum WeaponType
     {
-        Sword,
-        Axe,
+        LongSword,
+        Shortsword,
+        Claymore,
+        Cutlass,
+        BattleAxe,
+        Hatchet,
         Mace,
+        Warhammer,
         staff,
         Wands,
         Dagger,
         Spear,
         Bow,
         Magicbook,
-        shield,
-        crossbow,
+        Shield,
+        DualShield,
+        Crossbow,
+        Slings,
+        Throwingknives,
+        Clubs,
+        Halberd,
+        Whip,
+        Kusarigama,
+        Katana,
+        Rapier,
+        Trident,
+        WarScythe,
+        MilitaryFork,
+        BaseballBat,
+        PocketofSand,
+        TableLeg,
+        FryingPan,
+        Chair,
+        Saber,
+        Wakizashi,
+        Flintlock,
+
     }
 
     internal enum WeaponMaterial
     {
         Wood,
-        rusty,
-        stone,
+        Bone,
+        Rusty,
+        Stone,
         Iron,
         Steel,
         Mythril,
-        Obsidian
-    }
+        Obsidian,
+        Copper,
+        Bronze,
+        DragonBone,
+        Crystal,
+        Tungsten,
+        VoidMetal,
+        StarMetal,
+        Gold,
+        Basalt,
+        MoonSilver,
 
+    }
     internal enum ArmorMaterial
     {
         Cloth,
+        Bronze,
+        Bone,
+        Rusty,
+        DragonScale,
+        EnchantedSteel,
+        Crystal,
         Leather,
-        chainmail,
         Iron,
         Steel,
-        Mythril
+        Mythril,
+        Obsidian,
+        Tungsten,
+        StarMetal,
+        MeteorSteel,
+        VoidStone,
+        MoonSilver
     }
     internal enum ArmorSlot
     {
@@ -48,6 +96,15 @@ namespace RPGFramework.Enums
         Light,
         Medium,
         Heavy
+    }
+    public enum EquipmentSlot
+    {
+        Head,
+        Chest,
+        Legs,
+        Back,
+        MainHand,
+        OffHand
     }
 }
     
