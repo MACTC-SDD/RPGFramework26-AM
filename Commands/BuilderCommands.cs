@@ -193,7 +193,7 @@ namespace RPGFramework.Commands
             foreach (var exit in exits)
             {
                 player.WriteLine(
-                    $" Room Exit(s): {exit.ExitDirection} -> Room {exit.DestinationRoomId} ({exit.Description})"
+                    $" Room Exit(s): {exit.ExitDirection} -> Room {exit.DestinationRoomId} | Exit Id {exit.Id} | ({exit.Description})"
                 );
             }
             //end
