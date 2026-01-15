@@ -22,8 +22,7 @@ namespace RPGFramework
         {
         }
 
-        //incriments the agression level by a set amount (negative values allowed)
-        public void IncrimentAgressionLevel(int amount)
+        public void IncrementAgressionLevel(int amount)
         {
             CurrentAggressionLevel += amount;
         }

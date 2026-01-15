@@ -1,53 +1,57 @@
 ﻿
 namespace RPGFramework.Enums
 {
+    // CODE REVIEW: Liam (PR #21)
+    // Before you start actually creating weapons, alphabatize this list.
     internal enum WeaponType
     {
-        Sword,
-        Axe,
+        LongSword,
+        ShortSword,
+        Claymore,
+        Cutlass,
+        BattleAxe,
+        Hatchet,
         Mace,
-        staff,
+        Warhammer,
+        Staff,
         Wands,
         Dagger,
         Spear,
         Bow,
         Magicbook,
-        shield,
-        crossbow,
+        Shield,
+        DualShield,
+        Crossbow,
+        Slings,
+        Throwingknives,
+        Clubs,
+        Halberd,
+        Whip,
+        Kusarigama,
+        Katana,
+        Rapier,
+        Trident,
+        WarScythe,
+        MilitaryFork,
+        BaseballBat,
+        PocketofSand,
+        TableLeg,
+        FryingPan,
+        Chair,
+        Saber,
+        Wakizashi,
+        Flintlock,
+        Sword
     }
 
-    internal enum WeaponMaterial
-    {
-        Wood,
-        rusty,
-        stone,
-        Iron,
-        Steel,
-        Mythril,
-        Obsidian
-    }
-
-    internal enum ArmorMaterial
-    {
-        Cloth,
-        Leather,
-        chainmail,
-        Iron,
-        Steel,
-        Mythril
-    }
-    internal enum ArmorSlot
+    public enum EquipmentSlot
     {
         Head,
         Chest,
         Legs,
-        back
-    }
-    internal enum ArmorType
-    {
-        Light,
-        Medium,
-        Heavy
+        Back,
+        MainHand,
+        OffHand
     }
 }
     
