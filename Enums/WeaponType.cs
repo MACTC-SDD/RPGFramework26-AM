@@ -1,17 +1,19 @@
 ﻿
 namespace RPGFramework.Enums
 {
+    // CODE REVIEW: Liam (PR #21)
+    // Before you start actually creating weapons, alphabatize this list.
     internal enum WeaponType
     {
         LongSword,
-        Shortsword,
+        ShortSword,
         Claymore,
         Cutlass,
         BattleAxe,
         Hatchet,
         Mace,
         Warhammer,
-        staff,
+        Staff,
         Wands,
         Dagger,
         Spear,
@@ -39,64 +41,9 @@ namespace RPGFramework.Enums
         Saber,
         Wakizashi,
         Flintlock,
-
+        Sword
     }
 
-    internal enum WeaponMaterial
-    {
-        Wood,
-        Bone,
-        Rusty,
-        Stone,
-        Iron,
-        Steel,
-        Mythril,
-        Obsidian,
-        Copper,
-        Bronze,
-        DragonBone,
-        Crystal,
-        Tungsten,
-        VoidMetal,
-        StarMetal,
-        Gold,
-        Basalt,
-        MoonSilver,
-
-    }
-    internal enum ArmorMaterial
-    {
-        Cloth,
-        Bronze,
-        Bone,
-        Rusty,
-        DragonScale,
-        EnchantedSteel,
-        Crystal,
-        Leather,
-        Iron,
-        Steel,
-        Mythril,
-        Obsidian,
-        Tungsten,
-        StarMetal,
-        MeteorSteel,
-        VoidStone,
-        MoonSilver
-    }
-    internal enum ArmorSlot
-    {
-        Head,
-        Chest,
-        Legs,
-        back
-    }
-    internal enum ArmorType
-    {
-        Light,
-        Medium,
-        Heavy
-    }
     public enum EquipmentSlot
     {
         Head,

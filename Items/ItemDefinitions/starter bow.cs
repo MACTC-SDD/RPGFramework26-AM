@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using RPGFramework.Enums;
 
 namespace RPGFramework.Items.ItemDefinitions
 {
@@ -20,8 +18,8 @@ namespace RPGFramework.Items.ItemDefinitions
                 Name = "Starter Bow",
                 UsesRemaining = 0,
                 Value = 0,
-                Type = Weapon.WeaponType.Bow,
-                Material = Weapon.WeaponMaterial.Wood,
+                Type = WeaponType.Bow,
+                Material = WeaponMaterial.Wood,
                 Range = 20,
                 Damage = 5
             };
