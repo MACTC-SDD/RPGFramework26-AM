@@ -372,11 +372,7 @@ namespace RPGFramework.Commands
             player.WriteLine($"Room {roomToDelete.Id} deleted.");
         }
 
-    }
-}
-
-
-        }
+        
 
         private static void RoomSetColor(Player player, List<string> parameters)
         {

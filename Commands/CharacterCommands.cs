@@ -269,7 +269,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -332,7 +332,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
             try
@@ -351,7 +351,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
             try
@@ -370,7 +370,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
             string category = parameters[3].ToLower();
@@ -384,7 +384,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
             string category = parameters[3].ToLower();
@@ -398,7 +398,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
             string category = parameters[3].ToLower();
@@ -411,7 +411,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -431,7 +431,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -459,7 +459,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
             if (GameState.Instance.Npcs.ContainsKey(parameters[3]))
