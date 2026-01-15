@@ -1,5 +1,6 @@
 ﻿
 using RPGFramework.Enums;
+using System.Drawing;
 using static EquipmentBase;
 
 namespace RPGFramework
@@ -25,5 +26,16 @@ namespace RPGFramework
             Defense = defense;
         }
         public ArmorRarity Rarity { get; set; }
+
+
+        Dictionary<ArmorRarity, Color> rarityColors = new()
+{
+    { ArmorRarity  .Common, Color.Gray },
+    { ArmorRarity.Uncommon, Color.Green },
+    { ArmorRarity.Rare, Color.Blue },
+    { ArmorRarity.Epic, Color.Purple },
+    { ArmorRarity.Legendary, Color.Orange },
+    { ArmorRarity.Mythic, Color.Gold }
+};
     }
 }

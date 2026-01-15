@@ -1,6 +1,7 @@
 ﻿
 using RPGFramework.Enums;
 using System;
+using System.Drawing;
 
 namespace RPGFramework
 {
@@ -39,6 +40,16 @@ namespace RPGFramework
         public Weapon()
         {
         }
+        Dictionary<WeaponRarity, Color> rarityColors = new()
+{
+    { WeaponRarity.Common, Color.Gray },
+    { WeaponRarity.Uncommon, Color.Green },
+    { WeaponRarity.Rare, Color.Blue },
+    { WeaponRarity.Epic, Color.Purple },
+    { WeaponRarity.Legendary, Color.Orange },
+    { WeaponRarity.Mythic, Color.Gold },
+    { WeaponRarity.Eternal, Color.DarkRed }
+};
         // TODO
         // Add attack properties (damage, speed, etc.)
         // Implement attack methods

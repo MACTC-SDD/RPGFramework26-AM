@@ -62,7 +62,10 @@ namespace RPGFramework.Enums
         MoonSilver,
         Sand,
         admin,
-        burner
+        burner,
+        DragonScale,
+        MetorMetal,
+        EnchatedSteel
 
     }
     internal enum ArmorMaterial
@@ -75,6 +78,7 @@ namespace RPGFramework.Enums
         Bone,
         Rusty,
         DragonScale,
+        DragonBone,
         EnchantedSteel,
         Crystal,
         Leather,
@@ -112,7 +116,7 @@ namespace RPGFramework.Enums
     }
     public enum WeaponRarity
     {
-        Common,
+        Common, 
         Uncommon,
         Rare,
         Epic,
