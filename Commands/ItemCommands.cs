@@ -14,7 +14,6 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new ListInventoryCommand(),
-                
                 new ItemBuildCommand(),
                 new ArmorBuildCommand(),
                 new WeaponBuildCommand(),

@@ -39,6 +39,11 @@ public sealed class TelnetConnection
     public int? TerminalWidth { get; private set; }
     public int? TerminalHeight { get; private set; }
 
+    public string CurrentLineText =>
+    _encoding.GetString(_lineBuffer.ToArray());
+
+    public Action? OnlineCommitted; // Invoked when a full line is entered.
+
     public TelnetConnection(NetworkStream stream, Encoding? encoding = null)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
@@ -53,6 +58,11 @@ public sealed class TelnetConnection
 
         // We do NOT request ECHO by default because we want client-side echo.
         // Most clients will offer WILL ECHO anyway, and we accept it.
+    }
+
+    private void ClearCurrentLine()
+    {
+        _lineBuffer.Clear();
     }
 
     public string? ReadLine()
@@ -134,6 +144,9 @@ public sealed class TelnetConnection
                 if (b == (byte)'\n')
                 {
                     line = _encoding.GetString(_lineBuffer.ToArray());
+                    ClearCurrentLine();
+
+                    OnlineCommitted?.Invoke();
                     return true;
                 }
 

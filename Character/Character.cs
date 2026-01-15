@@ -13,7 +13,7 @@ namespace RPGFramework
     /// as needed. The class enforces valid ranges for skill attributes and manages health and alive status. Instances
     /// of this class are not created directly; instead, use a concrete subclass representing a specific character
     /// type.</remarks>
-    internal abstract class Character
+    internal abstract class Character : IDescribable
     {
         enum CharacterState { 
             Idle, 
@@ -25,6 +25,7 @@ namespace RPGFramework
         #region --- Properties ---
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
+        public string Description { get; set; } = "";
         public int Gold { get; set; } = 0;
         public int Health { get; protected set; } = 0;
         public int Level { get; protected set; } = 1;
@@ -67,6 +68,11 @@ namespace RPGFramework
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
         }
 
+        public void SetRoom(int id)
+        {
+            LocationId = id;
+        }
+
         // Set Health to a specific value
         public void SetHealth(int health)
         {
@@ -103,6 +109,11 @@ namespace RPGFramework
         {
             SetHealth(Health + heal);
         }
+
+        // CODE REVIEW: Shelton - PR #18
+        // There is really no reason to be a method, you can just set the property directly.
+        // I commented it out and you can just delete this comment once you've reviewed.
+        //public void SetDescription(string Desc) { Description = Desc; }
 
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
         {

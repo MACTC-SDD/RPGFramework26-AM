@@ -56,6 +56,7 @@ namespace RPGFramework
         /// </summary>
         [JsonIgnore] public Dictionary<string, Player> Players { get; set; } = new Dictionary<string, Player>();
 
+        [JsonIgnore] public Dictionary<string, Mob> Mobs { get; set; } = new Dictionary<string, Mob>();
         [JsonIgnore] public Dictionary<string, Item> ItemCatalog { get; set; } = new Dictionary<string, Item>();
         [JsonIgnore] public Dictionary<string, Weapon> WeaponCatalog { get; set; } = new Dictionary<string, Weapon>();
         [JsonIgnore] public Dictionary<string, Armor> ArmorCatalog { get; set; } = new Dictionary<string, Armor>();
@@ -155,15 +156,46 @@ namespace RPGFramework
                 GameState.Log(DebugLevel.Alert, $"{ItemCatalog.Count} items loaded.");
 
             }
-            catch (FileNotFoundException fex)
+            catch (FileNotFoundException)
             {
                 GameState.Log(DebugLevel.Warning, $"Item catalog file not found, creating blank.");                
             }
-
             // Load Weapons
+            ArmorCatalog.Clear();
 
+            try
+            {
+                var armor = await Persistence.LoadArmorAsync();
+                foreach (var kvp in armor)
+                {
+                    ArmorCatalog.Add(kvp.Key, kvp.Value);
+                }
+
+                GameState.Log(DebugLevel.Alert, $"{ArmorCatalog.Count} armor loaded.");
+
+            }
+            catch (FileNotFoundException)
+            {
+                GameState.Log(DebugLevel.Warning, $"Armor catalog file not found, creating blank.");
+            }
             // Load Armor
-            
+            WeaponCatalog.Clear();
+
+            try
+            {
+                var weapons = await Persistence.LoadWeaponsAsync();
+                foreach (var kvp in weapons)
+                {
+                    WeaponCatalog.Add(kvp.Key, kvp.Value);
+                }
+
+                GameState.Log(DebugLevel.Alert, $"{WeaponCatalog.Count} weapons loaded.");
+
+            }
+            catch (FileNotFoundException)
+            {
+                GameState.Log(DebugLevel.Warning, $"Weapon catalog file not found, creating blank.");
+            }
         }
 
         /// <summary>

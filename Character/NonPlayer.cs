@@ -1,4 +1,6 @@
 ﻿
+using RPGFramework.Enums;
+
 namespace RPGFramework
 {
     /// <summary>
@@ -15,6 +17,22 @@ namespace RPGFramework
         public int MaxAgressionLevel { get; private set; } = 10; // (the maximum aggression level for this NPC)
         public int MinAgressionLevel { get; private set; } = 0; // (the minimum aggression level for this NPC)
 
+        // CODE REVIEW: Shelton - PR #18
+        // There is really no reason to be fields, and you already have all of this information
+        // as properties with private set, so I removed these methods.
+        // I also moved them to the top with the rest of the fields/properties.
+        // You can delete this comment once you've reviewed.
+        //public int GetAgressionLevel() { return CurrentAgressionLevel; } // Not needed you already have CurrentAgressionLevel property
+        //public string GetShortDescription() { return ShortDescription; }
+        //public string GetLongDescription() { return LongDescription; }
+
+        // CODE REVIEW: Shelton - PR #18
+        // We want to make sure we have a default constructor for serialization purposes (and in general).
+        // I added it, so you can just delete this comment.
+        public NonPlayer()
+        {
+        }
+
         public NonPlayer(string name, string shortDesc, string longDesc, int level)
         {
             Name = name;
@@ -23,7 +41,7 @@ namespace RPGFramework
             Level = level;
         }
 
-        public void IncrimentAgressionLevel(int amount)
+        public void IncrementAgressionLevel(int amount)
         {
             if (amount < MaxAgressionLevel || amount > -MaxAgressionLevel)
             {
@@ -42,12 +60,8 @@ namespace RPGFramework
                 CurrentAgressionLevel += amount;
             }
         }
-        //feels self explanitory
-        public int GetAgressionLevel(){return CurrentAgressionLevel;}
 
-        //returns the two different descriptions
-        public string GetShortDescription() { return ShortDescription; }
-        public string GetLongDescription() { return LongDescription; }
+
         
     }
 }
