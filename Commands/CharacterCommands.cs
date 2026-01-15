@@ -2,6 +2,7 @@
 using RPGFramework.Geography;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace RPGFramework.Commands
@@ -232,6 +233,28 @@ internal class MobBuilderCommand : ICommand
                         SetNpcDescription(player, parameters);
                     }
                     break;
+                case "dialog":
+                    if (parameters[2].ToLower() == "add")
+                    {
+                        NpcAddDialog(player, parameters);
+                    }
+                    else if (parameters[2].ToLower() == "list" && parameters.Count == 5)
+                    {
+                        NpcListDialog(player, parameters);
+                    }
+                    else if (parameters[2].ToLower() == "list" && parameters.Count == 6)
+                    {
+                        NpcListCategoryDialog(player, parameters);
+                    }
+                    else if (parameters[2].ToLower() == "delete" && parameters.Count == 5)
+                    {
+                        DeleteNpcDialogCategory(player, parameters);
+                    }
+                    else if (parameters[2].ToLower() == "delete" && parameters.Count == 6)
+                    {
+                        DeleteNpcDialogLine(player, parameters);
+                    }
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -295,8 +318,91 @@ internal class MobBuilderCommand : ICommand
             player.WriteLine("/npc set desc <'Name'> '<Description>'");
             player.WriteLine("/npc set name <'CurrentName'> '<NewName>'");
             player.WriteLine("/npc list");
+            player.WriteLine("/npc dialog list '<character>' '<category>'");
+            player.WriteLine("/npc dialog list '<character>'");
+            player.WriteLine("/npc dialog delete '<character>' '<category>'");
+            player.WriteLine("/npc dialog delete '<character>' '<category>' '<line to remove>'");
+            player.WriteLine("/npc dialog add '<character'> <category>' '<line to add>'");
             player.WriteLine("/npc create '<name>' '<description>'");
             player.WriteLine("/npc delete '<name>'");
+        }
+
+        private static void DeleteNpcDialogLine(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+            try
+            {
+                string category = parameters[3].ToLower();
+                GameState.Instance.Npcs[parameters[4]].DialogOptions[category].Remove(parameters[5]);
+            }
+            catch (Exception ex)
+            {
+                player.WriteLine($"Error deleting dialog!: {ex.Message}");
+                player.WriteLine(ex.StackTrace);
+            }
+        }
+        private static void DeleteNpcDialogCategory(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+            try
+            {
+                string category = parameters[3].ToLower();
+                GameState.Instance.Npcs[parameters[4]].DialogOptions.Remove(category);
+            }
+            catch (Exception ex)
+            {
+                player.WriteLine($"Error deleting dialog!: {ex.Message}");
+                player.WriteLine(ex.StackTrace);
+            }
+        }
+        private static void NpcListDialog(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+            string category = parameters[3].ToLower();
+            foreach (var dialog in GameState.Instance.Npcs[parameters[4]].DialogOptions)
+            {
+                player.WriteLine(dialog.Key);
+            }
+        }
+        private static void NpcListCategoryDialog(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+            string category = parameters[3].ToLower();
+            foreach (var dialog in GameState.Instance.Npcs[parameters[4]].DialogOptions[category])
+            {
+                player.WriteLine(dialog);
+            }
+        }
+        private static void NpcAddDialog(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+            string category = parameters[3].ToLower();
+            GameState.Instance.Npcs[parameters[4]].DialogOptions[category].Add(parameters[5]);
         }
 
         //Deletes an NPC from the catalogue.
@@ -319,7 +425,7 @@ internal class MobBuilderCommand : ICommand
             }
         }
 
-        //Set mobs name
+        //Set npcs name
         private static void SetNpcName(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
@@ -347,7 +453,7 @@ internal class MobBuilderCommand : ICommand
             return;
         }
 
-        //Sets mob description that currently exists.
+        //Sets npc description that currently exists.
         private static void SetNpcDescription(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
