@@ -11,7 +11,7 @@ namespace RPGFramework.Enums
         Hatchet,
         Mace,
         Warhammer,
-        staff,
+        Staff,
         Wands,
         Dagger,
         Spear,
@@ -31,9 +31,9 @@ namespace RPGFramework.Enums
         Trident,
         WarScythe,
         MilitaryFork,
-        pocketofsand,
-        chair,
-        fryingpan,
+        Pocketofsand,
+        Chair,
+        Fryingpan,
         Wakizashi,
         TableLeg,
         Saber,
@@ -60,12 +60,18 @@ namespace RPGFramework.Enums
         Gold,
         Basalt,
         MoonSilver,
+        Sand,
+        admin,
+        burner
 
     }
     internal enum ArmorMaterial
     {
         Cloth,
         Bronze,
+        Copper,
+        Gold,
+        Basalt,
         Bone,
         Rusty,
         DragonScale,
@@ -79,7 +85,7 @@ namespace RPGFramework.Enums
         Tungsten,
         StarMetal,
         MeteorSteel,
-        VoidStone,
+        VoidMetal,
         MoonSilver
     }
     internal enum ArmorSlot
@@ -103,5 +109,24 @@ namespace RPGFramework.Enums
         Back,
         MainHand,
         OffHand
+    }
+    public enum WeaponRarity
+    {
+        Common,
+        Uncommon,
+        Rare,
+        Epic,
+        Legendary,
+        Mythic,
+        Eternal
+    }
+    public enum ArmorRarity
+    {
+        Common,
+        Uncommon,
+        Rare,
+        Epic,
+        Legendary,
+        Mythic
     }
 }

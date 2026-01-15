@@ -34,6 +34,8 @@ namespace RPGFramework
             IsTwoHanded = isTwoHanded;
         }
 
+        public WeaponRarity Rarity { get; set; }
+
         public Weapon()
         {
         }
