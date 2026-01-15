@@ -43,6 +43,9 @@ namespace RPGFramework.Persistence
         /// player IDs to <see cref="Player"/> instances. 
         /// The dictionary is empty if no players are found.</returns>
         Task<IReadOnlyDictionary<string, Player>> LoadPlayersAsync();
+        Task<IReadOnlyDictionary<string, Item>> LoadItemsAsync();
+        Task<IReadOnlyDictionary<string, Armor>> LoadArmorAsync();
+        Task<IReadOnlyDictionary<string, Weapon>> LoadWeaponsAsync();
 
         /// <summary>
         /// Asynchronously saves the specified collection of areas to the data store.
@@ -66,6 +69,9 @@ namespace RPGFramework.Persistence
         /// <param name="player">The <see cref="Player"/> instance to save. Cannot be <c>null</c>.</param>
         /// <returns>A task that represents the asynchronous save operation.</returns>
         Task SavePlayerAsync(Player player);
+        Task SaveItemCatalogAsync(Dictionary<string, Item> items);
+        Task SaveArmorCatalogAsync(Dictionary<string, Armor> armor);
+        Task SaveWeaponCatalogAsync(Dictionary<string, Weapon> weapons);
     }
 
     /// <summary>

@@ -3,7 +3,7 @@ using RPGFramework;
 
 namespace RPGFramework
 {
-    internal class Item
+    internal class Item : IDescribable
     {
         public int Id { get; set; } = 0;
         public string Description { get; set; } = ""; // What you see when you look at it
@@ -18,5 +18,10 @@ namespace RPGFramework
         public int UsesRemaining { get; set; } = -1; // -1 means unlimited uses
         public double Value { get; set; } = 0;
         public double Weight { get; set; } = 0;
+
+        internal static Item ItemCreation(int areaId, int v1, int v2)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

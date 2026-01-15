@@ -7,7 +7,7 @@ namespace RPGFramework.Commands
         {
             return new List<ICommand>
             {
-                new IventoryCommand(),
+                new InventoryCommand(),
                 // Add other communication commands here as they are implemented
             };
         }
@@ -15,7 +15,7 @@ namespace RPGFramework.Commands
 
     }
 
-    internal class IventoryCommand : ICommand
+    internal class InventoryCommand : ICommand
     {
         public string Inventory => "equip";
         public IEnumerable<string> Aliases => new List<string> { };

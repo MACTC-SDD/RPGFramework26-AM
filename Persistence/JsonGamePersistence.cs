@@ -109,7 +109,7 @@ namespace RPGFramework.Persistence
         public Task<Area?> LoadAreaAsync(string areaName)
         {
             var area = ObjectStorage.LoadObject<Area>($"data/areas/",$"{areaName}");            
-            return Task.FromResult(area);
+            return Task.FromResult<Area?>(area);
         }
 
         public Task<IReadOnlyDictionary<int, Area>> LoadAreasAsync()
@@ -124,6 +124,27 @@ namespace RPGFramework.Persistence
             var players = ObjectStorage.LoadAllObjects<Player>("data/players/");
             var dict = players.ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
             return Task.FromResult((IReadOnlyDictionary<string, Player>)dict);
+        }
+
+        public Task<IReadOnlyDictionary<string, Item>> LoadItemsAsync()
+        {
+            var items = ObjectStorage.LoadObject<Dictionary<string, Item>>("data/catalogs/","items-catalog.json")
+                        ?? new Dictionary<string, Item>();
+            return Task.FromResult((IReadOnlyDictionary<string, Item>)items);
+        }
+
+        public Task<IReadOnlyDictionary<string, Armor>> LoadArmorAsync()
+        {
+            var armor = ObjectStorage.LoadObject<Dictionary<string, Armor>>("data/catalogs/", "armor-catalog.json")
+                        ?? new Dictionary<string, Armor>();
+            return Task.FromResult((IReadOnlyDictionary<string, Armor>)armor);
+        }
+
+        public Task<IReadOnlyDictionary<string, Weapon>> LoadWeaponsAsync()
+        {
+            var weapons = ObjectStorage.LoadObject<Dictionary<string, Weapon>>("data/catalogs/", "weapons-catalog.json")
+                          ?? new Dictionary<string, Weapon>();
+            return Task.FromResult((IReadOnlyDictionary<string, Weapon>)weapons);
         }
         #endregion
 
@@ -153,6 +174,22 @@ namespace RPGFramework.Persistence
             ObjectStorage.SaveObject(player, "data/players/", $"{player.Name}.json");
             return Task.CompletedTask;
         }
+        public Task SaveItemCatalogAsync(Dictionary<string, Item> items)
+        {
+            ObjectStorage.SaveObject(items, "data/catalogs/", $"items-catalog.json");
+            return Task.CompletedTask; }
+        public Task SaveArmorCatalogAsync(Dictionary<string, Armor> armor)
+        {
+            ObjectStorage.SaveObject(armor, "data/catalogs/", $"armor-catalog.json");
+            return Task.CompletedTask;
+        }
+        public Task SaveWeaponCatalogAsync(Dictionary<string, Weapon> weapons)
+        {
+            ObjectStorage.SaveObject(weapons, "data/catalogs/", $"weapons-catalog.json");
+            return Task.CompletedTask;
+        }
+
+        
         #endregion
     }
 }

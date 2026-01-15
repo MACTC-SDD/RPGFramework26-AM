@@ -1,5 +1,6 @@
 ﻿
 using RPGFramework.Geography;
+using RPGFramework.Items;
 
 namespace RPGFramework
 {
@@ -12,21 +13,32 @@ namespace RPGFramework
     /// as needed. The class enforces valid ranges for skill attributes and manages health and alive status. Instances
     /// of this class are not created directly; instead, use a concrete subclass representing a specific character
     /// type.</remarks>
-    internal abstract class Character
+    internal abstract class Character : IDescribable
     {
+        enum CharacterState { 
+            Idle, 
+            Moving, 
+            Attacking, 
+            Dead 
+        }
+
         #region --- Properties ---
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
+        public string Description { get; set; } = "";
         public int Gold { get; set; } = 0;
         public int Health { get; protected set; } = 0;
         public int Level { get; protected set; } = 1;
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
+        public List<string> Tags { get; set; } = new List<string>(); // (for scripting or special behavior)
+        public Character Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = new List<Armor>();
         public Weapon PrimaryWeapon { get; set; }
+        public Inventory PlayerInventory { get; set; } = new Inventory(); 
         #endregion
 
         #region --- Skill Attributes --- (0-20)
@@ -54,6 +66,11 @@ namespace RPGFramework
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
+        }
+
+        public void SetRoom(int id)
+        {
+            LocationId = id;
         }
 
         // Set Health to a specific value
@@ -92,6 +109,11 @@ namespace RPGFramework
         {
             SetHealth(Health + heal);
         }
+
+        // CODE REVIEW: Shelton - PR #18
+        // There is really no reason to be a method, you can just set the property directly.
+        // I commented it out and you can just delete this comment once you've reviewed.
+        //public void SetDescription(string Desc) { Description = Desc; }
 
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
         {
