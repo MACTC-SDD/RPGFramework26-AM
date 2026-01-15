@@ -17,7 +17,7 @@ namespace RPGFramework
         private int _currentAggressionLevel;
         public int CurrentAggressionLevel{
             get => _currentAggressionLevel;
-            private set => _currentAggressionLevel = Math.Clamp(value, 0, 10);
+            protected set => _currentAggressionLevel = Math.Clamp(value, 0, 10);
         }
         public Dictionary<string, string[]> DialogOptions { get; set; } //Dialog options, added at creation time.
         public int PreviousAreaId { get; private set; } = 0;

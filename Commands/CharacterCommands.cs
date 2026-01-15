@@ -46,6 +46,9 @@ namespace RPGFramework.Commands
                 case "delete":
                     MobDelete(player, parameters);
                     break;
+                case "list":
+                    ListMobs();
+                    break;
                 case "set":
                     if (parameters[2].ToLower() == "name")
                     {
@@ -118,6 +121,7 @@ namespace RPGFramework.Commands
             player.WriteLine("Usage: ");
             player.WriteLine("/mob set '<desc>' <'Name'> '<Description>'");
             player.WriteLine("/mob set '<name>' <'CurrentName'> '<NewName>'");
+            player.WriteLine("/mob list");
             player.WriteLine("/mob create '<name>' '<description>'");
             player.WriteLine("/mob delete '<name>'");
         }
@@ -161,7 +165,14 @@ namespace RPGFramework.Commands
 
 
         }
-
+        private static void ListMobs()
+        {
+            foreach(var mob in GameState.Instance.Mobs)
+            {
+                Console.WriteLine($"Mob Name: {mob.Value.Name} Description: {mob.Value.Description}");
+            }
+            return;
+        }
 
         //Sets mob description that currently exists.
         private static void SetMobDescription(Player player, List<string> parameters)
