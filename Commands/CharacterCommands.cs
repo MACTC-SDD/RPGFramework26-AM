@@ -13,12 +13,13 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new MobBuilderCommand(),
+                new NpcBuilderCommand(),
                 // Add more builder commands here as needed
             };
         }
     }
 
-    internal class MobBuilderCommand : ICommand
+internal class MobBuilderCommand : ICommand
     {
         public string Name => "/mob";
 
@@ -119,8 +120,8 @@ namespace RPGFramework.Commands
         private static void WriteUsage(Player player)
         {
             player.WriteLine("Usage: ");
-            player.WriteLine("/mob set '<desc>' <'Name'> '<Description>'");
-            player.WriteLine("/mob set '<name>' <'CurrentName'> '<NewName>'");
+            player.WriteLine("/mob set desc <'Name'> '<Description>'");
+            player.WriteLine("/mob set name <'CurrentName'> '<NewName>'");
             player.WriteLine("/mob list");
             player.WriteLine("/mob create '<name>' '<description>'");
             player.WriteLine("/mob delete '<name>'");
@@ -186,6 +187,178 @@ namespace RPGFramework.Commands
             if (GameState.Instance.Mobs.ContainsKey(parameters[3]))
             {
                 GameState.Instance.Mobs[parameters[3]].Description = parameters[4];
+            }
+
+        }
+    }
+    internal class NpcBuilderCommand : ICommand
+    {
+        public string Name => "/npc";
+
+        public IEnumerable<string> Aliases => Array.Empty<string>();
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+            {
+                return false;
+            }
+
+            if (parameters.Count < 2)
+            {
+                WriteUsage(player);
+                return false;
+            }
+
+            //Switches between the second parameter to determine command.
+            switch (parameters[1].ToLower())
+            {
+                case "create":
+                    NpcCreate(player, parameters);
+                    break;
+                case "delete":
+                    NpcDelete(player, parameters);
+                    break;
+                case "list":
+                    ListNpcs();
+                    break;
+                case "set":
+                    if (parameters[2].ToLower() == "name")
+                    {
+                        SetNpcName(player, parameters);
+                    }
+                    else if (parameters[2].ToLower() == "desc")
+                    {
+                        SetNpcDescription(player, parameters);
+                    }
+                    break;
+                default:
+                    WriteUsage(player);
+                    break;
+            }
+
+            return true;
+        }
+
+        //Creates empty mob
+        private static void NpcCreate(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+
+            // 0: /mob
+            // 1: create
+            // 2: name
+            // 3: description
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /mob create '<name>' '<description>'");
+                return;
+            }
+
+            try
+            {
+                NonPlayer m = new NonPlayer();
+                m.Name = parameters[2];
+                m.Description = parameters[3];
+
+                // Use a method or constructor to set Description, since the setter is protected
+                // Assuming a method like SetDescription exists in NonPlayer or Mob
+
+                // check if key in dictionary
+                if (GameState.Instance.Npcs.ContainsKey(m.Name))
+                {
+                    player.WriteLine("An Npc with that name already exists.");
+                }
+                else
+                {
+                    GameState.Instance.Npcs.Add(m.Name, m);
+                }
+
+                player.WriteLine("Npc created.");
+            }
+            catch (Exception ex)
+            {
+                player.WriteLine($"Error creating Npc: {ex.Message}");
+                player.WriteLine(ex.StackTrace);
+            }
+        }
+
+        //Prints all available commands.
+        private static void WriteUsage(Player player)
+        {
+            player.WriteLine("Usage: ");
+            player.WriteLine("/npc set desc <'Name'> '<Description>'");
+            player.WriteLine("/npc set name <'CurrentName'> '<NewName>'");
+            player.WriteLine("/npc list");
+            player.WriteLine("/npc create '<name>' '<description>'");
+            player.WriteLine("/npc delete '<name>'");
+        }
+
+        //Deletes an NPC from the catalogue.
+        private static void NpcDelete(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+
+            if (GameState.Instance.Npcs.ContainsKey(parameters[2]))
+            {
+                GameState.Instance.Npcs.Remove(parameters[2]);
+            }
+            else
+            {
+                player.WriteLine("An npc with that name doesn't exist.");
+            }
+        }
+
+        //Set mobs name
+        private static void SetNpcName(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+
+            NonPlayer temp = GameState.Instance.Npcs[parameters[3]];
+            temp.Name = parameters[3];
+
+            GameState.Instance.Npcs.Remove(parameters[3]);
+
+            GameState.Instance.Npcs.Add(parameters[4], temp);
+
+
+        }
+        private static void ListNpcs()
+        {
+            foreach (var npc in GameState.Instance.Npcs)
+            {
+                Console.WriteLine($"Npc Name: {npc.Value.Name} Description: {npc.Value.Description}");
+            }
+            return;
+        }
+
+        //Sets mob description that currently exists.
+        private static void SetNpcDescription(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                return;
+            }
+            if (GameState.Instance.Npcs.ContainsKey(parameters[3]))
+            {
+                GameState.Instance.Npcs[parameters[3]].Description = parameters[4];
             }
 
         }

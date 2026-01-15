@@ -57,6 +57,7 @@ namespace RPGFramework
         [JsonIgnore] public Dictionary<string, Player> Players { get; set; } = new Dictionary<string, Player>();
 
         [JsonIgnore] public Dictionary<string, Mob> Mobs { get; set; } = new Dictionary<string, Mob>();
+        [JsonIgnore] public Dictionary<string, NonPlayer> Npcs { get; set; } = new Dictionary<string, NonPlayer>();
         [JsonIgnore] public Dictionary<string, Item> ItemCatalog { get; set; } = new Dictionary<string, Item>();
         [JsonIgnore] public Dictionary<string, Weapon> WeaponCatalog { get; set; } = new Dictionary<string, Weapon>();
         [JsonIgnore] public Dictionary<string, Armor> ArmorCatalog { get; set; } = new Dictionary<string, Armor>();

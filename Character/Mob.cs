@@ -10,7 +10,6 @@ namespace RPGFramework
 
         public Mob()
         {
-            
         }
 
         public bool CanChase()
