@@ -19,7 +19,7 @@ namespace RPGFramework
 
         public double Range { get; set; }
 
-        public double Abilites { get; set; }
+        public double Abilities { get; set; }
 
         public WeaponType Type { get; set; }
 
