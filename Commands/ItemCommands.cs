@@ -88,7 +88,7 @@ namespace RPGFramework.Commands
             player.WriteLine("Usage: ");
             player.WriteLine("/item description '<set item desc to this>'");
             player.WriteLine("/item name '<set item name to this>'");
-            player.WriteLine("/item create '<name>' '<description>''");
+            player.WriteLine("/item create '<name>' '<description>'");
         }
 
         private static void ItemCreate(Player player, List<string> parameters)
