@@ -225,7 +225,7 @@ namespace RPGFramework.Commands
 
             // Determine room to delete
 
-            Room roomToDelete = null;
+            Room? roomToDelete = null;
 
             if (parameters[2].Equals("here", StringComparison.OrdinalIgnoreCase))
             {
@@ -370,7 +370,6 @@ namespace RPGFramework.Commands
             GameState.Instance.Areas.Add(area.Id, area);
             
             Room startRoom = Room.CreateRoom(area.Id, "Start Room", "You are in a newly created area.");
-            area.Rooms.Add(startRoom.Id, startRoom);
 
             // Move builder into new area
             player.AreaId = area.Id;
@@ -408,7 +407,7 @@ namespace RPGFramework.Commands
                 return;
             }
 
-            if (!GameState.Instance.Areas.TryGetValue(areaId, out Area area))
+            if (!GameState.Instance.Areas.TryGetValue(areaId, out var area))
             {
                 player.WriteLine("Area not found.");
                 return;

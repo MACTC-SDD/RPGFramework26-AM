@@ -108,6 +108,15 @@ namespace RPGFramework
                 Areas.Add(kvp.Key, kvp.Value);
                 GameState.Log(DebugLevel.Alert, $"Area '{kvp.Value.Name}' loaded successfully.");
             }
+
+            // Ensure start area/room are valid
+            if (!Areas.ContainsKey(StartAreaId) || Areas[StartAreaId].Rooms.Count == 0)
+            {
+                var firstArea = Areas.Values.First();
+                StartAreaId = firstArea.Id;
+                StartRoomId = firstArea.Rooms.Keys.First();
+            }
+
         }
 
         /// <summary>
