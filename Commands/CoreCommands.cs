@@ -18,6 +18,7 @@ namespace RPGFramework.Commands
                 new QuitCommand(),
                 new SayCommand(),
                 new TimeCommand(),
+                new UnlockCommand(),
                 // Add other core commands here as they are implemented
             };
         }

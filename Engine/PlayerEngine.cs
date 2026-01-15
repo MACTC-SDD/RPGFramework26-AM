@@ -69,5 +69,10 @@ namespace RPGFramework
 
             return ((System.Net.IPEndPoint)Network.Client.Client.RemoteEndPoint).Address.ToString();
         }
+
+        internal bool HasItem(object requiredKeyId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

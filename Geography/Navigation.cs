@@ -7,6 +7,10 @@ namespace RPGFramework.Geography
     /// </summary>
     internal class Navigation
     {
+        private object player;
+
+        public object RequiredKeyId { get; private set; }
+        public ExitType ExitType { get; private set; }
 
         /// <summary>
         /// Move the character in the specified direction if possible, otherwise, send error.
@@ -28,15 +32,32 @@ namespace RPGFramework.Geography
                 }
                 return;
             }
-
-            Room destinationRoom = GameState.Instance.Areas[character.AreaId].Rooms[exit.DestinationRoomId];
-
-            currentRoom.LeaveRoom(character, destinationRoom);
-            destinationRoom.EnterRoom(character, currentRoom);
-            
-            character.AreaId = destinationRoom.AreaId;
-            character.LocationId = exit.DestinationRoomId;
         }
+
+        public ExitResult TryUse(player)
+        {
+            switch (ExitType)
+            {
+                case ExitType.Open:
+                case ExitType.Door:
+                    return ExitResult.Success;
+
+                case ExitType.LockedDoor:
+                    if (RequiredKeyId != null && player.HasItem(RequiredKeyId))
+                    {
+                        ExitType = ExitType.Door; // permanently unlock
+                        return ExitResult.Success;
+                    }
+                    return ExitResult.Locked;
+
+                case ExitType.Impassable:
+                    return ExitResult.Blocked;
+
+                default:
+                    return ExitResult.Blocked;
+            }
+        }
+        
 
         public static Direction GetOppositeDirection(Direction direction)
         {
@@ -58,5 +79,17 @@ namespace RPGFramework.Geography
                     return Direction.None;
             }
         }
+    }
+
+    public class player
+    {
+    }
+
+    internal enum ExitResult
+    {
+        Blocked,
+        Locked,
+        Success,
+        MissingKey
     }
 }

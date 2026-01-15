@@ -1,4 +1,6 @@
-﻿namespace RPGFramework
+﻿using RPGFramework;
+
+namespace RPGFramework
 {
     internal class Program
     {
@@ -9,3 +11,4 @@
         }
     }
 }
+
