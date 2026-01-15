@@ -1,5 +1,6 @@
 ﻿
 using RPGFramework.Geography;
+using RPGFramework.Items;
 
 namespace RPGFramework
 {
@@ -14,6 +15,12 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character
     {
+        enum CharacterState { 
+            Idle, 
+            Moving, 
+            Attacking, 
+            Dead 
+        }
 
         #region --- Properties ---
         public bool Alive { get; set; } = true;
@@ -31,6 +38,7 @@ namespace RPGFramework
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = new List<Armor>();
         public Weapon PrimaryWeapon { get; set; }
+        public Inventory PlayerInventory { get; set; } = new Inventory(); 
         #endregion
 
         #region --- Skill Attributes --- (0-20)
@@ -102,5 +110,10 @@ namespace RPGFramework
             SetHealth(Health + heal);
         }
         public void SetDescription(string Desc) { Description = Desc; }
+
+        internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

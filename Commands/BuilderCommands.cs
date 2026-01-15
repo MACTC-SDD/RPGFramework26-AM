@@ -1,6 +1,8 @@
 ﻿
 using RPGFramework.Enums;
 using RPGFramework.Geography;
+using System.Diagnostics;
+using System.Formats.Asn1;
 
 namespace RPGFramework.Commands
 {
@@ -49,6 +51,12 @@ namespace RPGFramework.Commands
                 case "create":
                     RoomCreate(player, parameters);
                     break;
+                case "show":
+                    RoomShow(player, parameters);
+                    break;
+                case "tag":
+                    RoomTag(player, parameters);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -63,7 +71,19 @@ namespace RPGFramework.Commands
             player.WriteLine("/room description '<set room desc to this>'");
             player.WriteLine("/room name '<set room name to this>'");
             player.WriteLine("/room create '<name>' '<description>' <exit direction> '<exit description>'");
+            player.WriteLine("/room show 'Details about the room you are in'");
+            player.WriteLine("/room Tag '<add or remove room tags>'");
         }
+
+        private static void WriteDeleteUsage(Player player)
+        {
+            player.WriteLine("Usage:");
+            player.WriteLine("/room delete here");
+            player.WriteLine("/room delete here confirm");
+            player.WriteLine("/room delete <roomId>");
+            player.WriteLine("/room delete <roomId> confirm");
+        }
+
 
         private static void RoomCreate(Player player, List<string> parameters)
         {
@@ -102,7 +122,9 @@ namespace RPGFramework.Commands
             catch (Exception ex)
             {
                 player.WriteLine($"Error creating room: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
+#pragma warning disable CS8604 // Possible null reference argument.
+                player.WriteLine(message: ex.StackTrace);
+#pragma warning restore CS8604 // Possible null reference argument.
             }
         }
 
@@ -137,5 +159,217 @@ namespace RPGFramework.Commands
                 player.WriteLine("Room name set.");
             }
         }
+        
+        private static void RoomShow(Player player, List<string> parameters)
+        {
+            Room r = player.GetRoom();
+            player.Write($"Room name: {r.Name}  Room description: {r.Description}  Room Id: {r.Id} Tags:");
+            
+            if (r.Tags.Count == 0)
+            {
+                player.WriteLine("  None");
+            }
+            else
+            {
+                foreach (var tag in r.Tags)
+                {
+                    player.WriteLine($"  {tag}");
+                }
+            }
+
+            // until end is commented, the following code is generated, but understood in how it does what it does.
+            Room room = player.GetRoom();
+            Area area = GameState.Instance.Areas[player.AreaId];
+
+            
+            var exits = room.GetExits();
+
+            /* CODE-REVIEW: This works, but we should let the Room method handle it with .GetExits()
+            var exits = area.Exits.Values
+                .Where(e => e.SourceRoomId == room.Id)
+                .ToList();
+            */
+
+            if (exits.Count == 0)
+            {
+                player.WriteLine("There are no exits, forces beyond this realm are at play...");
+                return;
+            }
+
+            foreach (var exit in exits)
+            {
+                player.WriteLine(
+                    $" Room Exit(s): {exit.ExitDirection} -> Room {exit.DestinationRoomId} ({exit.Description})"
+                );
+            }
+            //end
+        }
+
+        private static void RoomTag(Player player, List<string>parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            Room room = player.GetRoom();
+
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("Options:");
+                player.WriteLine("/room tag add (tag you want to add)");
+                player.WriteLine("/room tag remove (tag you want to remove");
+                return;
+            }
+
+            string action = parameters[2].ToLower();
+            switch (action)
+            {
+                case "add":
+                     if (parameters.Count < 4)
+                    {
+                        player.WriteLine("Use: /room tag add <tag>");
+                        return;
+                    }
+
+                    string tagToAdd = parameters[3].ToLower();
+
+                    
+
+                    if (room.Tags.Contains(tagToAdd))
+                    {
+                        player.WriteLine($"Room already has tag '{tagToAdd}'.");
+                        return;
+                    }
+                     
+                    room.Tags.Add(tagToAdd);
+                    player.WriteLine($"Tag '{tagToAdd}' added to room.");
+                    break;
+
+                case "remove":
+                    if (parameters.Count < 4)
+                    {
+                        player.WriteLine("Use: /room tag remove <tag>");
+                        return;
+                    }
+
+                    string tagToRemove = parameters[3].ToLower();
+
+                    if (!room.Tags.Remove(tagToRemove))
+                    {
+                        player.WriteLine($"Room does not have tag '{tagToRemove}'.");
+                        return;
+                    }
+
+                    player.WriteLine($"Tag '{tagToRemove}' removed from room.");
+                    break;
+
+                case "list":
+                    if (room.Tags.Count == 0)
+                    {
+                        player.WriteLine("This room has no tags.");
+                    }
+                    else
+                    {
+                        player.WriteLine("Room tags:");
+                        foreach (var tag in room.Tags)
+                        {
+                            player.WriteLine($" - {tag}");
+                        }
+                    }
+                    break;
+
+                default:
+                    player.WriteLine("Invalid tag");
+                    break;
+            }
+        
+    }
+
+        
+
+        private static void DeleteRoom(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            if (parameters.Count < 3)
+            {
+                WriteDeleteUsage(player);
+                return;
+            }
+
+            // Determine room to delete
+
+            Room roomToDelete = null;
+
+            if (parameters[2].Equals("here", StringComparison.OrdinalIgnoreCase))
+            {
+                roomToDelete = player.GetRoom();
+            }
+            else if (int.TryParse(parameters[2], out int roomId))
+            {
+                if (!GameState.Instance.Areas[player.AreaId].Rooms.TryGetValue(roomId, out roomToDelete))
+                {
+                    player.WriteLine("Room not found in this area.");
+                    return;
+                }
+            }
+            else
+            {
+                WriteDeleteUsage(player);
+                return;
+            }
+
+            //  confirm
+            
+            bool confirmed = parameters.Count >= 4 &&
+                             parameters[3].Equals("confirm", StringComparison.OrdinalIgnoreCase);
+
+            if (!confirmed)
+            {
+                player.WriteLine($"[red]WARNING:[/]");
+                player.WriteLine($"You are about to permanently delete:");
+                player.WriteLine($"Room {roomToDelete.Id}: {roomToDelete.Name}");
+                player.WriteLine($"Type:");
+                player.WriteLine($"/room delete {(parameters[2])} confirm");
+                return;
+            }
+
+            int areaId = roomToDelete.AreaId;
+
+            // Safety checks
+
+            if (GameState.Instance.Areas[areaId].Rooms.Count <= 1)
+            {
+                player.WriteLine("You cannot delete the last room in an area.");
+                return;
+            }
+
+
+            // Move players out of the room
+ 
+            int fallbackRoomId = GameState.Instance.Areas[areaId].Rooms.Keys
+                .First(id => id != roomToDelete.Id);
+
+            foreach (Player p in Room.GetPlayersInRoom(roomToDelete))
+            {
+                p.WriteLine("The room dissolves around you!");
+                p.LocationId = fallbackRoomId;
+            }
+
+            // Delete room + exits
+
+            Room.DeleteRoom(roomToDelete);
+
+            player.WriteLine($"Room {roomToDelete.Id} deleted.");
+        }
+
     }
 }
+
+

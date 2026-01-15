@@ -21,6 +21,7 @@ public sealed class TelnetConnection
     private const byte WILL = 251;
     private const byte SB = 250;
     private const byte SE = 240;
+    private const byte ESC = 27;
 
     // Telnet options
     private const byte OPT_ECHO = 1;
@@ -29,7 +30,7 @@ public sealed class TelnetConnection
 
     private readonly List<byte> _lineBuffer = new List<byte>(256);
 
-    private enum State { Data, Iac, IacCommand, SubNegotiation, SubIac }
+    private enum State { Data, Iac, IacCommand, SubNegotiation, SubIac, AnsiEscape }
     private State _state = State.Data;
     private byte _pendingCommand;
     private byte _subOption;
@@ -37,6 +38,11 @@ public sealed class TelnetConnection
 
     public int? TerminalWidth { get; private set; }
     public int? TerminalHeight { get; private set; }
+
+    public string CurrentLineText =>
+    _encoding.GetString(_lineBuffer.ToArray());
+
+    public Action? OnlineCommitted; // Invoked when a full line is entered.
 
     public TelnetConnection(NetworkStream stream, Encoding? encoding = null)
     {
@@ -54,9 +60,15 @@ public sealed class TelnetConnection
         // Most clients will offer WILL ECHO anyway, and we accept it.
     }
 
+    private void ClearCurrentLine()
+    {
+        _lineBuffer.Clear();
+    }
+
     public string? ReadLine()
     {
         _lineBuffer.Clear();
+
         Span<byte> buf = stackalloc byte[512];
 
         while (true)
@@ -69,99 +81,170 @@ public sealed class TelnetConnection
 
             for (int i = 0; i < read; i++)
             {
-                byte b = buf[i];
-
-                switch (_state)
+                if (TryParseByte(buf[i], out string? line))
                 {
-                    case State.Data:
-                        if (b == IAC)
-                        {
-                            _state = State.Iac;
-                        }
-                        else
-                        {
-                            if (b == (byte)'\r')
-                            {
-                                continue;
-                            }
-
-                            if (b == (byte)'\n')
-                            {
-                                return _encoding.GetString(_lineBuffer.ToArray());
-                            }
-
-                            _lineBuffer.Add(b);
-                        }
-                        break;
-
-                    case State.Iac:
-                        if (b == IAC)
-                        {
-                            // Escaped IAC => literal 0xFF data
-                            _lineBuffer.Add(IAC);
-                            _state = State.Data;
-                        }
-                        else if (b == DO || b == DONT || b == WILL || b == WONT)
-                        {
-                            _pendingCommand = b;
-                            _state = State.IacCommand;
-                        }
-                        else if (b == SB)
-                        {
-                            _pendingCommand = SB;
-                            _state = State.IacCommand; // next byte is option
-                        }
-                        else
-                        {
-                            _state = State.Data; // ignore other commands
-                        }
-                        break;
-
-                    case State.IacCommand:
-                        if (_pendingCommand == SB)
-                        {
-                            _subOption = b;
-                            _subData.Clear();
-                            _state = State.SubNegotiation;
-                        }
-                        else
-                        {
-                            HandleNegotiation(_pendingCommand, b);
-                            _state = State.Data;
-                        }
-                        break;
-
-                    case State.SubNegotiation:
-                        if (b == IAC)
-                        {
-                            _state = State.SubIac;
-                        }
-                        else
-                        {
-                            _subData.Add(b);
-                        }
-                        break;
-
-                    case State.SubIac:
-                        if (b == SE)
-                        {
-                            HandleSubNegotiation(_subOption, _subData);
-                            _state = State.Data;
-                        }
-                        else if (b == IAC)
-                        {
-                            // Escaped IAC inside SB => literal 0xFF in subdata
-                            _subData.Add(IAC);
-                            _state = State.SubNegotiation;
-                        }
-                        else
-                        {
-                            // Some other IAC command in SB; ignore and continue SB
-                            _state = State.SubNegotiation;
-                        }
-                        break;
+                    return line;
                 }
             }
+        }
+    }
+
+    public async Task<string?> ReadLineAsync(CancellationToken cancellationToken = default)
+    {
+        _lineBuffer.Clear();
+
+        byte[] buf = new byte[512];
+
+        while (true)
+        {
+            int read = await _stream.ReadAsync(buf, 0, buf.Length, cancellationToken).ConfigureAwait(false);
+            if (read <= 0)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < read; i++)
+            {
+                if (TryParseByte(buf[i], out string? line))
+                {
+                    return line;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Parses a single incoming byte. Returns true only when a full line has been completed (or connection ended).
+    /// The completed line is returned in <paramref name="line"/> when true.
+    /// </summary>
+    private bool TryParseByte(byte b, out string? line)
+    {
+        line = null;
+
+        switch (_state)
+        {
+            case State.Data:
+                if (b == IAC)
+                {
+                    _state = State.Iac;
+                    return false;
+                }
+
+                if (b == ESC)
+                {
+                    _state = State.AnsiEscape;
+                    return false;
+                }
+
+                if (b == (byte)'\r')
+                {
+                    return false;
+                }
+
+                if (b == (byte)'\n')
+                {
+                    line = _encoding.GetString(_lineBuffer.ToArray());
+                    ClearCurrentLine();
+
+                    OnlineCommitted?.Invoke();
+                    return true;
+                }
+
+                // Handle backspace/delete
+                if (b == 0x08 || b == 0x7F)
+                {
+                    if (_lineBuffer.Count > 0)
+                    {
+                        _lineBuffer.RemoveAt(_lineBuffer.Count - 1);
+                    }
+                    return false;
+                }
+
+                _lineBuffer.Add(b);
+                return false;
+
+            case State.Iac:
+                if (b == IAC)
+                {
+                    // Escaped IAC => literal 0xFF data
+                    _lineBuffer.Add(IAC);
+                    _state = State.Data;
+                    return false;
+                }
+
+                if (b == DO || b == DONT || b == WILL || b == WONT)
+                {
+                    _pendingCommand = b;
+                    _state = State.IacCommand;
+                    return false;
+                }
+
+                if (b == SB)
+                {
+                    _pendingCommand = SB;
+                    _state = State.IacCommand; // next byte is option
+                    return false;
+                }
+
+                _state = State.Data; // ignore other commands
+                return false;
+
+            case State.IacCommand:
+                if (_pendingCommand == SB)
+                {
+                    _subOption = b;
+                    _subData.Clear();
+                    _state = State.SubNegotiation;
+                    return false;
+                }
+
+                HandleNegotiation(_pendingCommand, b);
+                _state = State.Data;
+                return false;
+
+            case State.SubNegotiation:
+                if (b == IAC)
+                {
+                    _state = State.SubIac;
+                    return false;
+                }
+
+                _subData.Add(b);
+                return false;
+
+            case State.SubIac:
+                if (b == SE)
+                {
+                    HandleSubNegotiation(_subOption, _subData);
+                    _state = State.Data;
+                    return false;
+                }
+
+                if (b == IAC)
+                {
+                    // Escaped IAC inside SB => literal 0xFF in subdata
+                    _subData.Add(IAC);
+                    _state = State.SubNegotiation;
+                    return false;
+                }
+
+                // Some other IAC command in SB; ignore and continue SB
+                _state = State.SubNegotiation;
+                return false;
+
+            case State.AnsiEscape:
+                // Most sequences look like ESC [ ... <final>
+                // We’ll ignore bytes until we hit a typical terminator.
+                // Terminators are commonly in the range '@'..'~' (final byte of CSI sequences).
+                if (b >= (byte)'@' && b <= (byte)'~')
+                {
+                    _state = State.Data;
+                }
+                return false;
+
+            default:
+                _state = State.Data;
+                return false;
         }
     }
 
