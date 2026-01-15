@@ -15,13 +15,6 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character
     {
-        enum CharacterState { 
-            Idle, 
-            Moving, 
-            Attacking, 
-            Dead 
-        }
-
         #region --- Properties ---
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;

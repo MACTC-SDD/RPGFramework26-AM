@@ -1,5 +1,7 @@
 ﻿
 using RPGFramework.Enums;
+using System.ComponentModel;
+using System.Transactions;
 
 namespace RPGFramework
 {
@@ -11,20 +13,13 @@ namespace RPGFramework
     internal class NonPlayer : Character
     {
         //additional variables from NPCs
-
-        public NonPlayer(string name, string shortDesc, string longDesc, int level)
-        {
-            Name = name;
-            Description = Desc;
-            Level = level;
-        }
+        public Dictionary<string, string[]> DialogOptions { get; protected set; } = new Dictionary<string, string[]>();
+        public int CurrentAggressionLevel { get; protected set; } = 0;
+        public int MaxAggressionLevel { get; protected set; } = 10;
+        public int MinAgressionLevel { get; protected set; } = 0;
 
         public NonPlayer()
         {
-            Name ="Generic NPC";
-            Level = 1;
-            DialogOptions = new Dictionary<string, string[]>();
-            LocationId = 0;
         }
 
         //incriments the agression level by a set amount (negative values allowed)
@@ -32,11 +27,6 @@ namespace RPGFramework
         {
             CurrentAggressionLevel += amount;
         }
-
-        //feels self explanitory
-        public int GetAggressionLevel(){return CurrentAggressionLevel;}
-
-        //returns the two different descriptions
         
     }
 }
