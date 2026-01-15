@@ -3,6 +3,7 @@ using RPGFramework.Enums;
 using RPGFramework.Geography;
 using System.Diagnostics;
 using System.Formats.Asn1;
+using System.Reflection.Metadata.Ecma335;
 
 namespace RPGFramework.Commands
 {
@@ -13,6 +14,7 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new RoomBuilderCommand(),
+                new AreaBuilderCommand(),
                 // Add more builder commands here as needed
             };
         }
@@ -77,6 +79,20 @@ namespace RPGFramework.Commands
             player.WriteLine("/room delete here confirm");
             player.WriteLine("/room delete <roomId>");
             player.WriteLine("/room delete <roomId> confirm");
+        }
+
+        private static void WriteAreaUsage(Player player)
+        {
+            player.WriteLine("Usage: ");
+            player.WriteLine("/area create '<name>' '<description>'");
+            player.WriteLine("/area show");
+        }
+
+        private static void WriteAreaDeleteUsage(Player player)
+        {
+            player.WriteLine("Usage:");
+            player.WriteLine("/area delete <areaId>");
+            player.WriteLine("/area delete <areaId> confirm");
         }
 
 
@@ -274,6 +290,175 @@ namespace RPGFramework.Commands
         }
 
     }
+
+    internal class AreaBuilderCommand : ICommand
+    {
+        public string Name => "/area";
+
+        public IEnumerable<string> Aliases => Array.Empty<string>();
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+                return false;
+
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return true;
+            }
+
+            if (parameters.Count < 2)
+            {
+                WriteAreaUsage(player);
+                return true;
+            }
+
+            switch (parameters[1].ToLower())
+            {
+                case "create":
+                    CreateArea(player, parameters);
+                    break;
+
+                case "show":
+                    AreaShow(player);
+                    break;
+
+                case "delete":
+                    AreaDelete(player, parameters);
+                    break;
+
+                default:
+                    WriteAreaUsage(player);
+                    break;
+            }
+            return true;
+        }
+
+        private static void WriteAreaUsage(Player player)
+        {
+            player.WriteLine("Usage:");
+            player.WriteLine("/area create '<name>' '<description>'");
+        }
+
+        private static void CreateArea(Player player, List<string> parameters)
+        {
+            // 0: /area
+            // 1: create
+            // 2: name
+            // 3: description
+            if (parameters.Count < 4)
+            {
+                WriteAreaUsage(player);
+                return;
+            }
+
+            int newAreaId = GameState.Instance.Areas.Count == 0
+                ? 0
+                : GameState.Instance.Areas.Keys.Max() + 1;
+
+            Area area = new Area
+            {
+                Id = newAreaId,
+                Name = parameters[2],
+                Description = parameters[3],
+                Rooms = new Dictionary<int, Room>(),
+                Exits = new Dictionary<int, Exit>()
+            };
+
+            // Create starting room
+            GameState.Instance.Areas.Add(area.Id, area);
+            
+            Room startRoom = Room.CreateRoom(area.Id, "Start Room", "You are in a newly created area.");
+            area.Rooms.Add(startRoom.Id, startRoom);
+
+            // Move builder into new area
+            player.AreaId = area.Id;
+            player.LocationId = startRoom.Id;
+
+            player.WriteLine($"Area '{area.Name}' created (ID {area.Id}).");
+        }
+
+        private static void AreaShow(Player player)
+        {
+            Area area = GameState.Instance.Areas[player.AreaId];
+
+            player.WriteLine($"Area name: {area.Id}");
+            player.WriteLine($"Area description: {area.Description}");
+            player.WriteLine($"Area Id: {area.Id}");
+            player.WriteLine($"Rooms ({area.Rooms.Count})");
+
+            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
+            {
+                player.WriteLine($"Room {room.Id}: {room.Name}");
+            }
+        }
+
+        private static void AreaDelete(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 3)
+            {
+                WriteAreaUsage(player);
+                return;
+            }
+
+            if (!int.TryParse(parameters[2], out int areaId))
+            {
+                WriteAreaUsage(player);
+                return;
+            }
+
+            if (!GameState.Instance.Areas.TryGetValue(areaId, out Area area))
+            {
+                player.WriteLine("Area not found.");
+                return;
+            }
+
+            // Prevent deleting the start area
+            if (areaId == GameState.Instance.StartAreaId)
+            {
+                player.WriteLine("You cannot delete the starting area.");
+                return;
+            }
+
+            bool confirmed = parameters.Count >= 4 &&
+                             parameters[3].Equals("confirm", StringComparison.OrdinalIgnoreCase);
+
+            if (!confirmed)
+            {
+                player.WriteLine("[red]WARNING:[/]");
+                player.WriteLine($"You are about to permanently delete:");
+                player.WriteLine($"Area {area.Id}: {area.Name}");
+                player.WriteLine("This will delete ALL rooms and exits in this area.");
+                player.WriteLine("Type:");
+                player.WriteLine($"/area delete {area.Id} confirm");
+                return;
+            }
+
+            // Move players out of the area
+            int fallbackAreaId = GameState.Instance.Areas.Keys
+                .First(id => id != areaId);
+
+            Area fallbackArea = GameState.Instance.Areas[fallbackAreaId];
+            int fallbackRoomId = fallbackArea.Rooms.Keys.First();
+
+            foreach (Player p in GameState.Instance.Players.Values)
+            {
+                if (p.IsOnline && p.AreaId == areaId)
+                {
+                    p.WriteLine("The area collapses and reality shifts!");
+                    p.AreaId = fallbackAreaId;
+                    p.LocationId = fallbackRoomId;
+                }
+            }
+
+            // Delete the area
+            GameState.Instance.Areas.Remove(areaId);
+
+            player.WriteLine($"Area {areaId} deleted.");
+        }
+    }
+
 }
 
 
