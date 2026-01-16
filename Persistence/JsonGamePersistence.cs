@@ -111,7 +111,7 @@ namespace RPGFramework.Persistence
                     if (Directory.Exists(seedDataDir) &&
                         !PathsReferToSameDirectory(seedDataDir, runtimeDataDir))
                     {
-                        CopyDirectoryIfMissing(seedDataDir, runtimeDataDir, true);
+                        CopyDirectoryIfMissing(seedDataDir, runtimeDataDir, options.CopyFilesFromDataSeedToRuntimeData);
                     }
                 }
             }
