@@ -186,7 +186,7 @@ namespace RPGFramework.Commands
                 }
             }
 
-            // until end is commented, the following code is generated, but understood in how it does what it does.
+            
             Room room = player.GetRoom();
             Area area = GameState.Instance.Areas[player.AreaId];
 
@@ -202,9 +202,7 @@ namespace RPGFramework.Commands
 
             foreach (var exit in exits)
             {
-                player.WriteLine(
-                    $" Room Exit(s): {exit.ExitDirection} -> Room {exit.DestinationRoomId} ({exit.Description})"
-                );
+                player.WriteLine($" Room Exit(s): Id: {exit.Id} {exit.ExitDirection}  -> Room {exit.DestinationRoomId} ({exit.Description})");
             }
             //end
         }
@@ -339,6 +337,8 @@ namespace RPGFramework.Commands
         {
             player.WriteLine("Usage:");
             player.WriteLine("/area create '<name>' '<description>'");
+            player.WriteLine("/area show");
+            player.WriteLine("/area delete <areaId> confirm");
         }
 
         private static void CreateArea(Player player, List<string> parameters)
