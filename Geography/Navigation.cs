@@ -34,7 +34,7 @@ namespace RPGFramework.Geography
             }
         }
 
-        public ExitResult TryUse(player)
+        public ExitResult TryUse(Player player)
         {
             switch (ExitType)
             {
