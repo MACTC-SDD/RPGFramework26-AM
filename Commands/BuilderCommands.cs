@@ -20,6 +20,11 @@ namespace RPGFramework.Commands
         }
     }
 
+    // CODE REVIEW: Jibril PR #26
+    // I added regions to separate the two classes for better readability.
+    // You can delete this comment after you've read it.
+
+    #region RoomBuilderCommand
     /// <summary>
     /// /room command for building and editing rooms.
     /// </summary>
@@ -89,6 +94,12 @@ namespace RPGFramework.Commands
             player.WriteLine("/room delete <roomId> confirm");
         }
 
+        // CODE REVIEW: Jibril PR #26
+        // I commented these out, these were probably added by mistake
+        // since they are duplicates of the ones in AreaBuilderCommand
+        // You can delete this comment after you've read it and the code
+        // after you've read it.
+        /*
         private static void WriteAreaUsage(Player player)
         {
             player.WriteLine("Usage: ");
@@ -102,6 +113,7 @@ namespace RPGFramework.Commands
             player.WriteLine("/area delete <areaId>");
             player.WriteLine("/area delete <areaId> confirm");
         }
+        */
 
 
         private static void RoomCreate(Player player, List<string> parameters)
@@ -140,11 +152,15 @@ namespace RPGFramework.Commands
             }
             catch (Exception ex)
             {
+
                 player.WriteLine($"Error creating room: {ex.Message}");
-#pragma warning disable CS8604 // Possible null reference argument.
-                player.WriteLine(message: ex.StackTrace);
-#pragma warning restore CS8604 // Possible null reference argument.
-            }
+
+                // CODE REVIEW: Jibril PR #26
+                // You can suppress the null warning like you did with pragmas
+                // but a better way is to use the null-coalescing operator (??) to provide a default value.
+                // You can delete this comment after you've read it.
+                player.WriteLine(message: ex.StackTrace ?? "");
+           }
         }
 
         private static void RoomSetColor(Player player, List<string> parameters)
@@ -209,19 +225,11 @@ namespace RPGFramework.Commands
                     player.WriteLine($"  {tag}");
                 }
             }
-
             
             Room room = player.GetRoom();
             Area area = GameState.Instance.Areas[player.AreaId];
-
-            
+     
             var exits = room.GetExits();
-
-            /* CODE-REVIEW: This works, but we should let the Room method handle it with .GetExits()
-            var exits = area.Exits.Values
-                .Where(e => e.SourceRoomId == room.Id)
-                .ToList();
-            */
 
             if (exits.Count == 0)
             {
@@ -232,8 +240,7 @@ namespace RPGFramework.Commands
             foreach (var exit in exits)
             {
                 player.WriteLine($" Room Exit(s): Id: {exit.Id} {exit.ExitDirection}  -> Room {exit.DestinationRoomId} ({exit.Description})");
-            }
-            //end
+            }         
         }
 
         private static void RoomTag(Player player, List<string>parameters)
@@ -401,7 +408,9 @@ namespace RPGFramework.Commands
         }
 
     }
-
+    #endregion
+    
+    #region AreaBuilderCommand
     internal class AreaBuilderCommand : ICommand
     {
         public string Name => "/area";
@@ -570,4 +579,5 @@ namespace RPGFramework.Commands
             player.WriteLine($"Area {areaId} deleted.");
         }
     }
+    #endregion
 }
