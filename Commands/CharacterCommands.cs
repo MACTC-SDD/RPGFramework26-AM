@@ -113,7 +113,7 @@ internal class MobBuilderCommand : ICommand
             catch (Exception ex)
             {
                 player.WriteLine($"Error creating mob: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
+                player.WriteLine(ex.StackTrace ?? "");
             }
         }
 
@@ -307,7 +307,7 @@ internal class MobBuilderCommand : ICommand
             catch (Exception ex)
             {
                 player.WriteLine($"Error creating Npc: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
+                player.WriteLine(ex.StackTrace ?? "");
             }
         }
 
@@ -343,7 +343,7 @@ internal class MobBuilderCommand : ICommand
             catch (Exception ex)
             {
                 player.WriteLine($"Error deleting dialog!: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
+                player.WriteLine(ex.StackTrace ?? "");
             }
         }
         private static void DeleteNpcDialogCategory(Player player, List<string> parameters)
@@ -362,7 +362,7 @@ internal class MobBuilderCommand : ICommand
             catch (Exception ex)
             {
                 player.WriteLine($"Error deleting dialog!: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
+                player.WriteLine(ex.StackTrace ?? "");
             }
         }
         private static void NpcListDialog(Player player, List<string> parameters)
