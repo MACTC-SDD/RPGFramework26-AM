@@ -2,6 +2,7 @@
 {
     internal enum NonPlayerType
     {
+        Default,
         Mob,
         Shopkeep,
         QuestGiver,

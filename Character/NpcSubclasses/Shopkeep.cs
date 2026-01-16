@@ -10,6 +10,7 @@ namespace RPGFramework
         // ItemID, Quantity
         public Shopkeep()
         {
+            NpcType = NonPlayerType.Shopkeep;
         }
 
         //not sure if its neccesary, but it doesn't hurt to have it.
@@ -20,6 +21,14 @@ namespace RPGFramework
             Description = desc;
             Level = level;
             ShopInventory = inventory;
+        }
+        public void IncrimentItemQuantity(int index)
+        {
+            ShopInventory[index]++;
+        }
+        public void AddItemToInventory(int index)
+        {
+            ShopInventory[index] = 1;
         }
     }
 }

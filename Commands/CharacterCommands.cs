@@ -158,8 +158,6 @@ namespace RPGFramework.Commands
 
                 return true;
             }
-
-
             //Prints all available commands.
             private static void WriteUsage(Player player)
             {
@@ -183,9 +181,110 @@ namespace RPGFramework.Commands
                 }
                 return;
             }
-
-            //Sets npc description that currently exists.
         }
+        internal class ShopKeepBuilderCommand : ICommand
+        {
+            public string Name => "/npc";
+
+            public IEnumerable<string> Aliases => Array.Empty<string>();
+
+            public bool Execute(Character character, List<string> parameters)
+            {
+                if (character is not Player player)
+                {
+                    return false;
+                }
+
+                if (parameters.Count < 2)
+                {
+                    WriteUsage(player);
+                    return false;
+                }
+
+                //Switches between the second parameter to determine command.
+                switch (parameters[1].ToLower())
+                {
+                    case "create":
+                        NpcCreate(player, parameters);
+                        break;
+                    case "delete":
+                        NpcDelete(player, parameters);
+                        break;
+                    case "list":
+                        ListShopKeeps();
+                        break;
+                    case "set":
+                        if (parameters[2].Equals("name"))
+                        {
+                            SetNpcName(player, parameters);
+                        }
+                        else if (parameters[2].Equals("desc"))
+                        {
+                            SetNpcDescription(player, parameters);
+                        }
+                        break;
+                    case "inventory":
+                        if (parameters[2].Equals("add")){
+                            AddNpcItem(player,parameters);
+                        }
+                        break;
+                    case "dialog":
+                        if (parameters[2].Equals("add"))
+                        {
+                            NpcAddDialog(player, parameters);
+                        }
+                        else if (parameters[2].Equals("list") && parameters.Count == 5)
+                        {
+                            NpcListDialog(player, parameters);
+                        }
+                        else if (parameters[2].Equals("list") && parameters.Count == 6)
+                        {
+                            NpcListCategoryDialog(player, parameters);
+                        }
+                        else if (parameters[2].Equals("delete") && parameters.Count == 5)
+                        {
+                            DeleteNpcDialogCategory(player, parameters);
+                        }
+                        else if (parameters[2].Equals("delete") && parameters.Count == 6)
+                        {
+                            DeleteNpcDialogLine(player, parameters);
+                        }
+                        break;
+                    default:
+                        WriteUsage(player);
+                        break;
+                }
+
+                return true;
+            }
+            //Prints all available commands.
+            private static void WriteUsage(Player player)
+            {
+                player.WriteLine("Usage: ");
+                player.WriteLine("/shopkeep set desc <'Name'> '<Description>'");
+                player.WriteLine("/shopkeep set name <'CurrentName'> '<NewName>'");
+                player.WriteLine("/shopkeep list");
+                player.WriteLine("/shopkeep dialog list '<character>' '<category>'");
+                player.WriteLine("/shopkeep dialog list '<character>'");
+                player.WriteLine("/shopkeep dialog delete '<character>' '<category>'");
+                player.WriteLine("/shopkeep dialog delete '<character>' '<category>' '<line to remove>'");
+                player.WriteLine("/shopkeep dialog add '<character'> <category>' '<line to add>'");
+                player.WriteLine("/shopkeep inventory add '<character'> '<itemID>'"); //to add
+                player.WriteLine("/shopkeep inventory delete '<character'> '<itemID>'"); //to add
+                player.WriteLine("/shopkeep create '<name>' '<description>'");
+                player.WriteLine("/shopkeep delete '<name>'");
+            }
+
+            private static void ListShopKeeps()
+            {
+                foreach (var shop in GameState.Instance.ShopKeeps)
+                {
+                    Console.WriteLine($"Shop Name: {shop.Value.Name} Description: {shop.Value.Description}");
+                }
+                return;
+            }
+        }
+
         //Creates an entity of a NonPlayer type, adds to gamestate.
         private static void NpcCreate(Player player, List<string> parameters)
         {
@@ -400,6 +499,36 @@ namespace RPGFramework.Commands
             if (parameters[0].Equals("/npc"))
             {
                 GameState.Instance.Npcs[parameters[3]].DialogOptions[parameters[4].ToLower()].Add(parameters[5]);
+            }
+        }
+        private static void AddNpcItem(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.Role.ToString());
+                return;
+            }
+
+            if (parameters[0].Equals("/shopkeep"))
+            {
+                //Adds one to quantity if it exists already
+                if (GameState.Instance.ShopKeeps.ContainsKey(parameters[3]))
+                {
+                    if (GameState.Instance.ShopKeeps[parameters[3]].ShopInventory.ContainsKey(int.Parse(parameters[4])))
+                    {
+                        GameState.Instance.ShopKeeps[parameters[3]].IncrimentItemQuantity(int.Parse(parameters[4]));
+                        player.WriteLine("Added one of the item to the inventory!");
+                    }
+                    else
+                    {
+                        GameState.Instance.ShopKeeps[parameters[3]].AddItemToInventory(int.Parse(parameters[4]));
+                    }
+                }
+                else
+                {
+                    player.WriteLine("Shopkeep does not exist!");
+                }
             }
         }
     }

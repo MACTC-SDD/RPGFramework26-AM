@@ -11,6 +11,7 @@ namespace RPGFramework
 
         public Mob()
         {
+            NpcType = NonPlayerType.Mob;
         }
 
         //not sure if its neccesary, but it doesn't hurt to have it.
