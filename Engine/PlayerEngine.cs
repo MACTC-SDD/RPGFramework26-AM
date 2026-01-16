@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using RPGFramework.Workflows;
+using Spectre.Console;
 using System.Net.Sockets;
 using System.Text.Json.Serialization;
 
@@ -7,6 +8,8 @@ namespace RPGFramework
     internal partial class Player
     {
         // Things to not save (don't serialize)
+        [JsonIgnore]
+        public IWorkflow? CurrentWorkflow { get; set; } = null;
         [JsonIgnore]
         public PlayerNetwork? Network { get; set; }
 

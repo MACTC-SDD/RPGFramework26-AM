@@ -18,8 +18,10 @@ namespace RPGFramework
         
         // Properties
         public DateTime LastLogin { get; set; }
+        public int MapRadius { get; set; } = 2; // How far the player can see on the map
+        public string Password { get; private set; } = "SomeGarbage";
         public TimeSpan PlayTime { get; set; } = new TimeSpan();
-        public PlayerRole PlayerRole { get; set; } = PlayerRole.Player;
+        public PlayerRole Role { get; set; }
         #endregion
 
         public string DisplayName()
@@ -61,15 +63,29 @@ namespace RPGFramework
             GameState.Instance.SavePlayer(this);
         }
 
-
+        /// <summary>
+        /// Sets the password to the specified value.
+        /// </summary>
+        /// <param name="newPassword">The new password to assign. Cannot be null.</param>
+        /// <returns>true if the password was set successfully; otherwise, false.</returns>
+        public bool SetPassword(string newPassword)
+        {
+            // TODO: Consider adding password complexity checking
+            Password = newPassword;
+            return true;
+        }
         public void Write(string message)
         {
+            WriteNewLineIfNeeded();
             Console.Write(message);
+            Console.Write(Network.TelnetConnection.CurrentLineText); // Re-write current input line
         }
 
         public void Write(IRenderable renderable)
         {
+            WriteNewLineIfNeeded();
             Console.Write(renderable);
+            Console.Write(Network.TelnetConnection.CurrentLineText); // Re-write current input line
         }
 
         
@@ -80,9 +96,22 @@ namespace RPGFramework
         /// p formatting supported by the output system.</param>
         public void WriteLine(string message)
         {
+            WriteNewLineIfNeeded();
             Console.MarkupLine(message);
-            //Network?.Writer.WriteLine(message);
+            Console.Write(Network.TelnetConnection.CurrentLineText); // Re-write current input line
         }
+        private void WriteNewLineIfNeeded()
+        {
+            if (Network == null)
+                return;
+            if (Network.TelnetConnection == null)
+                return;
+            if (Network.NeedsOutputNewline)
+            {
+                Console.Write("\r\n");
+            }
+        }
+
 
     }
 

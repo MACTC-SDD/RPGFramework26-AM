@@ -30,9 +30,9 @@ namespace RPGFramework.Commands
 
         public bool Execute(Character character, List<string> parameters)
         {
-            if (character is Player)
+            if (character is Player p)
             {
-                MapRenderer.RenderLocalMap((Player)character, 4);
+                MapRenderer.RenderLocalMap(p, p.MapRadius);
                 return true;
             }
 

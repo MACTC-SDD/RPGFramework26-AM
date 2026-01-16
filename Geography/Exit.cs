@@ -5,6 +5,7 @@ namespace RPGFramework.Geography
 {
     internal class Exit
     {
+        #region --- Properties ---
         public int Id { get; set; } = 0;
         public Direction ExitDirection { get; set; }
         public ExitType ExitType { get; set; } = ExitType.Open;
@@ -13,6 +14,7 @@ namespace RPGFramework.Geography
         public string Description { get; set; } = "";
         public int SourceRoomId { get; set; }
         public int DestinationRoomId { get; set; }
+        #endregion
 
 
 

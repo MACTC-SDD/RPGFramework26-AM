@@ -6,7 +6,7 @@ NPC Database
 	All instantiated NPCs in the game world
 		Consider loading NPC data on demand based on player proximity or interaction.
 
-Should we break NPCs into Mobs, Shopkeepers, Trainers, Quest Givers, etc.?
+Break NPCs into Mobs, Shopkeepers, Trainers, Quest Givers, etc. (subclasses)
 
 Player Notes
 	Need to create prompt like <20hp 100m 100mv> for players.
