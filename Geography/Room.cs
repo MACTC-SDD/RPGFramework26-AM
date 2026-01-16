@@ -138,6 +138,25 @@ namespace RPGFramework.Geography
         }
 
         /// <summary>
+        /// Returns the first exit in this room that matches the specified name.
+        /// </summary>
+        /// <returns></returns>
+        public Exit? GetExitByName(string name)
+        {
+            return GetExits().Find(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Returns the first exit in this room that matches the specified id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Exit? GetExitById(int id)
+        {
+            return GetExits().Find(e => e.Id == id);
+        }
+
+        /// <summary>
         /// Get the next available room ID for the specified area.
         /// </summary>
         /// <param name="areaId"></param>
