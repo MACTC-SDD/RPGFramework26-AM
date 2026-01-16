@@ -104,5 +104,11 @@ namespace RPGFramework.Persistence
         /// Default: true
         /// </summary>
         public bool CreateStarterAreaIfMissing { get; init; } = true;
+
+        /// <summary>
+        /// If true, copies files from the data seed folder to the runtime data folder during initialization.
+        /// WARNING: This will overwrite existing files in the runtime data folder.
+        /// </summary>
+        public bool CopyFilesFromDataSeedToRuntimeData { get; set; } = false;
     }
 }
