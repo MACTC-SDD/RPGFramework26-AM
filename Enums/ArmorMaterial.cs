@@ -8,6 +8,9 @@ namespace RPGFramework.Enums
         Bone,
         Rusty,
         DragonScale,
+        DragonBone,
+        Copper,
+        Gold,
         EnchantedSteel,
         Crystal,
         Leather,
@@ -18,7 +21,7 @@ namespace RPGFramework.Enums
         Tungsten,
         StarMetal,
         MeteorSteel,
-        VoidStone,
+        VoidMetal,
         MoonSilver
     }
 }

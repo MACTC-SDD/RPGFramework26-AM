@@ -21,7 +21,13 @@ namespace RPGFramework.Enums
         Gold,
         Basalt,
         MoonSilver,
-        
+        Sand,
+        admin,
+        burner,
+        DragonScale,
+        MetorMetal,
+        EnchatedSteel
+
     }
 }
     
