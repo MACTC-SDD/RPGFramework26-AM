@@ -24,6 +24,16 @@ namespace RPGFramework
 
         public void IncrementAgressionLevel(int amount)
         {
+            if(amount + CurrentAggressionLevel > MaxAggressionLevel)
+            {
+                CurrentAggressionLevel = MaxAggressionLevel;
+                return;
+            }
+            else if(amount + CurrentAggressionLevel < MinAgressionLevel)
+            {
+                CurrentAggressionLevel = MinAgressionLevel;
+                return;
+            }
             CurrentAggressionLevel += amount;
         }
         

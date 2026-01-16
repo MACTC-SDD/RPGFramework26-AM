@@ -89,32 +89,25 @@ internal class MobBuilderCommand : ICommand
                 return;
             }
 
-            try
-            {
-                Mob m = new Mob();
-                m.Name = parameters[2];
-                m.Description = parameters[3];
+            Mob m = new Mob();
+            m.Name = parameters[2];
+            m.Description = parameters[3];
 
                 // Use a method or constructor to set Description, since the setter is protected
                 // Assuming a method like SetDescription exists in NonPlayer or Mob
 
                 // check if key in dictionary
-                if (GameState.Instance.Mobs.ContainsKey(m.Name))
-                {
-                    player.WriteLine("A mob with that name already exists.");
-                }
-                else
-                {
-                    GameState.Instance.Mobs.Add(m.Name, m);
-                }
-
-                player.WriteLine("Mob created.");
-            }
-            catch (Exception ex)
+            if (GameState.Instance.Mobs.ContainsKey(m.Name))
             {
-                player.WriteLine($"Error creating mob: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
+                player.WriteLine("A mob with that name already exists.");
             }
+            else
+            {
+                GameState.Instance.Mobs.Add(m.Name, m);
+            }
+
+            player.WriteLine("Mob created.");
+           
         }
 
         //Prints all available commands.
@@ -269,7 +262,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -283,32 +276,25 @@ internal class MobBuilderCommand : ICommand
                 return;
             }
 
-            try
-            {
-                NonPlayer m = new NonPlayer();
-                m.Name = parameters[2];
-                m.Description = parameters[3];
+
+            NonPlayer m = new NonPlayer();
+            m.Name = parameters[2];
+            m.Description = parameters[3];
 
                 // Use a method or constructor to set Description, since the setter is protected
                 // Assuming a method like SetDescription exists in NonPlayer or Mob
 
                 // check if key in dictionary
-                if (GameState.Instance.Npcs.ContainsKey(m.Name))
-                {
-                    player.WriteLine("An Npc with that name already exists.");
-                }
-                else
-                {
-                    GameState.Instance.Npcs.Add(m.Name, m);
-                }
-
-                player.WriteLine("Npc created.");
-            }
-            catch (Exception ex)
+            if (GameState.Instance.Npcs.ContainsKey(m.Name))
             {
-                player.WriteLine($"Error creating Npc: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
+                player.WriteLine("An Npc with that name already exists.");
             }
+            else
+            {
+                GameState.Instance.Npcs.Add(m.Name, m);
+            }
+
+            player.WriteLine("Npc created.");
         }
 
         //Prints all available commands.
@@ -332,45 +318,29 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
-            try
-            {
-                string category = parameters[3].ToLower();
-                GameState.Instance.Npcs[parameters[4]].DialogOptions[category].Remove(parameters[5]);
-            }
-            catch (Exception ex)
-            {
-                player.WriteLine($"Error deleting dialog!: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
-            }
+            string category = parameters[3].ToLower();
+            GameState.Instance.Npcs[parameters[4]].DialogOptions[category].Remove(parameters[5]);
         }
         private static void DeleteNpcDialogCategory(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
-            try
-            {
-                string category = parameters[3].ToLower();
-                GameState.Instance.Npcs[parameters[4]].DialogOptions.Remove(category);
-            }
-            catch (Exception ex)
-            {
-                player.WriteLine($"Error deleting dialog!: {ex.Message}");
-                player.WriteLine(ex.StackTrace);
-            }
+            string category = parameters[3].ToLower();
+            GameState.Instance.Npcs[parameters[4]].DialogOptions.Remove(category);
         }
         private static void NpcListDialog(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
             string category = parameters[3].ToLower();
@@ -384,7 +354,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
             string category = parameters[3].ToLower();
@@ -398,7 +368,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
             string category = parameters[3].ToLower();
@@ -411,7 +381,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -431,7 +401,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -459,7 +429,7 @@ internal class MobBuilderCommand : ICommand
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
             if (GameState.Instance.Npcs.ContainsKey(parameters[3]))
