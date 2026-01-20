@@ -99,13 +99,13 @@ internal class MobBuilderCommand : ICommand
                 // Assuming a method like SetDescription exists in NonPlayer or Mob
 
                 // check if key in dictionary
-                if (GameState.Instance.Mobs.ContainsKey(m.Name))
+                if (GameState.Instance.MobCatalog.ContainsKey(m.Name))
                 {
                     player.WriteLine("A mob with that name already exists.");
                 }
                 else
                 {
-                    GameState.Instance.Mobs.Add(m.Name, m);
+                    GameState.Instance.MobCatalog.Add(m.Name, m);
                 }
 
                 player.WriteLine("Mob created.");
@@ -138,9 +138,9 @@ internal class MobBuilderCommand : ICommand
                 return;
             }
 
-            if (GameState.Instance.Mobs.ContainsKey(parameters[2]))
+            if (GameState.Instance.MobCatalog.ContainsKey(parameters[2]))
             {
-                GameState.Instance.Mobs.Remove(parameters[2]);
+                GameState.Instance.MobCatalog.Remove(parameters[2]);
             }
             else
             {
@@ -158,18 +158,18 @@ internal class MobBuilderCommand : ICommand
                 return;
             }
 
-            Mob temp = GameState.Instance.Mobs[parameters[3]];
+            Mob temp = GameState.Instance.MobCatalog[parameters[3]];
             temp.Name = parameters[3];
 
-            GameState.Instance.Mobs.Remove(parameters[3]);
+            GameState.Instance.MobCatalog.Remove(parameters[3]);
 
-            GameState.Instance.Mobs.Add(parameters[4], temp);
+            GameState.Instance.MobCatalog.Add(parameters[4], temp);
 
 
         }
         private static void ListMobs()
         {
-            foreach(var mob in GameState.Instance.Mobs)
+            foreach(var mob in GameState.Instance.MobCatalog)
             {
                 Console.WriteLine($"Mob Name: {mob.Value.Name} Description: {mob.Value.Description}");
             }
@@ -185,9 +185,9 @@ internal class MobBuilderCommand : ICommand
                 player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
-            if (GameState.Instance.Mobs.ContainsKey(parameters[3]))
+            if (GameState.Instance.MobCatalog.ContainsKey(parameters[3]))
             {
-                GameState.Instance.Mobs[parameters[3]].Description = parameters[4];
+                GameState.Instance.MobCatalog[parameters[3]].Description = parameters[4];
             }
 
         }
@@ -293,13 +293,13 @@ internal class MobBuilderCommand : ICommand
                 // Assuming a method like SetDescription exists in NonPlayer or Mob
 
                 // check if key in dictionary
-                if (GameState.Instance.Npcs.ContainsKey(m.Name))
+                if (GameState.Instance.NPCCatalog.ContainsKey(m.Name))
                 {
                     player.WriteLine("An Npc with that name already exists.");
                 }
                 else
                 {
-                    GameState.Instance.Npcs.Add(m.Name, m);
+                    GameState.Instance.NPCCatalog.Add(m.Name, m);
                 }
 
                 player.WriteLine("Npc created.");
@@ -338,7 +338,7 @@ internal class MobBuilderCommand : ICommand
             try
             {
                 string category = parameters[3].ToLower();
-                GameState.Instance.Npcs[parameters[4]].DialogOptions[category].Remove(parameters[5]);
+                GameState.Instance.NPCCatalog[parameters[4]].DialogOptions[category].Remove(parameters[5]);
             }
             catch (Exception ex)
             {
@@ -357,7 +357,7 @@ internal class MobBuilderCommand : ICommand
             try
             {
                 string category = parameters[3].ToLower();
-                GameState.Instance.Npcs[parameters[4]].DialogOptions.Remove(category);
+                GameState.Instance.NPCCatalog[parameters[4]].DialogOptions.Remove(category);
             }
             catch (Exception ex)
             {
@@ -374,7 +374,7 @@ internal class MobBuilderCommand : ICommand
                 return;
             }
             string category = parameters[3].ToLower();
-            foreach (var dialog in GameState.Instance.Npcs[parameters[4]].DialogOptions)
+            foreach (var dialog in GameState.Instance.NPCCatalog[parameters[4]].DialogOptions)
             {
                 player.WriteLine(dialog.Key);
             }
@@ -388,7 +388,7 @@ internal class MobBuilderCommand : ICommand
                 return;
             }
             string category = parameters[3].ToLower();
-            foreach (var dialog in GameState.Instance.Npcs[parameters[4]].DialogOptions[category])
+            foreach (var dialog in GameState.Instance.NPCCatalog[parameters[4]].DialogOptions[category])
             {
                 player.WriteLine(dialog);
             }
@@ -402,7 +402,7 @@ internal class MobBuilderCommand : ICommand
                 return;
             }
             string category = parameters[3].ToLower();
-            GameState.Instance.Npcs[parameters[4]].DialogOptions[category].Add(parameters[5]);
+            GameState.Instance.NPCCatalog[parameters[4]].DialogOptions[category].Add(parameters[5]);
         }
 
         //Deletes an NPC from the catalogue.
@@ -415,9 +415,9 @@ internal class MobBuilderCommand : ICommand
                 return;
             }
 
-            if (GameState.Instance.Npcs.ContainsKey(parameters[2]))
+            if (GameState.Instance.NPCCatalog.ContainsKey(parameters[2]))
             {
-                GameState.Instance.Npcs.Remove(parameters[2]);
+                GameState.Instance.NPCCatalog.Remove(parameters[2]);
             }
             else
             {
@@ -435,18 +435,18 @@ internal class MobBuilderCommand : ICommand
                 return;
             }
 
-            NonPlayer temp = GameState.Instance.Npcs[parameters[3]];
+            NonPlayer temp = GameState.Instance.NPCCatalog[parameters[3]];
             temp.Name = parameters[3];
 
-            GameState.Instance.Npcs.Remove(parameters[3]);
+            GameState.Instance.NPCCatalog.Remove(parameters[3]);
 
-            GameState.Instance.Npcs.Add(parameters[4], temp);
+            GameState.Instance.NPCCatalog.Add(parameters[4], temp);
 
 
         }
         private static void ListNpcs()
         {
-            foreach (var npc in GameState.Instance.Npcs)
+            foreach (var npc in GameState.Instance.NPCCatalog)
             {
                 Console.WriteLine($"Npc Name: {npc.Value.Name} Description: {npc.Value.Description}");
             }
@@ -462,9 +462,9 @@ internal class MobBuilderCommand : ICommand
                 player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
-            if (GameState.Instance.Npcs.ContainsKey(parameters[3]))
+            if (GameState.Instance.NPCCatalog.ContainsKey(parameters[3]))
             {
-                GameState.Instance.Npcs[parameters[3]].Description = parameters[4];
+                GameState.Instance.NPCCatalog[parameters[3]].Description = parameters[4];
             }
 
         }

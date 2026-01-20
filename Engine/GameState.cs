@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using RPGFramework.Enums;
 using RPGFramework.Geography;
+using RPGFramework.Interfaces;
 using RPGFramework.Persistence;
 
 namespace RPGFramework
@@ -56,14 +57,12 @@ namespace RPGFramework
         /// </summary>
         [JsonIgnore] public Dictionary<string, Player> Players { get; set; } = new Dictionary<string, Player>();
 
-
-        [JsonIgnore] public Dictionary<string, Mob> Mobs { get; set; } = new Dictionary<string, Mob>();
-        [JsonIgnore] public Dictionary<string, NonPlayer> Npcs { get; set; } = new Dictionary<string, NonPlayer>();
-        [JsonIgnore] public Dictionary<string, Item> ItemCatalog { get; set; } = new Dictionary<string, Item>();
-        [JsonIgnore] public Dictionary<string, Weapon> WeaponCatalog { get; set; } = new Dictionary<string, Weapon>();
-        [JsonIgnore] public Dictionary<string, Armor> ArmorCatalog { get; set; } = new Dictionary<string, Armor>();
-
-
+        [JsonIgnore] public List<ICatalog> Catalogs { get; private set; } = new List<ICatalog>();
+        [JsonIgnore] public Catalog<string, Mob> MobCatalog { get; set; } = new Catalog<string, Mob>();
+        [JsonIgnore] public Catalog<string, NonPlayer> NPCCatalog { get; set; } = new Catalog<string, NonPlayer>();
+        [JsonIgnore] public Catalog<string, Item> ItemCatalog { get; set; } = new Catalog<string, Item>();
+        [JsonIgnore] public Catalog<string, Weapon> WeaponCatalog { get; set; } = new Catalog<string, Weapon>();
+        [JsonIgnore] public Catalog<string, Armor> ArmorCatalog { get; set; } = new Catalog<string, Armor>();
 
         // Move starting area/room to configuration settings
         public int StartAreaId { get; set; } = 0;
@@ -73,10 +72,13 @@ namespace RPGFramework
 
         #endregion --- Properties ---
 
-        #region --- Methods ---
         private GameState()
         {
-
+            Catalogs.Add(MobCatalog);
+            Catalogs.Add(NPCCatalog);
+            Catalogs.Add(ItemCatalog);
+            Catalogs.Add(WeaponCatalog);
+            Catalogs.Add(ArmorCatalog);
         }
 
         public void AddPlayer(Player player)
@@ -84,6 +86,8 @@ namespace RPGFramework
             Players.Add(player.Name, player);
         }
 
+        #region --- Methods ---
+        #region LoadArea Method
         /// <summary>
         /// This would be used by an admin command to load an area on demand. 
         /// For now useful primarily for reloading externally crearted changes
@@ -104,7 +108,9 @@ namespace RPGFramework
 
             return Task.CompletedTask;
         }
+        #endregion
 
+        #region LoadAllAreas Method
         // Load all Area files from /data/areas. Each Area file will contain some
         // basic info and lists of rooms and exits.
         private async Task LoadAllAreas()
@@ -125,9 +131,10 @@ namespace RPGFramework
                 StartAreaId = firstArea.Id;
                 StartRoomId = firstArea.Rooms.Keys.First();
             }
-
         }
+        #endregion
 
+        #region LoadAllPlayers Method
         /// <summary>
         /// Loads all player data from persistent storage and adds each player 
         /// to the <see cref="Players"/> collection.
@@ -150,77 +157,30 @@ namespace RPGFramework
 
             GameState.Log(DebugLevel.Alert, $"{Players.Count} players loaded.");
         }
+        #endregion
 
+        #region LoadAllCatalogs Method
         private async Task LoadAllCatalogs()
         {
-            // Load Items
-            ItemCatalog.Clear();
-
-            try
+            foreach (ICatalog catalog in Catalogs)
             {
-                var items = await Persistence.LoadItemsAsync();
-                foreach (var kvp in items)
-                {
-                    ItemCatalog.Add(kvp.Key, kvp.Value);
-                }
-
-                GameState.Log(DebugLevel.Alert, $"{ItemCatalog.Count} items loaded.");
-
-            }
-            catch (FileNotFoundException)
-            {
-                GameState.Log(DebugLevel.Warning, $"Item catalog file not found, creating blank.");                
-            }
-            // Load Weapons
-            ArmorCatalog.Clear();
-
-            try
-            {
-                var armor = await Persistence.LoadArmorAsync();
-                foreach (var kvp in armor)
-                {
-                    ArmorCatalog.Add(kvp.Key, kvp.Value);
-                }
-
-                GameState.Log(DebugLevel.Alert, $"{ArmorCatalog.Count} armor loaded.");
-
-            }
-            catch (FileNotFoundException)
-            {
-                GameState.Log(DebugLevel.Warning, $"Armor catalog file not found, creating blank.");
-            }
-            // Load Armor
-            WeaponCatalog.Clear();
-
-            try
-            {
-                var weapons = await Persistence.LoadWeaponsAsync();
-                foreach (var kvp in weapons)
-                {
-                    WeaponCatalog.Add(kvp.Key, kvp.Value);
-                }
-
-                GameState.Log(DebugLevel.Alert, $"{WeaponCatalog.Count} weapons loaded.");
-
-            }
-            catch (FileNotFoundException)
-            {
-                GameState.Log(DebugLevel.Warning, $"Weapon catalog file not found, creating blank.");
+                await catalog.LoadCatalogAsync();
             }
         }
+        #endregion
 
+        #region SaveAllAreas Method
         /// <summary>
         /// Saves all area entities asynchronously to the persistent storage.
         /// </summary>
-        /// <remarks>This method initiates an asynchronous operation to persist 
-        /// the current set of areas. The save operation is performed for all 
-        /// areas contained in the collection at the time of invocation.</remarks>
         /// <returns>A <see cref="Task"/> that represents the asynchronous save operation.</returns>
         private Task SaveAllAreas()
         {
             return Persistence.SaveAreasAsync(Areas.Values);
         }
+        #endregion
 
+        #region SaveAllPlayers Method
         /// <summary>
         /// Saves all player data asynchronously.
         /// </summary>
@@ -235,7 +195,9 @@ namespace RPGFramework
 
             return Persistence.SavePlayersAsync(toSave);
         }
+        #endregion
 
+        #region SavePlayer Method
         /// <summary>
         /// Saves the specified player to persistent storage asynchronously.
         /// </summary>
@@ -245,18 +207,24 @@ namespace RPGFramework
         {
             return Persistence.SavePlayerAsync(p);
         }
+        #endregion
 
+        #region SaveAllCatalogs Method
         public async Task SaveAllCatalogs()
         {
-            await Persistence.SaveItemCatalogAsync(ItemCatalog);
-            await Persistence.SaveArmorCatalogAsync(ArmorCatalog);
-            await Persistence.SaveWeaponCatalogAsync(WeaponCatalog);
+            foreach (ICatalog catalog in Catalogs)
+            {
+                await catalog.SaveCatalogAsync();
+            }
         }
+        #endregion
 
+        #region Start Method (Async)
         /// <summary>
         /// Initializes and starts the game server 
         ///   loading all areas
         ///   loading all players
+        ///   loading all catalogs
         ///   starting the Telnet server
         ///   launching background threads for periodic tasks.
         /// </summary>
@@ -279,11 +247,6 @@ namespace RPGFramework
             await LoadAllAreas();
             await LoadAllPlayers();
             await LoadAllCatalogs();
-            // Load Item (Weapon/Armor/Consumable/General) catalogs
-            // Load NPC (Mobs/Shop/Guild/Quest) catalogs
-
-
-
 
             // TODO: Consider moving thread methods to their own class
 
@@ -304,7 +267,9 @@ namespace RPGFramework
             this.TelnetServer = new TelnetServer(5555);
             await this.TelnetServer.StartAsync();
         }
+        #endregion
 
+        #region Stop Method (Async)
         /// <summary>
         /// Stops the server, saving all player and area data, disconnecting online players, 
         /// and terminating the application.
@@ -337,6 +302,7 @@ namespace RPGFramework
             // Exit program
             Environment.Exit(0);
         }
+        #endregion
 
         #endregion --- Methods ---
 
