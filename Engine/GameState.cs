@@ -26,9 +26,6 @@ namespace RPGFramework
         // The persistence mechanism to use. Default is JSON-based persistence.
         public static IGamePersistence Persistence { get; set; } = new JsonGamePersistence();
 
-        public bool IsRunning { get; private set; } = false;
-
-        #region --- Properties ---
 
         #region --- Fields ---
         private CancellationTokenSource? _saveCts;
@@ -38,11 +35,31 @@ namespace RPGFramework
 
         #endregion
 
+        #region --- Properties ---
+
+        #region --- Unserialized Properties ---
+
+        [JsonIgnore] public bool IsRunning { get; private set; } = false;
+
         /// <summary>
         /// All Areas are loaded into this dictionary
         /// </summary>
-        [JsonIgnore] public Dictionary<int, Area> Areas { get; set; } =
-            new Dictionary<int, Area>();
+        [JsonIgnore] public Dictionary<int, Area> Areas { get; set; } = [];          
+
+        /// <summary>
+        /// All Players are loaded into this dictionary, with the player's name as the key 
+        /// </summary>
+        [JsonIgnore] public Dictionary<string, Player> Players { get; set; } = [];
+
+        [JsonIgnore] public List<ICatalog> Catalogs { get; private set; } = [];
+        [JsonIgnore] public Catalog<string, Mob> MobCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, NonPlayer> NPCCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, Item> ItemCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, Weapon> WeaponCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, Armor> ArmorCatalog { get; set; } = [];
+
+        [JsonIgnore] public TelnetServer? TelnetServer { get; private set; }
+        #endregion
 
         // TODO: Move this to configuration settings class
         public DebugLevel DebugLevel { get; set; } = DebugLevel.Debug;
@@ -52,24 +69,10 @@ namespace RPGFramework
         /// </summary>
         public DateTime GameDate { get; set; } = new DateTime(2021, 1, 1);
 
-        /// <summary>
-        /// All Players are loaded into this dictionary, with the player's name as the key 
-        /// </summary>
-        [JsonIgnore] public Dictionary<string, Player> Players { get; set; } = new Dictionary<string, Player>();
-
-        [JsonIgnore] public List<ICatalog> Catalogs { get; private set; } = new List<ICatalog>();
-        [JsonIgnore] public Catalog<string, Mob> MobCatalog { get; set; } = new Catalog<string, Mob>();
-        [JsonIgnore] public Catalog<string, NonPlayer> NPCCatalog { get; set; } = new Catalog<string, NonPlayer>();
-        [JsonIgnore] public Catalog<string, Item> ItemCatalog { get; set; } = new Catalog<string, Item>();
-        [JsonIgnore] public Catalog<string, Weapon> WeaponCatalog { get; set; } = new Catalog<string, Weapon>();
-        [JsonIgnore] public Catalog<string, Armor> ArmorCatalog { get; set; } = new Catalog<string, Armor>();
-
         // Move starting area/room to configuration settings
         public int StartAreaId { get; set; } = 0;
         public int StartRoomId { get; set; } = 0;
-
-        public TelnetServer? TelnetServer { get; private set; }
-
+       
         #endregion --- Properties ---
 
         private GameState()
@@ -98,11 +101,8 @@ namespace RPGFramework
             Area? area = GameState.Persistence.LoadAreaAsync(areaName).Result;
             if (area != null)
             {
-                if (Areas.ContainsKey(area.Id))
+                if (!Areas.TryAdd(area.Id, area))
                     Areas[area.Id] = area;
-                else
-                    Areas.Add(area.Id, area);
-
                 GameState.Log(DebugLevel.Alert, $"Area '{area.Name}' loaded successfully.");
             }
 
@@ -125,7 +125,7 @@ namespace RPGFramework
             }
 
             // Ensure start area/room are valid
-            if (!Areas.ContainsKey(StartAreaId) || Areas[StartAreaId].Rooms.Count == 0)
+            if (!Areas.TryGetValue(StartAreaId, out Area? value) || value.Rooms.Count == 0)
             {
                 var firstArea = Areas.Values.First();
                 StartAreaId = firstArea.Id;
