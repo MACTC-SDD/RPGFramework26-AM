@@ -48,6 +48,15 @@ namespace RPGFramework.Persistence
         Task<IReadOnlyDictionary<string, Weapon>> LoadWeaponsAsync();
 
         /// <summary>
+        /// Asynchronously loads a catalog by name and deserializes it to the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type to which the catalog data will be deserialized. Must be a reference type.</typeparam>
+        /// <param name="catalogName">The name of the catalog to load. Cannot be null or empty.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains an instance of type T if the
+        /// catalog is found and successfully deserialized; otherwise, null.</returns>
+        Task<T?> LoadCatalogAsync<T>(string catalogName) where T : class;
+
+        /// <summary>
         /// Asynchronously saves the specified collection of areas to the data store.
         /// </summary>
         /// <param name="areas">The collection of <see cref="Area"/> objects to save. 
@@ -72,6 +81,14 @@ namespace RPGFramework.Persistence
         Task SaveItemCatalogAsync(Dictionary<string, Item> items);
         Task SaveArmorCatalogAsync(Dictionary<string, Armor> armor);
         Task SaveWeaponCatalogAsync(Dictionary<string, Weapon> weapons);
+
+        /// <summary>
+        /// Asynchronously saves the specified catalog under the given name.
+        /// </summary>
+        /// <param name="catalog">The catalog to be saved. Cannot be null.</param>
+        /// <param name="catalogName">The name to assign to the saved catalog. Cannot be null or empty.</param>
+        /// <returns>A task that represents the asynchronous save operation.</returns>
+        Task SaveCatalogAsync(object catalog, string catalogName);
     }
 
     /// <summary>

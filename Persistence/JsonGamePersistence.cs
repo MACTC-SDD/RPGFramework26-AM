@@ -168,6 +168,12 @@ namespace RPGFramework.Persistence
                           ?? new Dictionary<string, Weapon>();
             return Task.FromResult((IReadOnlyDictionary<string, Weapon>)weapons);
         }
+
+        public Task<T?> LoadCatalogAsync<T>(string catalogName) where T : class
+        {
+            var catalog = ObjectStorage.LoadObject<T?>("data/catalogs/", $"{catalogName}.json");
+            return Task.FromResult(catalog);
+        }
         #endregion
 
         #region Save Methods
@@ -211,7 +217,11 @@ namespace RPGFramework.Persistence
             return Task.CompletedTask;
         }
 
-        
+        public Task SaveCatalogAsync(object catalog, string catalogName)
+        {
+            ObjectStorage.SaveObject(catalog, "data/catalogs/", $"{catalogName}.json");
+            return Task.CompletedTask;
+        }
         #endregion
     }
 }
