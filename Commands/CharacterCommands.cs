@@ -311,13 +311,13 @@ namespace RPGFramework.Commands
                 m.Name = parameters[2];
                 m.Description = parameters[3];
                 // check if key in dictionary
-                if (GameState.Instance.Npcs.ContainsKey(m.Name))
+                if (GameState.Instance.NPCCatalog.ContainsKey(m.Name))
                 {
                     player.WriteLine("An Npc with that name already exists.");
                 }
                 else
                 {
-                    GameState.Instance.Npcs.Add(m.Name, m);
+                    GameState.Instance.NPCCatalog.Add(m.Name, m);
                 }
 
                 player.WriteLine("Npc created.");
