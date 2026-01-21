@@ -61,6 +61,22 @@ namespace RPGFramework
                 _items[key] = value;
             }
         }
+
+        public object this[object key]
+        {
+            get
+            {
+                if (!_items.TryGetValue((TKey)key, out var value))
+                {
+                    throw new KeyNotFoundException($"The key '{key}' was not found in the catalog.");
+                }
+                return value;
+            }
+            set
+            {
+                _items[(TKey)key] = (TValue)value;
+            }
+        }
         #endregion
 
         #region Add Methods
@@ -72,9 +88,22 @@ namespace RPGFramework
             }
             _items[key] = value;
         }
+
+        public void Add(object key, object value)
+        {
+            var typedKey = (TKey)key;
+            var typedValue = (TValue)value;
+            if (_items.ContainsKey(typedKey))
+            {
+                throw new ArgumentException($"An item with the key '{key}' already exists in the catalog.");
+            }
+            _items[typedKey] = typedValue;
+        }
         #endregion
 
         public bool ContainsKey(TKey key) => _items.ContainsKey(key);
+
+        public bool ContainsKey(object key) => _items.ContainsKey((TKey)key);
 
         public Dictionary<TKey, TValue>.Enumerator GetEnumerator() => _items.GetEnumerator();
 
@@ -98,12 +127,13 @@ namespace RPGFramework
             catch (FileNotFoundException fex)
             {
                 GameState.Log(DebugLevel.Error, $"Error loading catalog '{Name}' (will use blank): {fex.Message}");
-            }
+            } 
             return;
         }
         #endregion
 
         public bool Remove(TKey key) => _items.Remove(key);
+        public bool Remove(object key) => _items.Remove((TKey)key);
 
         #region SaveCatalogAsync Method
         // Use this method to save the catalog to persistent storage

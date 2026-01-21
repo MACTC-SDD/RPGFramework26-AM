@@ -22,7 +22,7 @@ namespace RPGFramework
             Level = level;
             ShopInventory = inventory;
         }
-        public void IncrimentItemQuantity(int index)
+        public void IncrementItemQuantity(int index)
         {
             ShopInventory[index]++;
         }
