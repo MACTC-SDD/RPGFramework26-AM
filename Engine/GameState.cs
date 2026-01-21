@@ -57,6 +57,7 @@ namespace RPGFramework
         [JsonIgnore] public Catalog<string, Item> ItemCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, Weapon> WeaponCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, Armor> ArmorCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, Shopkeep> Shopkeeps { get; set; } = [];
 
         [JsonIgnore] public TelnetServer? TelnetServer { get; private set; }
         #endregion
