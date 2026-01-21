@@ -18,11 +18,13 @@ namespace RPGFramework.Commands
             [
                 new MobBuilderCommand(),
                 new NpcBuilderCommand(),
+                new ShopKeepBuilderCommand(),
                 // Add more commands here as needed
             ];
         }
     }
 
+    #region MobBuilderCommand Class
     // CODE REVIEW: Shelton (PR #25) - Unless there is a highly specific reason to have
     // nested classes, they should be top-level classes. This improves readability
     // and maintainability. I have refactored the classes to be top-level below. 561
@@ -116,6 +118,7 @@ namespace RPGFramework.Commands
             return;
         }
     }
+    #endregion
 
     #region NpcBuilderCommand Class
     internal class NpcBuilderCommand : BaseNpcCommand, ICommand
@@ -181,7 +184,6 @@ namespace RPGFramework.Commands
                     WriteUsage(player);
                     break;
             }
-
             return false;
         }
 
@@ -208,22 +210,23 @@ namespace RPGFramework.Commands
             }
             return;
         }
-
-
-
-
     }
     #endregion
 
     #region ShopKeepBuilderCommand Class
     internal class ShopKeepBuilderCommand : BaseNpcCommand, ICommand
     {
-        public string Name => "/npc";
+        
+        public string Name => "/shopkeep";
 
         public IEnumerable<string> Aliases => [];
 
         public bool Execute(Character character, List<string> parameters)
         {
+            _catalog = GameState.Instance.ShopCatalog;
+            _entityName = "shopkeep";
+            _entityType = typeof(Shopkeep);
+
             if (character is not Player player)
             {
                 return false;
@@ -374,6 +377,8 @@ namespace RPGFramework.Commands
             return false;
         }
         #endregion
+
+        // Maybe put NpcList method here instead of duplicating in each derived class?
 
         #region SetNpcProperty Method
         /// <summary>
