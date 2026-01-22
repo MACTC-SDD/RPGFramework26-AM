@@ -6,29 +6,44 @@ namespace RPGFramework
 {
     internal class Shopkeep : NonPlayer
     {
-        public Dictionary<int, int> ShopInventory { get; private set; } = new Dictionary<int, int>();
+        public Dictionary<string, int> ShopInventory { get; private set; } = new Dictionary<string, int>();
         // ItemID, Quantity
         public Shopkeep()
         {
-            NpcType = NonPlayerType.Shopkeep;
         }
 
-        //not sure if its neccesary, but it doesn't hurt to have it.
-        public Shopkeep(string name, string desc, int level, Dictionary<int, int> inventory,
-            int locationID)
+        public void IncrementItemQuantity(string index, int amount)
         {
-            Name = name;
-            Description = desc;
-            Level = level;
-            ShopInventory = inventory;
+            if((ShopInventory[index] + amount) < 0)
+            {
+                throw new IndexOutOfRangeException("Amount requested will cause it to go under 0");
+            }
+            ShopInventory[index] += amount;
         }
-        public void IncrementItemQuantity(int index)
+        public void AddItemToInventory(string index, int amount)
         {
-            ShopInventory[index]++;
+            if (ShopInventory.ContainsKey(index))
+            {
+                IncrementItemQuantity(index, amount);
+            }
+            else
+            {
+                ShopInventory[index] = amount;
+            }
         }
-        public void AddItemToInventory(int index)
+
+        public void BuyItem(string itemID, int quantity)
         {
-            ShopInventory[index] = 1;
+            if(!ShopInventory.ContainsKey(itemID))
+            {
+                throw new KeyNotFoundException("Item not found in shop inventory");
+            }
+            if(ShopInventory[itemID] < quantity)
+            {
+                throw new InvalidOperationException("Not enough quantity in shop inventory");
+            }
+            ShopInventory[itemID] -= quantity;
+            Gold += GameState.Instance.ItemCatalog[itemID].Value * quantity;
         }
     }
 }

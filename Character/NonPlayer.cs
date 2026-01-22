@@ -17,7 +17,6 @@ namespace RPGFramework
         public int CurrentAggressionLevel { get; protected set; } = 0;
         public int MaxAggressionLevel { get; protected set; } = 10;
         public int MinAgressionLevel { get; protected set; } = 0;
-        public NonPlayerType NpcType { get; protected set; } = NonPlayerType.Default;
         public CharacterState CurrentState { get; protected set; } = CharacterState.Idle;
         public NonPlayer()
         {

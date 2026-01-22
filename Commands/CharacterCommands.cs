@@ -242,7 +242,7 @@ namespace RPGFramework.Commands
 
                 case "inventory":
                     if (parameters[2].Equals("add")) {
-                        return AddNpcItem(player, parameters);
+                        return AddShopItem(player, parameters);
                     }
                     break;
                 // For longer commands with a lot of optiosn like this, we might send this to another method
@@ -300,6 +300,47 @@ namespace RPGFramework.Commands
                 Console.WriteLine($"Shop Name: {shop.Value.Name} Description: {shop.Value.Description}");
             }
             return;
+        }
+        protected static bool AddShopItem(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 6)
+            {
+                player.WriteLine($"Usage: /{_entityName} inventory add '<character'> '<itemID>' '<amount>'");
+                return false;
+            }
+
+            if (parameters[0].Equals("/shopkeep"))
+            {
+
+                //Adds one to quantity if it exists already
+                if (GameState.Instance.ShopCatalog.ContainsKey(parameters[3]))
+                {
+                    Shopkeep shop = GameState.Instance.ShopCatalog[parameters[3]];
+                    int.TryParse(parameters[5], out int Quantity);
+
+                    if (shop.ShopInventory.ContainsKey(parameters[4]))
+                    {
+                        shop.IncrementItemQuantity(parameters[4], Quantity);
+                        player.WriteLine("Added one of the item to the inventory!");
+                    }
+                    else
+                    {
+                        shop.AddItemToInventory(parameters[4], Quantity);
+                        player.WriteLine("Item added to inventory!");
+                    }
+                    return true;
+                }
+                else
+                {
+                    player.WriteLine("Npc does not exist!");
+                    return false;
+                }
+            }
+            else
+            {
+                player.WriteLine("This command is only available for shopkeeps!");
+            }
+            return false;
         }
     }
     #endregion
@@ -535,43 +576,6 @@ namespace RPGFramework.Commands
 
         // CODE REVIEW: Shelton (PR #25) - If this truly applies to shopkeeps we should move it to that class.
         #region AddNpcItem Method
-        protected static bool AddNpcItem(Player player, List<string> parameters)
-        {
-            if (parameters.Count < 5)
-            {
-                player.WriteLine($"Usage: /{_entityName} inventory add '<character'> '<itemID>'");
-                return false;
-            }
-
-            if (parameters[0].Equals("/shopkeep"))
-            {
-
-                //Adds one to quantity if it exists already
-                if (GameState.Instance.ShopCatalog.ContainsKey(parameters[3]))
-                {
-                    Shopkeep shop = GameState.Instance.ShopCatalog[parameters[3]];
-                    int.TryParse(parameters[4], out int itemID);
-
-                    if (shop.ShopInventory.ContainsKey(itemID))
-                    {
-                        shop.IncrementItemQuantity(itemID);
-                        player.WriteLine("Added one of the item to the inventory!");
-                    }
-                    else
-                    {
-                        shop.AddItemToInventory(itemID);
-                        player.WriteLine("Item added to inventory!");
-                    }
-                    return true;
-                }
-                else
-                {
-                    player.WriteLine("Npc does not exist!");
-                    return false;
-                }
-            }
-            return false;
-        }
         #endregion
     }
     #endregion

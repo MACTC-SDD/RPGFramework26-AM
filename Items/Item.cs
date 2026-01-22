@@ -16,7 +16,7 @@ namespace RPGFramework
         public string Name { get; set; } = "";
         public List<string> Tags { get; set; } = new List<string>();
         public int UsesRemaining { get; set; } = -1; // -1 means unlimited uses
-        public double Value { get; set; } = 0;
+        public int Value { get; set; } = 0;
         public double Weight { get; set; } = 0;
 
         internal static Item ItemCreation(int areaId, int v1, int v2)
