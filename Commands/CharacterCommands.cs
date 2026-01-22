@@ -25,18 +25,6 @@ namespace RPGFramework.Commands
     }
 
     #region MobBuilderCommand Class
-    // CODE REVIEW: Shelton (PR #25) - Unless there is a highly specific reason to have
-    // nested classes, they should be top-level classes. This improves readability
-    // and maintainability. I have refactored the classes to be top-level below. 561
-    // Nesting can also hide structural issues, such as the fact that all of your NPCcommands
-    // are located under the ShopKeepBuilderCommand class, which is proably not the intent.
-    // A nicer way to handle this might be to create a base class for NPC commands that
-    // MobBuilderCommand and ShopKeepBuilderCommand ad NpcBuilderCommand inherit from.
-    // I am going to refactor accordingly so you can see how that would look. The new parent class
-    // is called BaseNpcCommand.
-    // I also added one master permission at the top of each execute method to reduce
-    // redundancy.
-
     /*Creates, deletes, lists, and modifies mobs in the game world.*/
     internal class MobBuilderCommand : BaseNpcCommand, ICommand
     {        
@@ -377,9 +365,6 @@ namespace RPGFramework.Commands
             return false;
         }
         #endregion
-
-        // Maybe put NpcList method here instead of duplicating in each derived class?
-
         #region SetNpcProperty Method
         /// <summary>
         /// Sets a property of a NonPlayer entity. This includes anything that inherits from NonPlayer.
@@ -548,13 +533,13 @@ namespace RPGFramework.Commands
         }
         #endregion
 
-        #region AddNpcItem Method
         // CODE REVIEW: Shelton (PR #25) - If this truly applies to shopkeeps we should move it to that class.
+        #region AddNpcItem Method
         protected static bool AddNpcItem(Player player, List<string> parameters)
         {
             if (parameters.Count < 5)
             {
-                player.WriteLine("Usage: /shopkeep inventory add '<character'> '<itemID>'");
+                player.WriteLine($"Usage: /{_entityName} inventory add '<character'> '<itemID>'");
                 return false;
             }
 
@@ -581,7 +566,7 @@ namespace RPGFramework.Commands
                 }
                 else
                 {
-                    player.WriteLine("Shopkeep does not exist!");
+                    player.WriteLine("Npc does not exist!");
                     return false;
                 }
             }
