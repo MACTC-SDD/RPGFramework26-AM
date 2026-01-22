@@ -1,5 +1,4 @@
-﻿
-using RPGFramework.Geography;
+﻿using RPGFramework.Geography;
 using RPGFramework.Items;
 
 namespace RPGFramework
@@ -33,7 +32,7 @@ namespace RPGFramework
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
         public List<string> Tags { get; set; } = new List<string>(); // (for scripting or special behavior)
-        public Character Target { get; set; } = null; // (for combat or interaction)
+        public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = new List<Armor>();
@@ -118,6 +117,16 @@ namespace RPGFramework
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
         {
             throw new NotImplementedException();
+        }
+
+        internal void WriteLine(object description)
+        {
+            throw new NotImplementedException();
+        }
+        object IDescribable.Name
+        {
+            get => Name;
+            set => Name = value?.ToString() ?? "";
         }
     }
 }

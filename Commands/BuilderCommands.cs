@@ -305,7 +305,7 @@ namespace RPGFramework.Commands
 
             // Determine room to delete
 
-            Room roomToDelete = null;
+            Room? roomToDelete = null;
 
             if (parameters[2].Equals("here", StringComparison.OrdinalIgnoreCase))
             {

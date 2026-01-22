@@ -14,7 +14,7 @@ namespace RPGFramework
         public PlayerNetwork? Network { get; set; }
 
         [JsonIgnore]
-        public IAnsiConsole Console { get; set; }
+        public IAnsiConsole? Console { get; set; }
 
         #region --- Constructors ---
         // Constructor (creates a new player)
@@ -71,6 +71,16 @@ namespace RPGFramework
                 return "Disconnected";
 
             return ((System.Net.IPEndPoint)Network.Client.Client.RemoteEndPoint).Address.ToString();
+        }
+
+        internal object GetItem()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal object GetWeapon()
+        {
+            throw new NotImplementedException();
         }
     }
 }

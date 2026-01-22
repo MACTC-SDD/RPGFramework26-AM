@@ -1,6 +1,7 @@
 ﻿using RPGFramework.Display;
 using RPGFramework.Enums;
 using RPGFramework.Items;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -134,29 +135,44 @@ namespace RPGFramework.Commands
                 player.WriteLine("You do not have permission to do that.");
                 return;
             }
-
-            if (parameters.Count < 3)
+            var item = player.GetItem();
+            if (item is IDescribable describableItem)
             {
-                //player.WriteLine(player.GetItem().Description);
+                if (parameters.Count < 4)
+                {
+                    player.WriteLine(describableItem.Description);
+                }
+                else
+                {
+                    describableItem.Description = parameters[3];
+                    player.WriteLine("Item description set.");
+                }
             }
             else
             {
-                //player.GetItem().Description = parameters[2];
-                player.WriteLine("Item description set.");
+                player.WriteLine("No item selected or item does not support naming.");
             }
         }
 
         private static void ItemSetName(Player player, List<string> parameters)
         {
-
-            if (parameters.Count < 3)
+            var item = player.GetItem();
+            if (item is IDescribable describableItem)
             {
-                player.WriteLine(player.GetRoom().Name);
+                if (parameters.Count < 3)
+                {
+                    // Fix: Avoid possible null reference by using null-coalescing operator
+                    player.WriteLine(describableItem.Name?.ToString() ?? string.Empty);
+                }
+                else
+                {
+                    describableItem.Name = parameters[2];
+                    player.WriteLine("Item name set.");
+                }
             }
             else
             {
-                //player.GetItem().Name = parameters[2];
-                player.WriteLine("Item name set.");
+                player.WriteLine("No item selected or item does not support naming.");
             }
         }
 
@@ -340,7 +356,7 @@ namespace RPGFramework.Commands
                 return;
             }
 
-            // 0: /item
+            // 0: /weapon
             // 1: create
             // 2: name
             // 3: description
@@ -366,13 +382,18 @@ namespace RPGFramework.Commands
             }
             else
             {
-                GameState.Instance.WeaponCatalog.Add(newWeapon.Name, new Weapon());
+                GameState.Instance.WeaponCatalog.Add(newWeapon.Name, newWeapon);
             }
             // Here you would typically add the item to a database or game world
             player.WriteLine($"Weapon '{newWeapon.Name}' created successfully with description: {newWeapon.Description}");
 
         }
 
+        // 0: /weapon
+        // 1: set
+        // 2: name
+        // 3: (property name)
+        // 4: (property value)
         private static void WeaponSetDescription(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
@@ -380,16 +401,28 @@ namespace RPGFramework.Commands
                 player.WriteLine("You do not have permission to do that.");
                 return;
             }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Not enough parameters");
+                return;
+            }
+            
+                var weapon = player.GetWeapon();
+                if (weapon == null)
+                {
+                    player.WriteLine("No weapon selected.");
+                    return;
+                }
 
-            if (parameters.Count < 3)
-            {
-                //player.WriteLine(player.GetWeapon().Description);
-            }
-            else
-            {
-                //player.GetWeapon().Description = parameters[2];
-                player.WriteLine("Weapon description set.");
-            }
+                if (parameters.Count < 5)
+                {
+                    player.WriteLine(weapon.Description);
+                }
+                else
+                {
+                    weapon.Description = parameters[4];
+                    player.WriteLine("Weapon description set.");
+                }
         }
 
         private static void WeaponSetName(Player player, List<string> parameters)

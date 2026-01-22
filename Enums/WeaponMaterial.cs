@@ -3,24 +3,11 @@
     internal enum WeaponMaterial
     {
         Wood,
-        Bone,
-        Rusty,
-        Stone,
+        rusty,
+        stone,
         Iron,
         Steel,
         Mythril,
-        Obsidian,
-        Copper,
-        Bronze,
-        DragonBone,
-        Crystal,
-        Tungsten,
-        VoidMetal,
-        StarMetal,
-        Gold,
-        Basalt,
-        MoonSilver,
-
+        Obsidian
     }
 }
-    
