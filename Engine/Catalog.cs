@@ -147,6 +147,7 @@ namespace RPGFramework
         public bool TryGetValue(TKey key, out TValue? value) => _items.TryGetValue(key, out value);
     }
 
+    #region CatalogBuilder Class
     /// <summary>
     /// Provides factory methods for creating instances of the Catalog<TKey, TValue> class from collections of key/value
     /// pairs. This will allow us to add the CollectionBuilder attribute to Catalog so we can support collection expressions.
@@ -165,4 +166,5 @@ namespace RPGFramework
             return catalog;
         }
     }
+    #endregion
 }
