@@ -91,6 +91,18 @@ namespace RPGFramework
             }
         }
 
+        // Set Max Health to a specific value, use sparingly, mostly for creating characters
+        public void SetMaxHealth(int maxHealth)
+        {
+            if (maxHealth < 1)
+                maxHealth = 1;
+            MaxHealth = maxHealth;
+            // Ensure current health is not greater than new max health
+
+            Health = MaxHealth;
+        }
+
+
         // Remove some amount from health
         public void TakeDamage(int damage)
         {
