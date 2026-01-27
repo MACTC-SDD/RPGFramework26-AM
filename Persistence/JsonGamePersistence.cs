@@ -60,12 +60,7 @@ namespace RPGFramework.Persistence
 
         public Task EnsureInitializedAsync(GamePersistenceInitializationOptions options)
         {
-            // If you want to overwrite data files from seed_data, set this to true.
-            // Proceed with caution though, this will overwrite any existing files in the runtime data folder.
-            options.CopyFilesFromDataSeedToRuntimeData = false;
-
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
+            ArgumentNullException.ThrowIfNull(options);
 
             string baseDir = AppContext.BaseDirectory;
 

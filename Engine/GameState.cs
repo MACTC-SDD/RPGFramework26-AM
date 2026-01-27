@@ -121,7 +121,7 @@ namespace RPGFramework
         #region LoadAllAreas Method
         // Load all Area files from /data/areas. Each Area file will contain some
         // basic info and lists of rooms and exits.
-        private async Task LoadAllAreas()
+        public async Task LoadAllAreas()
         {
             Areas.Clear();
 
@@ -152,7 +152,7 @@ namespace RPGFramework
         /// as the key. Existing entries in <see cref="Players"/>
         /// are not cleared before loading; newly loaded players are added or 
         /// overwrite existing entries with the same name.</remarks>
-        private async Task LoadAllPlayers()
+        public async Task LoadAllPlayers()
         {
             Players.Clear();
 
@@ -168,7 +168,7 @@ namespace RPGFramework
         #endregion
 
         #region LoadAllCatalogs Method
-        private async Task LoadAllCatalogs()
+        public async Task LoadCatalogs()
         {
             foreach (ICatalog catalog in Catalogs)
             {
@@ -257,7 +257,7 @@ namespace RPGFramework
 
             await LoadAllAreas();
             await LoadAllPlayers();
-            await LoadAllCatalogs();
+            await LoadCatalogs();
 
             // TODO: Consider moving thread methods to their own class
 
