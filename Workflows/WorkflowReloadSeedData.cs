@@ -29,9 +29,9 @@ namespace RPGFramework.Workflows
                     CopyFilesFromDataSeedToRuntimeData = true
                 });
 
-                GameState.Instance.LoadAllAreas();
-                GameState.Instance.LoadAllPlayers();
-                GameState.Instance.LoadCatalogs();
+                _ = GameState.Instance.LoadAllAreas();
+                _ = GameState.Instance.LoadAllPlayers();
+                _ = GameState.Instance.LoadCatalogs();
 
                 GameState.Log(DebugLevel.Warning, $"{player.Name} has confirmed reloading seed data.");
 
