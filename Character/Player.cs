@@ -1,8 +1,8 @@
-﻿using System.Text.Json.Serialization;
+﻿using RPGFramework.Enums;
 using Spectre.Console;
 using Spectre.Console.Rendering;
-
-using RPGFramework.Enums;
+using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace RPGFramework
 {
@@ -55,6 +55,8 @@ namespace RPGFramework
             Network?.Client.Close();
         }
 
+
+        
         /// <summary>
         /// Save the player to the database.
         /// </summary>
@@ -95,6 +97,8 @@ namespace RPGFramework
             Console.MarkupLine(message);
             //Network?.Writer.WriteLine(message);
         }
+
+        
 
     }
 

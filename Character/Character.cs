@@ -1,5 +1,6 @@
 ﻿
 using RPGFramework.Geography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace RPGFramework
 {
@@ -14,11 +15,12 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character
     {
-        enum CharacterState { 
-            Idle, 
-            Moving, 
-            Attacking, 
-            Dead 
+        enum CharacterState
+        {
+            Idle,
+            Moving,
+            Attacking,
+            Dead
         }
 
         #region --- Properties ---
@@ -51,8 +53,8 @@ namespace RPGFramework
         public Character()
         {
             Health = MaxHealth;
-            Weapon w = new Weapon() 
-              { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
+            Weapon w = new Weapon()
+            { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
             PrimaryWeapon = w;
         }
 
@@ -71,11 +73,11 @@ namespace RPGFramework
             // Doesn't make sense if player is dead
             if (Alive == false)
                 return;
-            
+
 
             // Can't have health < 0
             if (health < 0)
-                health = 0;           
+                health = 0;
 
             // Can't have health > MaxHealth
             if (health > MaxHealth)
@@ -100,6 +102,8 @@ namespace RPGFramework
         public void Heal(int heal)
         {
             SetHealth(Health + heal);
+
         }
     }
 }
+        

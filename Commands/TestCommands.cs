@@ -4,9 +4,10 @@
     {
         public static List<ICommand> GetAllCommands()
         {
+            TestItemSizeCommand testItemSizeCommand = new();
             return new List<ICommand>
             {
-                new TestItemSizeCommand(),
+                testItemSizeCommand,
                 // Add more test commands here as needed
             };
         }
