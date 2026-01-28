@@ -1,4 +1,8 @@
 ﻿
+using RPGFramework.Enums;
+using System.ComponentModel;
+using System.Transactions;
+
 namespace RPGFramework
 {
     /// <summary>
@@ -9,45 +13,30 @@ namespace RPGFramework
     internal class NonPlayer : Character
     {
         //additional variables from NPCs
-        public string ShortDescription { get; private set; } = "";
-        public string LongDescription { get; private set; } = "";
-        public int CurrentAgressionLevel { get; private set; } = 0; // (the higher the value, the more aggressive actions can be taken)
-        public int MaxAgressionLevel { get; private set; } = 10; // (the maximum aggression level for this NPC)
-        public int MinAgressionLevel { get; private set; } = 0; // (the minimum aggression level for this NPC)
-
-        public NonPlayer(string name, string shortDesc, string longDesc, int level)
+        public Dictionary<string, List<string>> DialogOptions { get; protected set; } = new Dictionary<string, List<string>>();
+        public int CurrentAggressionLevel { get; protected set; } = 0;
+        public int MaxAggressionLevel { get; protected set; } = 10;
+        public int MinAgressionLevel { get; protected set; } = 0;
+        public NonPlayerType NpcType { get; protected set; } = NonPlayerType.Default;
+        public CharacterState CurrentState { get; protected set; } = CharacterState.Idle;
+        public NonPlayer()
         {
-            Name = name;
-            ShortDescription = shortDesc;
-            LongDescription = longDesc;
-            Level = level;
         }
 
-        public void IncrimentAgressionLevel(int amount)
+        public void IncrementAgressionLevel(int amount)
         {
-            if (amount < MaxAgressionLevel || amount > -MaxAgressionLevel)
+            if(amount + CurrentAggressionLevel > MaxAggressionLevel)
             {
-                CurrentAgressionLevel += amount;
+                CurrentAggressionLevel = MaxAggressionLevel;
+                return;
             }
-            else if (amount + CurrentAgressionLevel > MaxAgressionLevel)
+            else if(amount + CurrentAggressionLevel < MinAgressionLevel)
             {
-                CurrentAgressionLevel = MaxAgressionLevel;
+                CurrentAggressionLevel = MinAgressionLevel;
+                return;
             }
-            else if (CurrentAgressionLevel - amount < MinAgressionLevel)
-            {
-                CurrentAgressionLevel = MinAgressionLevel;
-            }
-            else
-            {
-                CurrentAgressionLevel += amount;
-            }
+            CurrentAggressionLevel += amount;
         }
-        //feels self explanitory
-        public int GetAgressionLevel(){return CurrentAgressionLevel;}
-
-        //returns the two different descriptions
-        public string GetShortDescription() { return ShortDescription; }
-        public string GetLongDescription() { return LongDescription; }
         
     }
 }
