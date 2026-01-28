@@ -11,6 +11,7 @@ namespace RPGFramework
         public Shopkeep()
         {
             NpcType = NonPlayerType.Shopkeep;
+            Tags.Add("Shopkeep");
         }
 
         public void IncrementItemQuantity(string index)

@@ -39,7 +39,7 @@ namespace RPGFramework.Commands
 
     /*Creates, deletes, lists, and modifies mobs in the game world.*/
     internal class MobBuilderCommand : BaseNpcCommand, ICommand
-    {        
+    {
         public string Name => "/mob";
 
         public IEnumerable<string> Aliases => [];
@@ -216,7 +216,7 @@ namespace RPGFramework.Commands
     #region ShopKeepBuilderCommand Class
     internal class ShopKeepBuilderCommand : BaseNpcCommand, ICommand
     {
-        
+
         public string Name => "/shopkeep";
 
         public IEnumerable<string> Aliases => [];
@@ -254,7 +254,7 @@ namespace RPGFramework.Commands
 
                 case "inventory":
                     if (parameters[2].Equals("add")) {
-                        return AddNpcItem(player, parameters);
+                        return AddItem(player, parameters);
                     }
                     break;
                 // For longer commands with a lot of optiosn like this, we might send this to another method
@@ -299,8 +299,8 @@ namespace RPGFramework.Commands
             player.WriteLine("/shopkeep dialog delete '<character>' '<category>'");
             player.WriteLine("/shopkeep dialog delete '<character>' '<category>' '<line to remove>'");
             player.WriteLine("/shopkeep dialog add '<character'> <category>' '<line to add>'");
-            player.WriteLine("/shopkeep inventory add '<character'> '<itemID>'"); //to add
-            player.WriteLine("/shopkeep inventory delete '<character'> '<itemID>'"); //to add
+            player.WriteLine("/shopkeep inventory add '<character'> '<itemID>'");
+            player.WriteLine("/shopkeep inventory delete '<character'> '<itemID>'");
             player.WriteLine("/shopkeep create '<name>' '<description>'");
             player.WriteLine("/shopkeep delete '<name>'");
         }
@@ -312,6 +312,42 @@ namespace RPGFramework.Commands
                 Console.WriteLine($"Shop Name: {shop.Value.Name} Description: {shop.Value.Description}");
             }
             return;
+        }
+        protected static bool AddItem(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine("Usage: /shopkeep inventory add '<character'> '<itemID>'");
+                return false;
+            }
+
+            if (parameters[0].Equals("/shopkeep"))
+            {
+
+                //Adds one to quantity if it exists already
+                if (GameState.Instance.ShopCatalog.ContainsKey(parameters[3]))
+                {
+                    Shopkeep shop = GameState.Instance.ShopCatalog[parameters[3]];
+                    string itemID = parameters[4];
+                    if (shop.ShopInventory.ContainsKey(itemID))
+                    {
+                        shop.IncrementItemQuantity(itemID);
+                        player.WriteLine("Added one of the item to the inventory!");
+                    }
+                    else
+                    {
+                        shop.AddItemToInventory(itemID);
+                        player.WriteLine("Item added to inventory!");
+                    }
+                    return true;
+                }
+                else
+                {
+                    player.WriteLine("Shopkeep does not exist!");
+                    return false;
+                }
+            }
+            return false;
         }
     }
     #endregion
@@ -344,8 +380,8 @@ namespace RPGFramework.Commands
             {
                 player.WriteLine($"{_entityName} with that name already exists.");
                 return false;
-            }            
-            
+            }
+
             NonPlayer npc = (NonPlayer)Activator.CreateInstance(_entityType)!;
             npc.Name = name; ;
             npc.Description = description;
@@ -548,46 +584,13 @@ namespace RPGFramework.Commands
         }
         #endregion
 
-        #region AddNpcItem Method
-        // CODE REVIEW: Shelton (PR #25) - If this truly applies to shopkeeps we should move it to that class.
-        protected static bool AddNpcItem(Player player, List<string> parameters)
+        #region AddTag Method
+        protected static void AddTag(Player player, List<string> parameters)
         {
-            if (parameters.Count < 5)
-            {
-                player.WriteLine("Usage: /shopkeep inventory add '<character'> '<itemID>'");
-                return false;
-            }
 
-            if (parameters[0].Equals("/shopkeep"))
-            {
-
-                //Adds one to quantity if it exists already
-                if (GameState.Instance.ShopCatalog.ContainsKey(parameters[3]))
-                {
-                    Shopkeep shop = GameState.Instance.ShopCatalog[parameters[3]];
-                    string itemID = parameters[4];
-                    if (shop.ShopInventory.ContainsKey(itemID))
-                    {
-                        shop.IncrementItemQuantity(itemID);
-                        player.WriteLine("Added one of the item to the inventory!");
-                    }
-                    else
-                    {
-                        shop.AddItemToInventory(itemID);
-                        player.WriteLine("Item added to inventory!");
-                    }
-                    return true;
-                }
-                else
-                {
-                    player.WriteLine("Shopkeep does not exist!");
-                    return false;
-                }
-            }
-            return false;
         }
         #endregion
     }
-    #endregion
 }
 
+#endregion

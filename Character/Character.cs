@@ -26,6 +26,8 @@ namespace RPGFramework
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
         public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
+        List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Mob", "Hostile", "Greedy", "Healer", "Wimpy"];
+        //Might need to move later, but for now I need a place to keep them -Shelton
         public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
@@ -59,6 +61,18 @@ namespace RPGFramework
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
+        }
+
+        // get exits in current room
+        public List<Exit> GetExits()
+        {
+            Room currentRoom = GetRoom();
+            List<Exit> exits = new List<Exit>();
+            foreach (int exitId in currentRoom.ExitIds)
+            {
+                exits.Add(GameState.Instance.Areas[AreaId].Exits[exitId]);
+            }
+            return exits;
         }
 
         public void SetRoom(int id)
@@ -114,11 +128,6 @@ namespace RPGFramework
         {
             SetHealth(Health + heal);
         }
-
-        // CODE REVIEW: Shelton - PR #18
-        // There is really no reason to be a method, you can just set the property directly.
-        // I commented it out and you can just delete this comment once you've reviewed.
-        //public void SetDescription(string Desc) { Description = Desc; }
 
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
         {
