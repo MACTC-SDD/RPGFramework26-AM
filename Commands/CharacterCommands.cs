@@ -565,8 +565,7 @@ namespace RPGFramework.Commands
                 if (GameState.Instance.ShopCatalog.ContainsKey(parameters[3]))
                 {
                     Shopkeep shop = GameState.Instance.ShopCatalog[parameters[3]];
-                    int.TryParse(parameters[4], out int itemID);
-
+                    string itemID = parameters[4];
                     if (shop.ShopInventory.ContainsKey(itemID))
                     {
                         shop.IncrementItemQuantity(itemID);
