@@ -22,7 +22,7 @@ namespace RPGFramework
         // This is a good thing if you want to reset everything, like after world files
         // have been updated in data_seed, but be careful as it will wipe out
         // any existing area, room, and catalog (mob, item, etc.) data.
-        private bool _OVERWRITE_DATA = false;
+        private readonly bool _OVERWRITE_DATA = false;
 
         // Static Fields and Properties
         private static readonly Lazy<GameState> _instance = new(() => new GameState());

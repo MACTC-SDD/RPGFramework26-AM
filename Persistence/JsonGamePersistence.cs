@@ -38,14 +38,14 @@ namespace RPGFramework.Persistence
 
         private static void CreateStarterArea()
         {
-            Area area = new Area
+            Area area = new()
             {
                 Id = 0,
                 Name = "Starter Area",
                 Description = "The first place new players enter."
             };
 
-            Room room = new Room
+            Room room = new()
             {
                 Id = 0,
                 AreaId = 0,

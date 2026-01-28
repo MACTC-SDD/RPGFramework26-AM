@@ -11,12 +11,12 @@ namespace RPGFramework.Commands
     {
         public static List<ICommand> GetAllCommands()
         {
-            return new List<ICommand>
-            {
+            return
+            [
                 new RoomBuilderCommand(),
                 new AreaBuilderCommand(),
                 // Add more builder commands here as needed
-            };
+            ];
         }
     }
 
@@ -32,7 +32,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "/room";
 
-        public IEnumerable<string> Aliases => Array.Empty<string>();
+        public IEnumerable<string> Aliases => [];
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -225,9 +225,8 @@ namespace RPGFramework.Commands
                     player.WriteLine($"  {tag}");
                 }
             }
-            
+
             Room room = player.GetRoom();
-            Area area = GameState.Instance.Areas[player.AreaId];
      
             var exits = room.GetExits();
 
@@ -415,7 +414,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "/area";
 
-        public IEnumerable<string> Aliases => Array.Empty<string>();
+        public IEnumerable<string> Aliases => [];
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -479,13 +478,13 @@ namespace RPGFramework.Commands
                 ? 0
                 : GameState.Instance.Areas.Keys.Max() + 1;
 
-            Area area = new Area
+            Area area = new()
             {
                 Id = newAreaId,
                 Name = parameters[2],
                 Description = parameters[3],
-                Rooms = new Dictionary<int, Room>(),
-                Exits = new Dictionary<int, Exit>()
+                Rooms = [],
+                Exits = []
             };
 
             // Create starting room

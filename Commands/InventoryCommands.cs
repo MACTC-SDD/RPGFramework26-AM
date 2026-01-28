@@ -5,20 +5,18 @@ namespace RPGFramework.Commands
     {
         public static List<ICommand> GetAllCommands()
         {
-            return new List<ICommand>
-            {
+            return
+            [
                 new InventoryCommand(),
                 // Add other communication commands here as they are implemented
-            };
+            ];
         }
-
-
     }
 
     internal class InventoryCommand : ICommand
     {
         public string Name => "equip";
-        public IEnumerable<string> Aliases => new List<string> { };
+        public IEnumerable<string> Aliases => [];
 
 
         public bool Execute(Character character, List<string> parameters)
