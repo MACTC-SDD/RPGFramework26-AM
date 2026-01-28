@@ -17,10 +17,9 @@ namespace RPGFramework.Commands
 
     internal class InventoryCommand : ICommand
     {
-        public string Inventory => "equip";
+        public string Name => "equip";
         public IEnumerable<string> Aliases => new List<string> { };
 
-        public string Name => throw new NotImplementedException();
 
         public bool Execute(Character character, List<string> parameters)
         {
