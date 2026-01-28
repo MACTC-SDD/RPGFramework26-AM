@@ -25,11 +25,11 @@ namespace RPGFramework
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
-        public List<string> Tags { get; set; } = new List<string>(); // (for scripting or special behavior)
-        public Character Target { get; set; } = null; // (for combat or interaction)
+        public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
+        public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
-        public List<Armor> EquippedArmor { get; set; } = new List<Armor>();
+        public List<Armor> EquippedArmor { get; set; } = [];
         public Weapon PrimaryWeapon { get; set; }
         public Inventory PlayerInventory { get; set; } = new Inventory(); 
         #endregion
@@ -47,7 +47,7 @@ namespace RPGFramework
         public Character()
         {
             Health = MaxHealth;
-            Weapon w = new Weapon() 
+            Weapon w = new() 
               { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
             PrimaryWeapon = w;
         }
@@ -90,6 +90,18 @@ namespace RPGFramework
                 Alive = false;
             }
         }
+
+        // Set Max Health to a specific value, use sparingly, mostly for creating characters
+        public void SetMaxHealth(int maxHealth)
+        {
+            if (maxHealth < 1)
+                maxHealth = 1;
+            MaxHealth = maxHealth;
+            // Ensure current health is not greater than new max health
+
+            Health = MaxHealth;
+        }
+
 
         // Remove some amount from health
         public void TakeDamage(int damage)

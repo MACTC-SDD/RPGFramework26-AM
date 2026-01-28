@@ -1,5 +1,7 @@
 ﻿
 using RPGFramework.Display;
+using RPGFramework.Enums;
+using RPGFramework.Workflows;
 
 namespace RPGFramework.Commands
 {
@@ -10,6 +12,7 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new AnnounceCommand(),
+                new ReloadSeedDataCommand(),
                 new ShutdownCommand(),
                 // Add more builder commands here as needed
             };
@@ -27,6 +30,29 @@ namespace RPGFramework.Commands
             return true;
         }
     }
+
+    #region ReloadSeedDataCommand Class
+    internal class ReloadSeedDataCommand : ICommand
+    {
+        public string Name => "/reloadseeddata";
+        public IEnumerable<string> Aliases => [];
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+                return false;
+
+            if (Utility.CheckPermission(player, PlayerRole.Admin) == false)
+            {
+                player.WriteLine("You do not have permission to use this command.");
+                return false;
+            }
+
+            player.CurrentWorkflow = new WorkflowReloadSeedData();
+            player.WriteLine("Watch out, you're about to overwrite your data with the default seed files. If that's what you want, type YES!");
+            return true;
+        }
+    }
+    #endregion
 
     internal class ShutdownCommand : ICommand
     {

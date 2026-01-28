@@ -1,5 +1,6 @@
 ﻿using RPGFramework.Enums;
 using System.ComponentModel;
+using System.Transactions;
 
 namespace RPGFramework
 {
@@ -10,16 +11,15 @@ namespace RPGFramework
 
         public Mob()
         {
+            NpcType = NonPlayerType.Mob;
         }
 
-        public Mob(string name, string desc, int level, Dictionary<string, string[]> dialogOptions, int maxRoomsToChase,
-            int locationID)
+        //not sure if its neccesary, but it doesn't hurt to have it.
+        public Mob(string name, string desc, int level, Dictionary<string, string[]> dialogOptions, int maxRoomsToChase)
         {
             Name = name;
             Description = desc;
             Level = level;
-            //LocationID = locationID; // Not sure what this is for (Area/Room?)
-            //DialogOptions = dialogOptions;
             MaxRoomsToChase = maxRoomsToChase;
         }
 

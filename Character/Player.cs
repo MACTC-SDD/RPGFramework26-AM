@@ -77,15 +77,17 @@ namespace RPGFramework
         public void Write(string message)
         {
             WriteNewLineIfNeeded();
-            Console.Write(message);
-            Console.Write(Network.TelnetConnection.CurrentLineText); // Re-write current input line
+            Console?.Write(message);
+            var line = Network?.TelnetConnection?.CurrentLineText;
+            Console?.Write(line ?? String.Empty); // Re-write current input line
         }
 
         public void Write(IRenderable renderable)
         {
             WriteNewLineIfNeeded();
-            Console.Write(renderable);
-            Console.Write(Network.TelnetConnection.CurrentLineText); // Re-write current input line
+            Console?.Write(renderable);
+            var line = Network?.TelnetConnection?.CurrentLineText;
+            Console?.Write(line ?? String.Empty); // Re-write current input line
         }
 
         
@@ -97,8 +99,9 @@ namespace RPGFramework
         public void WriteLine(string message)
         {
             WriteNewLineIfNeeded();
-            Console.MarkupLine(message);
-            Console.Write(Network.TelnetConnection.CurrentLineText); // Re-write current input line
+            Console?.MarkupLine(message);
+            var line = Network?.TelnetConnection?.CurrentLineText;
+            Console?.Write(line ?? String.Empty); // Re-write current input line
         }
         private void WriteNewLineIfNeeded()
         {
@@ -108,7 +111,7 @@ namespace RPGFramework
                 return;
             if (Network.NeedsOutputNewline)
             {
-                Console.Write("\r\n");
+                Console?.Write("\r\n");
             }
         }
 
