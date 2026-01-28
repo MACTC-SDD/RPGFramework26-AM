@@ -149,6 +149,16 @@ namespace RPGFramework.Commands
                 case "list":
                     ListNpcs();
                     break;
+                case "tag":
+                    if (parameters[2].Equals("add"))
+                    {
+                        AddTag(player, parameters);
+                    }
+                    else if (parameters[2].Equals("remove") || parameters[2].Equals("delete"))
+                    {
+                        RemoveTag(player, parameters);
+                    }
+                    break;
                 case "set":
                     return SetNpcProperty(player, parameters);
                 case "dialog":
@@ -228,7 +238,16 @@ namespace RPGFramework.Commands
                     break;
                 case "set":
                     return SetNpcProperty(player, parameters);
-
+                case "tag":
+                    if (parameters[2].Equals("add"))
+                    {
+                        AddTag(player, parameters);
+                    }
+                    else if (parameters[2].Equals("remove") || parameters[2].Equals("delete"))
+                    {
+                        RemoveTag(player, parameters);
+                    }
+                    break;
                 case "inventory":
                     if (parameters[2].Equals("add")) {
                         return AddItem(player, parameters);
