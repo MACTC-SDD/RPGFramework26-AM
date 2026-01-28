@@ -39,7 +39,7 @@ namespace RPGFramework.Commands
 
     /*Creates, deletes, lists, and modifies mobs in the game world.*/
     internal class MobBuilderCommand : BaseNpcCommand, ICommand
-    {        
+    {
         public string Name => "/mob";
 
         public IEnumerable<string> Aliases => [];
@@ -54,9 +54,6 @@ namespace RPGFramework.Commands
             {
                 return false;
             }
-
-            // CODE REVIEW: Shelton (PR #25) - Added permission check for admin
-            // This assumes all /mob commands require admin permissions
             if (Utility.CheckPermission(player, PlayerRole.Admin) == false)
             {
                 player.WriteLine("You do not have permission to do that.");
@@ -68,8 +65,6 @@ namespace RPGFramework.Commands
                 WriteUsage(player);
                 return false;
             }
-
-            //Switches between the second parameter to determine command.
             switch (parameters[1].ToLower())
             {
                 case "create":
@@ -77,12 +72,19 @@ namespace RPGFramework.Commands
                     break;
                 case "delete":
                     return NpcDelete(player, parameters);
+                case "tag":
+                    if (parameters[2].Equals("add"))
+                    {
+                        AddTag(player, parameters);
+                    }
+                    else if (parameters[2].Equals("remove") || parameters[2].Equals("delete"))
+                    {
+                        RemoveTag(player, parameters);
+                    }
+                    break;
                 case "list":
                     ListMobs();
                     break;
-                // CODE REVIEW: Shelton (PR #25) - Because there might be many properties to set,
-                // we should put that logic in a method like NPCSetProperty (I will refactor accordingly)
-                // so you can review
                 case "set":
                     return SetNpcProperty(player, parameters);
                 default:
@@ -99,15 +101,6 @@ namespace RPGFramework.Commands
         /// <summary>
         /// Displays a list of available mob-related commands and their usage to the specified player.
         /// </summary>
-        private static void WriteUsage(Player player)
-        {
-            player.WriteLine("Usage: ");
-            player.WriteLine("/mob set desc <'Name'> '<Description>'");
-            player.WriteLine("/mob set name <'CurrentName'> '<NewName>'");
-            player.WriteLine("/mob list");
-            player.WriteLine("/mob create '<name>' '<description>'");
-            player.WriteLine("/mob delete '<name>'");
-        }
 
         private static void ListMobs()
         {
@@ -156,6 +149,16 @@ namespace RPGFramework.Commands
                 case "list":
                     ListNpcs();
                     break;
+                case "tag":
+                    if (parameters[2].Equals("add"))
+                    {
+                        AddTag(player, parameters);
+                    }
+                    else if (parameters[2].Equals("remove") || parameters[2].Equals("delete"))
+                    {
+                        RemoveTag(player, parameters);
+                    }
+                    break;
                 case "set":
                     return SetNpcProperty(player, parameters);
                 case "dialog":
@@ -186,22 +189,6 @@ namespace RPGFramework.Commands
             }
             return false;
         }
-
-        //Prints all available commands.
-        private static void WriteUsage(Player player)
-        {
-            player.WriteLine("Usage: ");
-            player.WriteLine("/npc set desc <'Name'> '<Description>'");
-            player.WriteLine("/npc set name <'CurrentName'> '<NewName>'");
-            player.WriteLine("/npc list");
-            player.WriteLine("/npc dialog list '<character>' '<category>'");
-            player.WriteLine("/npc dialog list '<character>'");
-            player.WriteLine("/npc dialog delete '<character>' '<category>'");
-            player.WriteLine("/npc dialog delete '<character>' '<category>' '<line to remove>'");
-            player.WriteLine("/npc dialog add '<character'> <category>' '<line to add>'");
-            player.WriteLine("/npc create '<name>' '<description>'");
-            player.WriteLine("/npc delete '<name>'");
-        }
         private static void ListNpcs()
         {
             foreach (var npc in GameState.Instance.NPCCatalog)
@@ -216,7 +203,7 @@ namespace RPGFramework.Commands
     #region ShopKeepBuilderCommand Class
     internal class ShopKeepBuilderCommand : BaseNpcCommand, ICommand
     {
-        
+
         public string Name => "/shopkeep";
 
         public IEnumerable<string> Aliases => [];
@@ -251,10 +238,19 @@ namespace RPGFramework.Commands
                     break;
                 case "set":
                     return SetNpcProperty(player, parameters);
-
+                case "tag":
+                    if (parameters[2].Equals("add"))
+                    {
+                        AddTag(player, parameters);
+                    }
+                    else if (parameters[2].Equals("remove") || parameters[2].Equals("delete"))
+                    {
+                        RemoveTag(player, parameters);
+                    }
+                    break;
                 case "inventory":
                     if (parameters[2].Equals("add")) {
-                        return AddNpcItem(player, parameters);
+                        return AddItem(player, parameters);
                     }
                     break;
                 // For longer commands with a lot of optiosn like this, we might send this to another method
@@ -287,24 +283,6 @@ namespace RPGFramework.Commands
 
             return false;
         }
-        //Prints all available commands.
-        private static void WriteUsage(Player player)
-        {
-            player.WriteLine("Usage: ");
-            player.WriteLine("/shopkeep set desc <'Name'> '<Description>'");
-            player.WriteLine("/shopkeep set name <'CurrentName'> '<NewName>'");
-            player.WriteLine("/shopkeep list");
-            player.WriteLine("/shopkeep dialog list '<character>' '<category>'");
-            player.WriteLine("/shopkeep dialog list '<character>'");
-            player.WriteLine("/shopkeep dialog delete '<character>' '<category>'");
-            player.WriteLine("/shopkeep dialog delete '<character>' '<category>' '<line to remove>'");
-            player.WriteLine("/shopkeep dialog add '<character'> <category>' '<line to add>'");
-            player.WriteLine("/shopkeep inventory add '<character'> '<itemID>'"); //to add
-            player.WriteLine("/shopkeep inventory delete '<character'> '<itemID>'"); //to add
-            player.WriteLine("/shopkeep create '<name>' '<description>'");
-            player.WriteLine("/shopkeep delete '<name>'");
-        }
-
         private static void ListShopKeeps()
         {
             foreach (var shop in GameState.Instance.ShopCatalog)
@@ -312,6 +290,42 @@ namespace RPGFramework.Commands
                 Console.WriteLine($"Shop Name: {shop.Value.Name} Description: {shop.Value.Description}");
             }
             return;
+        }
+        protected static bool AddItem(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine("Usage: /shopkeep inventory add '<character'> '<itemID>'");
+                return false;
+            }
+
+            if (parameters[0].Equals("/shopkeep"))
+            {
+
+                //Adds one to quantity if it exists already
+                if (GameState.Instance.ShopCatalog.ContainsKey(parameters[3]))
+                {
+                    Shopkeep shop = GameState.Instance.ShopCatalog[parameters[3]];
+                    string itemID = parameters[4];
+                    if (shop.ShopInventory.ContainsKey(itemID))
+                    {
+                        shop.IncrementItemQuantity(itemID);
+                        player.WriteLine("Added one of the item to the inventory!");
+                    }
+                    else
+                    {
+                        shop.AddItemToInventory(itemID);
+                        player.WriteLine("Item added to inventory!");
+                    }
+                    return true;
+                }
+                else
+                {
+                    player.WriteLine("Shopkeep does not exist!");
+                    return false;
+                }
+            }
+            return false;
         }
     }
     #endregion
@@ -322,6 +336,34 @@ namespace RPGFramework.Commands
         protected static ICatalog? _catalog;
         protected static string _entityName = "";
         protected static Type _entityType;
+
+        #region WriteUsage Method
+        protected static void WriteUsage(Player player)
+        {
+            player.WriteLine("Usage: ");
+            player.WriteLine($"/{_entityName} set desc <'Name'> '<Description>'");
+            player.WriteLine($"/{_entityName} set name <'CurrentName'> '<NewName>'");
+            player.WriteLine($"/{_entityName} list");
+            player.WriteLine($"/{_entityName} create '<name>' '<description>'");
+            player.WriteLine($"/{_entityName} delete '<name>'");
+            player.WriteLine($"/{_entityName} tag add '<name>' '<tag>'");
+            player.WriteLine($"/{_entityName} tag delete '<name>' '<tag>'");
+            if (_entityName == "shopkeep" || _entityName == "npc")
+            {
+                player.WriteLine($"/{_entityName} dialog list '<character>' '<category>'");
+                player.WriteLine($"/{_entityName} dialog list '<character>'");
+                player.WriteLine($"/{_entityName} dialog delete '<character>' '<category>'");
+                player.WriteLine($"/{_entityName} dialog delete '<character>' '<category>' '<line to remove>'");
+                player.WriteLine($"/{_entityName} dialog add '<character'> <category>' '<line to add>'");
+                if (_entityName == "shopkeep")
+                {
+                    player.WriteLine($"/{_entityName} inventory add '<character'> '<itemID>'");
+                    player.WriteLine($"/{_entityName} inventory delete '<character'> '<itemID>'");
+                }
+            }
+        }
+
+        #endregion
 
         #region NpcCreate Method
         //Creates an entity of a NonPlayer type, adds to gamestate.
@@ -344,8 +386,8 @@ namespace RPGFramework.Commands
             {
                 player.WriteLine($"{_entityName} with that name already exists.");
                 return false;
-            }            
-            
+            }
+
             NonPlayer npc = (NonPlayer)Activator.CreateInstance(_entityType)!;
             npc.Name = name; ;
             npc.Description = description;
@@ -548,47 +590,57 @@ namespace RPGFramework.Commands
         }
         #endregion
 
-        #region AddNpcItem Method
-        // CODE REVIEW: Shelton (PR #25) - If this truly applies to shopkeeps we should move it to that class.
-        protected static bool AddNpcItem(Player player, List<string> parameters)
+        #region AddTag Method
+        protected static void AddTag(Player player, List<string> parameters)
         {
-            if (parameters.Count < 5)
+            if (parameters.Count < 4)
             {
-                player.WriteLine("Usage: /shopkeep inventory add '<character'> '<itemID>'");
-                return false;
+                player.WriteLine($"Usage: /{_entityName} tag add '<name>' '<tag>'");
+                return;
             }
-
-            if (parameters[0].Equals("/shopkeep"))
+            string name = parameters[2];
+            string tag = parameters[3];
+            Character? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            bool completed = npc.AddTag(tag);
+            if (!completed)
             {
-
-                //Adds one to quantity if it exists already
-                if (GameState.Instance.ShopCatalog.ContainsKey(parameters[3]))
-                {
-                    Shopkeep shop = GameState.Instance.ShopCatalog[parameters[3]];
-                    int.TryParse(parameters[4], out int itemID);
-
-                    if (shop.ShopInventory.ContainsKey(itemID))
-                    {
-                        shop.IncrementItemQuantity(itemID);
-                        player.WriteLine("Added one of the item to the inventory!");
-                    }
-                    else
-                    {
-                        shop.AddItemToInventory(itemID);
-                        player.WriteLine("Item added to inventory!");
-                    }
-                    return true;
-                }
-                else
-                {
-                    player.WriteLine("Shopkeep does not exist!");
-                    return false;
-                }
+                player.WriteLine($"Tag '{tag}' is invalid or already exists on {_entityName} '{name}'.");
+                return;
             }
-            return false;
+            else
+            {
+                player.WriteLine($"Tag '{tag}' added to {_entityName} '{name}'.");
+            }
+        }
+        #endregion
+
+        #region RemoveTag Method
+        protected static void RemoveTag(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 4)
+            {
+                player.WriteLine($"Usage: /{_entityName} tag remove '<name>' '<tag>'");
+                return;
+            }
+            string name = parameters[2];
+            string tag = parameters[3];
+            Character? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            bool completed = npc.RemoveTag(tag);
+            if (!completed)
+            {
+                player.WriteLine($"Tag '{tag}' does not exist on {_entityName} '{name}'.");
+                return;
+            }
+            else
+            {
+                player.WriteLine($"Tag '{tag}' removed from {_entityName} '{name}'.");
+            }
         }
         #endregion
     }
-    #endregion
 }
-
+#endregion

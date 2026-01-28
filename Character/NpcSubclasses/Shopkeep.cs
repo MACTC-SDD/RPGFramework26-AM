@@ -6,29 +6,23 @@ namespace RPGFramework
 {
     internal class Shopkeep : NonPlayer
     {
-        public Dictionary<int, int> ShopInventory { get; private set; } = new Dictionary<int, int>();
+        public Dictionary<string, int> ShopInventory { get; private set; } = new Dictionary<string, int>();
         // ItemID, Quantity
         public Shopkeep()
         {
             NpcType = NonPlayerType.Shopkeep;
+            Tags.Add("Shopkeep");
         }
 
-        //not sure if its neccesary, but it doesn't hurt to have it.
-        public Shopkeep(string name, string desc, int level, Dictionary<int, int> inventory,
-            int locationID)
-        {
-            Name = name;
-            Description = desc;
-            Level = level;
-            ShopInventory = inventory;
-        }
-        public void IncrementItemQuantity(int index)
+        public void IncrementItemQuantity(string index)
         {
             ShopInventory[index]++;
         }
-        public void AddItemToInventory(int index)
+        public void AddItemToInventory(string index)
         {
             ShopInventory[index] = 1;
         }
+        
+        //Need to create selling methods later - Shelton
     }
 }
