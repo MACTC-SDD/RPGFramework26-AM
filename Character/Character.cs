@@ -25,8 +25,8 @@ namespace RPGFramework
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
-        public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Mob", "Hostile", "Greedy", "Healer", "Wimpy"];
+        protected List<string> Tags { get; set; } = []; // (for scripting or special behavior)
+        public List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Mob", "Hostile", "Greedy", "Healer", "Wimpy"];
         //Might need to move later, but for now I need a place to keep them -Shelton
         public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
@@ -132,6 +132,33 @@ namespace RPGFramework
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
         {
             throw new NotImplementedException();
+        }
+
+        //Add tags to character
+        public bool AddTag(string tag)
+        {
+           if(ValidTags.Contains(tag) && !Tags.Contains(tag))
+           {
+                Tags.Add(tag);
+                return true;
+           }
+            else
+            {
+                return false;
+            }
+        }
+        //removes tags from character
+        public bool RemoveTag(string tag)
+        {
+            if (Tags.Contains(tag))
+            {
+                Tags.Remove(tag);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

@@ -107,6 +107,8 @@ namespace RPGFramework.Commands
             player.WriteLine("/mob list");
             player.WriteLine("/mob create '<name>' '<description>'");
             player.WriteLine("/mob delete '<name>'");
+            player.WriteLine("/mob tag add '<name>' '<tag>'");
+            player.WriteLine("/mob tag delete '<name>' '<tag>'");
         }
 
         private static void ListMobs()
@@ -587,9 +589,56 @@ namespace RPGFramework.Commands
         #region AddTag Method
         protected static void AddTag(Player player, List<string> parameters)
         {
-
+            if (parameters.Count < 4)
+            {
+                player.WriteLine($"Usage: /{_entityName} tag add '<name>' '<tag>'");
+                return;
+            }
+            string name = parameters[2];
+            string tag = parameters[3];
+            Character? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            bool completed = npc.AddTag(tag);
+            if (!completed)
+            {
+                player.WriteLine($"Tag '{tag}' is invalid or already exists on {_entityName} '{name}'.");
+                return;
+            }
+            else
+            {
+                player.WriteLine($"Tag '{tag}' added to {_entityName} '{name}'.");
+            }
         }
         #endregion
+
+        #region RemoveTag Method
+        protected static void RemoveTag(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 4)
+            {
+                player.WriteLine($"Usage: /{_entityName} tag remove '<name>' '<tag>'");
+                return;
+            }
+            string name = parameters[2];
+            string tag = parameters[3];
+            Character? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            bool completed = npc.RemoveTag(tag);
+            if (!completed)
+            {
+                player.WriteLine($"Tag '{tag}' does not exist on {_entityName} '{name}'.");
+                return;
+            }
+            else
+            {
+                player.WriteLine($"Tag '{tag}' removed from {_entityName} '{name}'.");
+            }
+        }
+
+        #endregion
+
     }
 }
 
