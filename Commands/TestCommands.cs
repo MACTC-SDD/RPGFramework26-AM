@@ -7,7 +7,6 @@
             return new List<ICommand>
             {
                 new TestItemSizeCommand(),
-                new LadCommand()
                 // Add more test commands here as needed
             };
         }
