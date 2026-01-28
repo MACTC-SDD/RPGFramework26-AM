@@ -54,9 +54,6 @@ namespace RPGFramework.Commands
             {
                 return false;
             }
-
-            // CODE REVIEW: Shelton (PR #25) - Added permission check for admin
-            // This assumes all /mob commands require admin permissions
             if (Utility.CheckPermission(player, PlayerRole.Admin) == false)
             {
                 player.WriteLine("You do not have permission to do that.");
@@ -68,8 +65,6 @@ namespace RPGFramework.Commands
                 WriteUsage(player);
                 return false;
             }
-
-            //Switches between the second parameter to determine command.
             switch (parameters[1].ToLower())
             {
                 case "create":
@@ -77,12 +72,19 @@ namespace RPGFramework.Commands
                     break;
                 case "delete":
                     return NpcDelete(player, parameters);
+                case "tag":
+                    if (parameters[2].Equals("add"))
+                    {
+                        AddTag(player, parameters);
+                    }
+                    else if (parameters[2].Equals("remove") || parameters[2].Equals("delete"))
+                    {
+                        RemoveTag(player, parameters);
+                    }
+                    break;
                 case "list":
                     ListMobs();
                     break;
-                // CODE REVIEW: Shelton (PR #25) - Because there might be many properties to set,
-                // we should put that logic in a method like NPCSetProperty (I will refactor accordingly)
-                // so you can review
                 case "set":
                     return SetNpcProperty(player, parameters);
                 default:
@@ -316,7 +318,7 @@ namespace RPGFramework.Commands
         protected static string _entityName = "";
         protected static Type _entityType;
 
-        #region Write Usage Method
+        #region WriteUsage Method
         protected static void WriteUsage(Player player)
         {
             player.WriteLine("Usage: ");
@@ -343,6 +345,7 @@ namespace RPGFramework.Commands
         }
 
         #endregion
+
         #region NpcCreate Method
         //Creates an entity of a NonPlayer type, adds to gamestate.
         protected static bool NpcCreate(Player player, List<string> parameters)
@@ -618,10 +621,7 @@ namespace RPGFramework.Commands
                 player.WriteLine($"Tag '{tag}' removed from {_entityName} '{name}'.");
             }
         }
-
         #endregion
-
     }
 }
-
 #endregion
