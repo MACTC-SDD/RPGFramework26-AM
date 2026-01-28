@@ -99,17 +99,6 @@ namespace RPGFramework.Commands
         /// <summary>
         /// Displays a list of available mob-related commands and their usage to the specified player.
         /// </summary>
-        private static void WriteUsage(Player player)
-        {
-            player.WriteLine("Usage: ");
-            player.WriteLine("/mob set desc <'Name'> '<Description>'");
-            player.WriteLine("/mob set name <'CurrentName'> '<NewName>'");
-            player.WriteLine("/mob list");
-            player.WriteLine("/mob create '<name>' '<description>'");
-            player.WriteLine("/mob delete '<name>'");
-            player.WriteLine("/mob tag add '<name>' '<tag>'");
-            player.WriteLine("/mob tag delete '<name>' '<tag>'");
-        }
 
         private static void ListMobs()
         {
@@ -187,22 +176,6 @@ namespace RPGFramework.Commands
                     break;
             }
             return false;
-        }
-
-        //Prints all available commands.
-        private static void WriteUsage(Player player)
-        {
-            player.WriteLine("Usage: ");
-            player.WriteLine("/npc set desc <'Name'> '<Description>'");
-            player.WriteLine("/npc set name <'CurrentName'> '<NewName>'");
-            player.WriteLine("/npc list");
-            player.WriteLine("/npc dialog list '<character>' '<category>'");
-            player.WriteLine("/npc dialog list '<character>'");
-            player.WriteLine("/npc dialog delete '<character>' '<category>'");
-            player.WriteLine("/npc dialog delete '<character>' '<category>' '<line to remove>'");
-            player.WriteLine("/npc dialog add '<character'> <category>' '<line to add>'");
-            player.WriteLine("/npc create '<name>' '<description>'");
-            player.WriteLine("/npc delete '<name>'");
         }
         private static void ListNpcs()
         {
@@ -289,24 +262,6 @@ namespace RPGFramework.Commands
 
             return false;
         }
-        //Prints all available commands.
-        private static void WriteUsage(Player player)
-        {
-            player.WriteLine("Usage: ");
-            player.WriteLine("/shopkeep set desc <'Name'> '<Description>'");
-            player.WriteLine("/shopkeep set name <'CurrentName'> '<NewName>'");
-            player.WriteLine("/shopkeep list");
-            player.WriteLine("/shopkeep dialog list '<character>' '<category>'");
-            player.WriteLine("/shopkeep dialog list '<character>'");
-            player.WriteLine("/shopkeep dialog delete '<character>' '<category>'");
-            player.WriteLine("/shopkeep dialog delete '<character>' '<category>' '<line to remove>'");
-            player.WriteLine("/shopkeep dialog add '<character'> <category>' '<line to add>'");
-            player.WriteLine("/shopkeep inventory add '<character'> '<itemID>'");
-            player.WriteLine("/shopkeep inventory delete '<character'> '<itemID>'");
-            player.WriteLine("/shopkeep create '<name>' '<description>'");
-            player.WriteLine("/shopkeep delete '<name>'");
-        }
-
         private static void ListShopKeeps()
         {
             foreach (var shop in GameState.Instance.ShopCatalog)
@@ -361,6 +316,33 @@ namespace RPGFramework.Commands
         protected static string _entityName = "";
         protected static Type _entityType;
 
+        #region Write Usage Method
+        protected static void WriteUsage(Player player)
+        {
+            player.WriteLine("Usage: ");
+            player.WriteLine($"/{_entityName} set desc <'Name'> '<Description>'");
+            player.WriteLine($"/{_entityName} set name <'CurrentName'> '<NewName>'");
+            player.WriteLine($"/{_entityName} list");
+            player.WriteLine($"/{_entityName} create '<name>' '<description>'");
+            player.WriteLine($"/{_entityName} delete '<name>'");
+            player.WriteLine($"/{_entityName} tag add '<name>' '<tag>'");
+            player.WriteLine($"/{_entityName} tag delete '<name>' '<tag>'");
+            if (_entityName == "shopkeep" || _entityName == "npc")
+            {
+                player.WriteLine($"/{_entityName} dialog list '<character>' '<category>'");
+                player.WriteLine($"/{_entityName} dialog list '<character>'");
+                player.WriteLine($"/{_entityName} dialog delete '<character>' '<category>'");
+                player.WriteLine($"/{_entityName} dialog delete '<character>' '<category>' '<line to remove>'");
+                player.WriteLine($"/{_entityName} dialog add '<character'> <category>' '<line to add>'");
+                if (_entityName == "shopkeep")
+                {
+                    player.WriteLine($"/{_entityName} inventory add '<character'> '<itemID>'");
+                    player.WriteLine($"/{_entityName} inventory delete '<character'> '<itemID>'");
+                }
+            }
+        }
+
+        #endregion
         #region NpcCreate Method
         //Creates an entity of a NonPlayer type, adds to gamestate.
         protected static bool NpcCreate(Player player, List<string> parameters)
