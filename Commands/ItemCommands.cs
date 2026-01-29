@@ -14,7 +14,6 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new ListInventoryCommand(),
-                
                 new ItemBuildCommand(),
                 new ArmorBuildCommand(),
                 new WeaponBuildCommand(),
@@ -97,7 +96,7 @@ namespace RPGFramework.Commands
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -115,7 +114,14 @@ namespace RPGFramework.Commands
                     Name = parameters[2],
                     Description = parameters[3]
                 };
+            if (GameState.Instance.ItemCatalog.ContainsKey(newItem.Name))
+            {
 
+            }
+            else
+            {
+                GameState.Instance.ItemCatalog.Add(newItem.Name, new Item());
+            }
                 // Here you would typically add the item to a database or game world
                 player.WriteLine($"Item '{newItem.Name}' created successfully with description: {newItem.Description}");
             
@@ -136,7 +142,7 @@ namespace RPGFramework.Commands
             else
             {
                 //player.GetItem().Description = parameters[2];
-                player.WriteLine("Room description set.");
+                player.WriteLine("Item description set.");
             }
         }
 
@@ -210,7 +216,7 @@ namespace RPGFramework.Commands
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -228,7 +234,14 @@ namespace RPGFramework.Commands
                 Name = parameters[2],
                 Description = parameters[3]
             };
+            if (GameState.Instance.ArmorCatalog.ContainsKey(newArmor.Name))
+            {
 
+            }
+            else
+            {
+                GameState.Instance.ArmorCatalog.Add(newArmor.Name, new Armor());
+            }
             // Here you would typically add the item to a database or game world
             player.WriteLine($"Armor '{newArmor.Name}' created successfully with description: {newArmor.Description}");
 
@@ -323,7 +336,7 @@ namespace RPGFramework.Commands
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -331,17 +344,30 @@ namespace RPGFramework.Commands
             // 1: create
             // 2: name
             // 3: description
+            // 4: damage
+            // 5: attack time
+            //6: range
+            // 7: type
+            // 8: material
             if (parameters.Count < 4)
             {
-                player.WriteLine("Usage: /armor create '<name>' '<description>'");
+                player.WriteLine("Usage: /weapon create '<name>' '<description>'");
                 return;
             }
             Weapon newWeapon = new Weapon
             {
                 Name = parameters[2],
-                Description = parameters[3]
-            };
+                Description = parameters[3],
 
+            };
+            if (GameState.Instance.WeaponCatalog.ContainsKey(newWeapon.Name))
+            {
+
+            }
+            else
+            {
+                GameState.Instance.WeaponCatalog.Add(newWeapon.Name, new Weapon());
+            }
             // Here you would typically add the item to a database or game world
             player.WriteLine($"Weapon '{newWeapon.Name}' created successfully with description: {newWeapon.Description}");
 
@@ -385,8 +411,5 @@ namespace RPGFramework.Commands
             throw new NotImplementedException();
         }
     }
-
-
-
 }
 

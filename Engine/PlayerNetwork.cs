@@ -9,8 +9,10 @@ namespace RPGFramework
         public TcpClient Client { get; }
         public TelnetConnection? TelnetConnection { get; set; }
         public StreamWriter Writer { get; }
-        public StreamReader Reader { get; }
+        public StreamReader? Reader { get; }
+        public bool NeedsOutputNewline { get { return _needsOutputNewLine; } }
 
+        private bool _needsOutputNewLine;
         public PlayerNetwork(TcpClient client)
         {
             Client = client;
@@ -25,7 +27,10 @@ namespace RPGFramework
 
             //Writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
             //Reader = new StreamReader(stream, Encoding.UTF8);
-            TelnetConnection = new TelnetConnection(stream, Encoding.UTF8);
+            TelnetConnection = new(stream, Encoding.UTF8)
+            {
+                OnlineCommitted = () => _needsOutputNewLine = true
+            };
         }
     }
 }
