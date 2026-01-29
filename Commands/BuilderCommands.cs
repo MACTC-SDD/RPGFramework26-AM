@@ -33,6 +33,7 @@ namespace RPGFramework.Commands
         public string Name => "/room";
 
         public IEnumerable<string> Aliases => [];
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -415,6 +416,7 @@ namespace RPGFramework.Commands
         public string Name => "/area";
 
         public IEnumerable<string> Aliases => [];
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {

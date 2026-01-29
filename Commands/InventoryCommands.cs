@@ -18,6 +18,7 @@ namespace RPGFramework.Commands
         public string Name => "equip";
         public IEnumerable<string> Aliases => [];
 
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
