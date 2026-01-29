@@ -47,7 +47,7 @@ namespace RPGFramework.Geography
             }
 
             // Make sure the destination room doesn't already have an exit in the opposite direction
-            if (returnExit 
+            if (returnExit
                 && destinationRoom.GetExits().Any(e => e.ExitDirection == Navigation.GetOppositeDirection(direction)))
             {
                 player.WriteLine("The destination room already has an exit coming from the opposite direction.");
@@ -98,6 +98,24 @@ namespace RPGFramework.Geography
         public static Room CreateRoom(Area area, string name, string description)
         {
             return CreateRoom(area.Id, name, description);
+        }
+
+        /// <summary>
+        /// Create a copy of this room without copying exits.
+        /// </summary>
+        public Room CloneWithoutExits(string newName)
+        {
+            Room newRoom = new Room
+            {
+                Name = newName,
+                Description = this.Description,
+                MapColor = this.MapColor,
+                MapIcon = this.MapIcon,
+                Tags = new List<string>(this.Tags),
+                AreaId = this.AreaId // Important: assign the same area
+            };
+
+            return newRoom;
         }
 
         /// <summary>
@@ -175,8 +193,8 @@ namespace RPGFramework.Geography
             List<Player> playersInRoom = new List<Player>();
             foreach (Player p in GameState.Instance.Players.Values)
             {
-                if (p.IsOnline 
-                    && p.AreaId == room.AreaId 
+                if (p.IsOnline
+                    && p.AreaId == room.AreaId
                     && p.LocationId == room.Id)
                 {
                     playersInRoom.Add(p);
@@ -188,7 +206,7 @@ namespace RPGFramework.Geography
         #endregion --- Methods ---
 
         #region --- Methods (Events) ---
-        
+
         /// <summary>
         /// When a character enters a room, do this.
         /// </summary>

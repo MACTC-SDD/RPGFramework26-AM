@@ -15,6 +15,13 @@ namespace RPGFramework.Persistence
     internal sealed class JsonGamePersistence : IGamePersistence
     {
         #region Initialization Methods
+
+        /*Added GenerateNextAreaId()*/
+        private static int GenerateNextAreaId()
+        {
+            var areas = ObjectStorage.LoadAllObjects<Area>("data/areas/");
+            return areas.Count == 0 ? 0 : areas.Max(a => a.Id) + 1;
+        }
         private static void CopyDirectoryIfMissing(string sourceDir, string destDir)
         {
             foreach (string sourcePath in Directory.EnumerateFiles(sourceDir, "*", SearchOption.AllDirectories))
@@ -40,7 +47,8 @@ namespace RPGFramework.Persistence
         {
             Area area = new Area
             {
-                Id = 0,
+                /*Id = 0,*/
+                Id = GenerateNextAreaId(),
                 Name = "Starter Area",
                 Description = "The first place new players enter."
             };
@@ -115,7 +123,11 @@ namespace RPGFramework.Persistence
         public Task<IReadOnlyDictionary<int, Area>> LoadAreasAsync()
         {
             var areas = ObjectStorage.LoadAllObjects<Area>("data/areas/");
-            var dict = areas.ToDictionary(a => a.Id);
+            /* var dict = areas.ToDictionary(a => a.Id);*/
+            var dict = areas
+         .GroupBy(a => a.Id)
+         .Select(g => g.First())
+         .ToDictionary(a => a.Id);
             return Task.FromResult((IReadOnlyDictionary<int, Area>)dict);
         }
 
