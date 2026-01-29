@@ -40,8 +40,7 @@ namespace RPGFramework.Persistence
         {
             Area area = new()
             {
-                /*Id = 0,*/
-                Id = GenerateNextAreaId(),
+                Id = 0,                
                 Name = "Starter Area",
                 Description = "The first place new players enter."
             };
