@@ -170,5 +170,9 @@ namespace RPGFramework
                 return false;
             }
         }
+        public List<string> GetTags()
+        {
+            return Tags;
+        }
     }
 }
