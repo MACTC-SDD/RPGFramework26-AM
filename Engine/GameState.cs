@@ -39,6 +39,7 @@ namespace RPGFramework
         private CancellationTokenSource? _timeOfDayCts;
         private Task? _timeOfDayTask;
 
+        private int _logSuppressionSeconds = 30;
         #endregion
 
         #region --- Properties ---
@@ -318,14 +319,25 @@ namespace RPGFramework
         #endregion --- Methods ---
 
         #region --- Static Methods ---
-        internal static void Log(DebugLevel level, string message)
+        internal static bool Log(DebugLevel level, string message)
         {
             if (level <= GameState.Instance.DebugLevel)
             {
                 Console.WriteLine($"[{level}] {message}");
+                return true;
             }
+            return false;
         }
 
+        internal static bool Log(DebugLevel level, string message, DateTime lastLog, int suppressionSeconds)
+        {
+            if ((DateTime.Now - lastLog).TotalSeconds >= suppressionSeconds)
+            {
+                return Log(level, message);
+            }
+
+            return false;
+        }
         #endregion
 
         #region --- Thread Methods ---
