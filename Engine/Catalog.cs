@@ -144,7 +144,31 @@ namespace RPGFramework
         }
         #endregion
 
+        #region TryGetValue Methods
         public bool TryGetValue(TKey key, out TValue? value) => _items.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out TValue? value)
+        {
+            value = default;
+
+            if (_items.Keys.First().GetType() != typeof(string))
+            {
+                return false;
+            }
+
+            // Search keys in a case-insensitive manner
+            foreach (var kvp in _items)
+            {
+                if (string.Equals(kvp.Key as string, key, StringComparison.OrdinalIgnoreCase))
+                {
+                    value = kvp.Value;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        #endregion
+
     }
 
     #region CatalogBuilder Class
