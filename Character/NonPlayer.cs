@@ -1,6 +1,9 @@
 ﻿
+using RPGFramework.Commands;
 using RPGFramework.Enums;
+using RPGFramework.Geography;
 using System.ComponentModel;
+using System.Runtime.InteropServices.Swift;
 using System.Transactions;
 
 namespace RPGFramework
@@ -37,6 +40,45 @@ namespace RPGFramework
             }
             CurrentAggressionLevel += amount;
         }
-        
+
+        #region ---- Behavior Methods ----
+
+        //npc leaves the room into a random room.
+        private void NpcLeaveRoom(Character npc)
+        {
+            // Implement leave room logic here
+            List<Exit> exits = GetExits();
+            int exitId = random.Next(exits.Count);
+            Direction choice = exits.ElementAt(exitId).ExitDirection;
+
+            Navigation.Move(npc,choice);
+            return;
+        }
+
+        //Plays when the npc is in an idle state
+        public void PerformIdleBehavior()
+        {
+            // Implement idle behavior logic here
+            int LeavingChance = random.Next(1, 20);
+
+            //save for last option (so it cant talk after it leaves)
+            NpcMovementChance(LeavingChance);
+        }
+
+        //moves if the npc gets a high enough random number.
+        private void NpcMovementChance(int number)
+        {
+            if (Tags.Contains("Wanderer"))
+            {
+                number += 2;
+            }
+            if(number >= 18)
+            {
+                NpcLeaveRoom(this);
+
+            }
+            return;
+        }
+        #endregion
     }
 }

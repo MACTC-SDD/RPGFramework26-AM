@@ -16,6 +16,7 @@ namespace RPGFramework
     internal abstract class Character : IDescribable
     {
         #region --- Properties ---
+        public static Random random = new Random();
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
         public string Description { get; set; } = "";
