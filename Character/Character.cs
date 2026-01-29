@@ -63,6 +63,11 @@ namespace RPGFramework
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
         }
 
+        public Area GetArea()
+        {
+            return GameState.Instance.Areas[AreaId];
+        }
+
         // get exits in current room
         public List<Exit> GetExits()
         {
@@ -78,6 +83,11 @@ namespace RPGFramework
         public void SetRoom(int id)
         {
             LocationId = id;
+        }
+
+        public void SetArea(int id)
+        {
+            AreaId = id;
         }
 
         // Set Health to a specific value

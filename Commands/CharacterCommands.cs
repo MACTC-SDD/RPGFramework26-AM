@@ -25,18 +25,6 @@ namespace RPGFramework.Commands
     }
 
     #region MobBuilderCommand Class
-    // CODE REVIEW: Shelton (PR #25) - Unless there is a highly specific reason to have
-    // nested classes, they should be top-level classes. This improves readability
-    // and maintainability. I have refactored the classes to be top-level below. 561
-    // Nesting can also hide structural issues, such as the fact that all of your NPCcommands
-    // are located under the ShopKeepBuilderCommand class, which is proably not the intent.
-    // A nicer way to handle this might be to create a base class for NPC commands that
-    // MobBuilderCommand and ShopKeepBuilderCommand ad NpcBuilderCommand inherit from.
-    // I am going to refactor accordingly so you can see how that would look. The new parent class
-    // is called BaseNpcCommand.
-    // I also added one master permission at the top of each execute method to reduce
-    // redundancy.
-
     /*Creates, deletes, lists, and modifies mobs in the game world.*/
     internal class MobBuilderCommand : BaseNpcCommand, ICommand
     {
@@ -249,7 +237,8 @@ namespace RPGFramework.Commands
                     }
                     break;
                 case "inventory":
-                    if (parameters[2].Equals("add")) {
+                    if (parameters[2].Equals("add"))
+                    {
                         return AddItem(player, parameters);
                     }
                     break;
@@ -348,6 +337,8 @@ namespace RPGFramework.Commands
             player.WriteLine($"/{_entityName} delete '<name>'");
             player.WriteLine($"/{_entityName} tag add '<name>' '<tag>'");
             player.WriteLine($"/{_entityName} tag delete '<name>' '<tag>'");
+            player.WriteLine($"/{_entityName} set location '<name>' '<locationid>");
+            player.WriteLine($"/{_entityName} set area '<name>' '<areaid>");
             if (_entityName == "shopkeep" || _entityName == "npc")
             {
                 player.WriteLine($"/{_entityName} dialog list '<character>' '<category>'");
@@ -435,12 +426,12 @@ namespace RPGFramework.Commands
             // Consider showing the value of the property if a value isn't supplied
             if (parameters.Count < 5)
             {
-                player.WriteLine($"Usage: /{_entityName} set <name> <property> <value>");
+                player.WriteLine($"Usage: /{_entityName} set <property> <name> <value>");
                 return false;
             }
 
-            string name = parameters[2];
-            string property = parameters[3].ToLower();
+            string name = parameters[3];
+            string property = parameters[2].ToLower();
             string value = parameters[4];
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
@@ -456,9 +447,32 @@ namespace RPGFramework.Commands
                     _catalog.Add(value, npc);
                     return true;
                 case "desc":
-                case "description":
                     npc.Description = value;
                     return true;
+                case "location":
+                    if (int.TryParse(value, out int locationId))
+                    {
+                        npc.SetRoom(locationId);
+                        player.WriteLine($"{_entityName} '{name}' location set to Room ID {locationId}.");
+                        return true;
+                    }
+                    else
+                    {
+                        player.WriteLine("Invalid location ID. It must be a number.");
+                        return false;
+                    }
+                case "area":
+                    if (int.TryParse(value, out int areaId))
+                    {
+                        npc.AreaId = areaId;
+                        player.WriteLine($"{_entityName} '{name}' area set to Area ID {areaId}.");
+                        return true;
+                    }
+                    else
+                    {
+                        player.WriteLine("Invalid area ID. It must be a number.");
+                        return false;
+                    }
                 // Add other properties here as needed
                 default:
                     player.WriteLine($"Property '{property}' is not recognized for {_entityName}.");
