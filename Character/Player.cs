@@ -30,6 +30,53 @@ namespace RPGFramework
             return Name + (IsAFK ? " (AFK)" : "");
 
         }
+        /// <summary>
+        /// Checks if a player with the specified name exists in the provided dictionary. This is case-insensitive!
+        /// That is why we don't just use players.ContainsKey.
+        /// </summary>
+        /// <param name="playerName"></param>
+        /// <param name="players"></param>
+        /// <returns></returns>
+        public static bool Exists(string playerName, Dictionary<string, Player> players)
+        {
+            // Check dictionary keys in a case-insensitive manner
+            return players.Keys.Any(name => string.Equals(name, playerName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Searches for a player by name in the specified collection and returns the corresponding player if found.
+        /// This search is case-insensitive, which is why we should use this method instead of directly accessing the dictionary.
+        /// </summary>
+        /// <param name="playerName">The name of the player to locate. The comparison is case-insensitive.</param>
+        /// <param name="players">A dictionary containing player names as keys and their corresponding Player objects as values. Cannot be
+        /// null. This will usually be GameState.Instance.Players in our case.</param>
+        /// <returns>The Player object associated with the specified name if found; otherwise, null.</returns>
+        public static Player? FindPlayer(string playerName, Dictionary<string, Player> players)
+        {
+            foreach (var kvp in players)
+            {
+                if (string.Equals(kvp.Key, playerName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return kvp.Value;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Attempts to find a player with the specified name in the provided collection.
+        /// </summary>
+        /// <param name="playerName">The name of the player to locate. Cannot be null.</param>
+        /// <param name="players">A dictionary containing player names as keys and corresponding <see cref="Player"/> objects as values.
+        /// Cannot be null.</param>
+        /// <param name="player">When this method returns, contains the <see cref="Player"/> object associated with the specified name, if
+        /// found;</param>
+        /// <returns><see langword="true"/> if a player with the specified name is found; otherwise, <see langword="false"/>.</returns>
+        public static bool TryFindPlayer(string playerName, Dictionary<string, Player> players, out Player? player)
+        {
+            player = FindPlayer(playerName, players);
+            return player != null;
+        }
         
         /// <summary>
         /// Things that should happen when a player logs in.
