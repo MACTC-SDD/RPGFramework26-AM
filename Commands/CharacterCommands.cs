@@ -43,6 +43,7 @@ namespace RPGFramework.Commands
         public string Name => "/mob";
 
         public IEnumerable<string> Aliases => [];
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -119,6 +120,7 @@ namespace RPGFramework.Commands
         public string Name => "/npc";
 
         public IEnumerable<string> Aliases => [];
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -207,6 +209,7 @@ namespace RPGFramework.Commands
         public string Name => "/shopkeep";
 
         public IEnumerable<string> Aliases => [];
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -335,7 +338,7 @@ namespace RPGFramework.Commands
     {
         protected static ICatalog? _catalog;
         protected static string _entityName = "";
-        protected static Type _entityType;
+        protected static Type _entityType = typeof(BaseNpcCommand);
 
         #region WriteUsage Method
         protected static void WriteUsage(Player player)
