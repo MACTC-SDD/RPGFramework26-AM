@@ -14,7 +14,7 @@ namespace RPGFramework
         public PlayerNetwork? Network { get; set; }
 
         [JsonIgnore]
-        public IAnsiConsole Console { get; set; }
+        public IAnsiConsole? Console { get; set; }
 
         #region --- Constructors ---
         // Constructor (creates a new player)

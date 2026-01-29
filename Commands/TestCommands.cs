@@ -7,6 +7,8 @@
             return new List<ICommand>
             {
                 new TestItemSizeCommand(),
+                new TestItemCommand(),
+                new TestHelpCommand(),
                 // Add more test commands here as needed
             };
         }
@@ -27,6 +29,7 @@
 
         // These are the aliases that can also be used to execute this command. This can be empty.
         public IEnumerable<string> Aliases => new List<string>() { "ex" };
+        public string Help => "";
 
         // What will happen when the command is executed
         public bool Execute(Character character, List<string> parameters)
@@ -36,6 +39,65 @@
             {
                 player.WriteLine("This is an example command.");
             }
+
+            // If the command failed to run for some reason, return false
+            return true;
+        }
+    }
+   
+
+    internal class TestItemCommand : ICommand
+    {
+        // This is the command a player would type to execute this command
+        public string Name => "/ti";
+
+        // These are the aliases that can also be used to execute this command. This can be empty.
+        public IEnumerable<string> Aliases => new List<string>() {  };
+        public string Help => "";
+
+        // What will happen when the command is executed
+        public bool Execute(Character character, List<string> parameters)
+        {
+            // A lot of times we want to make sure it's a Player issuing the command, but not always
+            if (character is not Player player)
+                return false;
+
+
+            player.WriteLine("This is an example command.");
+            Item i = new Item();
+            i.Name = character.Name;
+            i.Description = "Test Item";
+            GameState.Instance.ItemCatalog.Add(i.Name, i);
+
+
+            // If the command failed to run for some reason, return false
+            return true;
+        }
+    }
+
+    internal class TestHelpCommand : ICommand
+    {
+        // This is the command a player would type to execute this command
+        public string Name => "/testhelp";
+
+        // These are the aliases that can also be used to execute this command. This can be empty.
+        public IEnumerable<string> Aliases => new List<string>() { };
+        public string Help => "";
+
+        // What will happen when the command is executed
+        public bool Execute(Character character, List<string> parameters)
+        {
+            // A lot of times we want to make sure it's a Player issuing the command, but not always
+            if (character is not Player player)
+                return false;
+
+            List<string> helps = CommandHelpScanner.GetAllHelpEntries();
+
+            foreach (string help in helps)
+            {
+                player.WriteLine(help);
+            }
+
 
             // If the command failed to run for some reason, return false
             return true;
@@ -53,6 +115,7 @@
     {
         public string Name => "testitemsize";
         public IEnumerable<string> Aliases => new List<string>() { };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             long startMem = GC.GetTotalMemory(true);

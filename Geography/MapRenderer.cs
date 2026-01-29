@@ -129,7 +129,7 @@ namespace RPGFramework.Geography
         {
             public int RoomId { get; init; }
             public bool IsPlayerHere { get; init; }
-            public string MapIcon { get; init; }
+            public string MapIcon { get; init; } = DisplaySettings.RoomMapIcon;
         }
     }
 }

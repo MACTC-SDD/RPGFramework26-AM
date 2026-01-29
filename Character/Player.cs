@@ -21,7 +21,7 @@ namespace RPGFramework
         public int MapRadius { get; set; } = 2; // How far the player can see on the map
         public string Password { get; private set; } = "SomeGarbage";
         public TimeSpan PlayTime { get; set; } = new TimeSpan();
-        public PlayerRole PlayerRole { get; set; }
+        public PlayerRole Role { get; set; }
         #endregion
         /*Made a small change?, undid it as it was for just testing*/
         public string DisplayName()
@@ -76,12 +76,18 @@ namespace RPGFramework
         }
         public void Write(string message)
         {
-            Console.Write(message);
+            WriteNewLineIfNeeded();
+            Console?.Write(message);
+            var line = Network?.TelnetConnection?.CurrentLineText;
+            Console?.Write(line ?? String.Empty); // Re-write current input line
         }
 
         public void Write(IRenderable renderable)
         {
-            Console.Write(renderable);
+            WriteNewLineIfNeeded();
+            Console?.Write(renderable);
+            var line = Network?.TelnetConnection?.CurrentLineText;
+            Console?.Write(line ?? String.Empty); // Re-write current input line
         }
 
         
@@ -92,9 +98,23 @@ namespace RPGFramework
         /// p formatting supported by the output system.</param>
         public void WriteLine(string message)
         {
-            Console.MarkupLine(message);
-            //Network?.Writer.WriteLine(message);
+            WriteNewLineIfNeeded();
+            Console?.MarkupLine(message);
+            var line = Network?.TelnetConnection?.CurrentLineText;
+            Console?.Write(line ?? String.Empty); // Re-write current input line
         }
+        private void WriteNewLineIfNeeded()
+        {
+            if (Network == null)
+                return;
+            if (Network.TelnetConnection == null)
+                return;
+            if (Network.NeedsOutputNewline)
+            {
+                Console?.Write("\r\n");
+            }
+        }
+
 
     }
 
