@@ -108,5 +108,35 @@ namespace RPGFramework
         {
             throw new NotImplementedException();
         }
+        //Attack Resolution
+        public bool WillHit()
+        {
+
+
+
+            int HitChance = 50 + (Dexterity -/*Enemy.Dexterity*/ ) * 5;
+            HitChance = Math.Clamp(HitChance, 5, 95);
+            int roll = Random.Shared.Next(1, 101);
+            bool hit = roll <= HitChance;
+            return hit;
+
+        }
+
+        public void WeaponStrengthDamage(int strength)
+        {
+            int Damage = (Strength +/*weapon.damage*/);
+        }
+
+        public bool WillDodge()
+        {
+            int DodgeChance = Dexterity;
+
+
+
+            int Dodge = Random.Shared.Next(1, 101);
+            bool dodgedroll = Dodge <= DodgeChance;
+            return dodgedroll;
+        }
+        //End Attack Resolution
     }
 }
