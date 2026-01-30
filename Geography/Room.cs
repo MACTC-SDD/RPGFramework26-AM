@@ -22,6 +22,9 @@ namespace RPGFramework.Geography
         // Name of the room
         public string Name { get; set; } = "";
        
+        public Dictionary<string, int> SpawnableMobs { get; set; } = new Dictionary<string, int>();
+
+        public int MaxSpawnedAllowed { get; set; } = 3;
         public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
 
         // List of exits from the room
