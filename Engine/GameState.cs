@@ -65,6 +65,7 @@ namespace RPGFramework
         [JsonIgnore] public Catalog<string, Weapon> WeaponCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, Armor> ArmorCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, Shopkeep> ShopCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, HelpEntry> HelpCatalog { get; set; } = [];
 
         [JsonIgnore] public TelnetServer? TelnetServer { get; private set; }
         #endregion
@@ -85,11 +86,12 @@ namespace RPGFramework
 
         private GameState()
         {
+            Catalogs.Add(ArmorCatalog);
+            Catalogs.Add(ItemCatalog);
+            Catalogs.Add(HelpCatalog);
             Catalogs.Add(MobCatalog);
             Catalogs.Add(NPCCatalog);
-            Catalogs.Add(ItemCatalog);
             Catalogs.Add(WeaponCatalog);
-            Catalogs.Add(ArmorCatalog);
             Catalogs.Add(ShopCatalog);
         }
 
