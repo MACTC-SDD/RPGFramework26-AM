@@ -5,13 +5,17 @@ using Spectre.Console;
 using RPGFramework;
 using RPGFramework.Display;
 using RPGFramework.Commands;
+using RPGFramework.Enums;
 using RPGFramework.Geography;
+using RPGFramework.Workflows;
+using System.Text;
+
 
 internal class TelnetServer
 {
-    private TcpListener _listener;
+    private readonly TcpListener _listener;
     private bool _isRunning;
-    
+
 
     public TelnetServer(int port)
     {
@@ -22,7 +26,7 @@ internal class TelnetServer
     {
         _listener.Start();
         _isRunning = true;
-        Console.WriteLine("Telnet Server is running...");
+        GameState.Log(DebugLevel.Alert, "Telnet Server is running...");
 
         while (_isRunning && GameState.Instance.IsRunning)
         {
@@ -30,7 +34,7 @@ internal class TelnetServer
             _ = HandleClientAsync(client);
         }
 
-        Console.WriteLine("Telnet Server is stopped...");
+        GameState.Log(DebugLevel.Alert, "Shutting down Telnet Server...");
         _listener.Stop();
     }
 
@@ -38,67 +42,79 @@ internal class TelnetServer
     {
         using (client)
         {
-
-            // TODO: Handle Login (Authentication)
-            // Populate player object and attach to client
-
-            // Loop here until player name is entered
             // Create PlayerNetwork object, once logged in we'll attach it to player
-            PlayerNetwork pn = new PlayerNetwork(client);
+            PlayerNetwork pn = new(client);
+
+
             pn.Writer.WriteLine("Username: ");
-            string? playerName = pn.Reader.ReadLine();
+
+            if (pn.TelnetConnection == null)
+            {
+                GameState.Log(DebugLevel.Error, "Telnet connection is null (disconnect?).");
+                return;
+            }
             
+            string? playerName = await pn.TelnetConnection.ReadLineAsync();
+
             while (string.IsNullOrEmpty(playerName))
             {
                 pn.Writer.WriteLine("Username: ");
-                playerName = pn.Reader.ReadLine();
+                playerName = pn.TelnetConnection.ReadLine();
             }
-            
+
+            GameState.Log(DebugLevel.Debug, $"Player '{playerName}' is connecting...");
             Player player;
 
             // If existing player
-            if (GameState.Instance.Players.ContainsKey(playerName))
+            if (GameState.Instance.Players.TryGetValue(playerName, out Player? value))
             {
-                player = GameState.Instance.Players[playerName];
+                GameState.Log(DebugLevel.Debug, $"Existing player '{playerName}' found, loading data...");
+                player = value;
             }
             else
             {
-                // TODO: New player creation (class, etc)
-                player = new Player(client, playerName);
+                GameState.Log(DebugLevel.Debug, $"No existing player '{playerName}' found, creating new player...");
+                // New player creation (class, etc)
+                player = new(client, playerName)
+                {
+                    CurrentWorkflow = new WorkflowOnboarding()
+                };
                 GameState.Instance.AddPlayer(player);
+                player.WriteLine("Welcome, new adventurer! Type start and hit enter to get going");
             }
 
             player.Network = pn;
             player.Login();
-           
 
-            await player.Network.Writer.WriteLineAsync("MOTD");
+            // MOTD Should Be Settable in Game Settings
             player.Write(RPGPanel.GetPanel("Welcome to the game!", "Welcome!"));
             MapRenderer.RenderLocalMap(player);
 
-            Console.WriteLine("New client connected!");
+            GameState.Log(DebugLevel.Alert, $"Player '{playerName}' has connected successfully.");
 
             // Listen for and process commands
+            // TODO We might want to use TelnetConnection instead if we want to fully support telnet protocol
             try
             {
                 while (client.Connected)
                 {
-                    string command = await player.Network.Reader.ReadLineAsync();
+                    //string command = await player.Network.Reader.ReadLineAsync();
+                    string? command = await player.Network.TelnetConnection.ReadLineAsync();
                     if (command == null)
                         break;
 
-                    Console.WriteLine($"Received command: {command}");
+                    GameState.Log(DebugLevel.Debug, $"Received command from '{player.Name}': {command}");
                     CommandManager.Process(player, command);
                 }
             }
             catch (Exception ex)
             {
-                //Console.WriteLine($"Connection error: {ex.Message}");
+                // Should this use GameState.Log instead?
                 AnsiConsole.WriteException(ex);
             }
             finally
             {
-                Console.WriteLine("Client disconnected");
+                GameState.Log(DebugLevel.Alert, $"Player '{playerName}' has disconnected.");
             }
         } // end using client
     }

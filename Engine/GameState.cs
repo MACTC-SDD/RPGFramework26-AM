@@ -1,7 +1,8 @@
 ﻿
 using System.Text.Json.Serialization;
-
+using RPGFramework.Enums;
 using RPGFramework.Geography;
+using RPGFramework.Interfaces;
 using RPGFramework.Persistence;
 
 namespace RPGFramework
@@ -17,6 +18,12 @@ namespace RPGFramework
     /// mechanism is used, but this can be replaced with a custom implementation. </para> 
     internal sealed class GameState
     {
+        // IF YOU SET THIS TO TRUE, IT WILL OVERWRITE ALL DATA FILES DURING INITIALIZATION
+        // This is a good thing if you want to reset everything, like after world files
+        // have been updated in data_seed, but be careful as it will wipe out
+        // any existing area, room, and catalog (mob, item, etc.) data.
+        private readonly bool _OVERWRITE_DATA = false;
+
         // Static Fields and Properties
         private static readonly Lazy<GameState> _instance = new(() => new GameState());
 
@@ -25,43 +32,65 @@ namespace RPGFramework
         // The persistence mechanism to use. Default is JSON-based persistence.
         public static IGamePersistence Persistence { get; set; } = new JsonGamePersistence();
 
-        public bool IsRunning { get; private set; } = false;
 
-        // Fields
-        //private bool IsRunning = false;
-        private Thread? _saveThread;
-        private Thread? _timeOfDayThread;
+        #region --- Fields ---
+        private CancellationTokenSource? _saveCts;
+        private Task? _saveTask;
+        private CancellationTokenSource? _timeOfDayCts;
+        private Task? _timeOfDayTask;
+
+        private int _logSuppressionSeconds = 30;
+        #endregion
 
         #region --- Properties ---
+
+        #region --- Unserialized Properties ---
+
+        [JsonIgnore] public bool IsRunning { get; private set; } = false;
 
         /// <summary>
         /// All Areas are loaded into this dictionary
         /// </summary>
-        [JsonIgnore]
-        public Dictionary<int, Area> Areas { get; set; } =
-            new Dictionary<int, Area>();
+        [JsonIgnore] public Dictionary<int, Area> Areas { get; set; } = [];          
+
+        /// <summary>
+        /// All Players are loaded into this dictionary, with the player's name as the key 
+        /// </summary>
+        [JsonIgnore] public Dictionary<string, Player> Players { get; set; } = [];
+
+        [JsonIgnore] public List<ICatalog> Catalogs { get; private set; } = [];
+        [JsonIgnore] public Catalog<string, Mob> MobCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, NonPlayer> NPCCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, Item> ItemCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, Weapon> WeaponCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, Armor> ArmorCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, Shopkeep> ShopCatalog { get; set; } = [];
+
+        [JsonIgnore] public TelnetServer? TelnetServer { get; private set; }
+        #endregion
+
+        // TODO: Move this to configuration settings class
+        public DebugLevel DebugLevel { get; set; } = DebugLevel.Debug;
 
         /// <summary>
         /// The date of the game world. This is used for time of day, etc.
         /// </summary>
         public DateTime GameDate { get; set; } = new DateTime(2021, 1, 1);
 
-        /// <summary>
-        /// All Players are loaded into this dictionary, with the player's name as the key 
-        /// </summary>
-        [JsonIgnore] public Dictionary<string, Player> Players { get; set; } = new Dictionary<string, Player>();
-
+        // Move starting area/room to configuration settings
         public int StartAreaId { get; set; } = 0;
         public int StartRoomId { get; set; } = 0;
-
-        public TelnetServer? TelnetServer { get; private set; }
-
+       
         #endregion --- Properties ---
 
-        #region --- Methods ---
         private GameState()
         {
-
+            Catalogs.Add(MobCatalog);
+            Catalogs.Add(NPCCatalog);
+            Catalogs.Add(ItemCatalog);
+            Catalogs.Add(WeaponCatalog);
+            Catalogs.Add(ArmorCatalog);
+            Catalogs.Add(ShopCatalog);
         }
 
         public void AddPlayer(Player player)
@@ -69,6 +98,8 @@ namespace RPGFramework
             Players.Add(player.Name, player);
         }
 
+        #region --- Methods ---
+        #region LoadArea Method
         /// <summary>
         /// This would be used by an admin command to load an area on demand. 
         /// For now useful primarily for reloading externally crearted changes
@@ -79,20 +110,19 @@ namespace RPGFramework
             Area? area = GameState.Persistence.LoadAreaAsync(areaName).Result;
             if (area != null)
             {
-                if (Areas.ContainsKey(area.Id))
+                if (!Areas.TryAdd(area.Id, area))
                     Areas[area.Id] = area;
-                else
-                    Areas.Add(area.Id, area);
-
-                Console.WriteLine($"Loaded area: {area.Name}");
+                GameState.Log(DebugLevel.Alert, $"Area '{area.Name}' loaded successfully.");
             }
 
             return Task.CompletedTask;
         }
+        #endregion
 
+        #region LoadAllAreas Method
         // Load all Area files from /data/areas. Each Area file will contain some
         // basic info and lists of rooms and exits.
-        private async Task LoadAllAreas()
+        public async Task LoadAllAreas()
         {
             Areas.Clear();
 
@@ -100,10 +130,20 @@ namespace RPGFramework
             foreach (var kvp in loaded)
             {
                 Areas.Add(kvp.Key, kvp.Value);
-                Console.WriteLine($"Loaded area: {kvp.Value.Name}");
+                GameState.Log(DebugLevel.Alert, $"Area '{kvp.Value.Name}' loaded successfully.");
+            }
+
+            // Ensure start area/room are valid
+            if (!Areas.TryGetValue(StartAreaId, out Area? value) || value.Rooms.Count == 0)
+            {
+                var firstArea = Areas.Values.First();
+                StartAreaId = firstArea.Id;
+                StartRoomId = firstArea.Rooms.Keys.First();
             }
         }
+        #endregion
 
+        #region LoadAllPlayers Method
         /// <summary>
         /// Loads all player data from persistent storage and adds each player 
         /// to the <see cref="Players"/> collection.
@@ -113,7 +153,7 @@ namespace RPGFramework
         /// as the key. Existing entries in <see cref="Players"/>
         /// are not cleared before loading; newly loaded players are added or 
         /// overwrite existing entries with the same name.</remarks>
-        private async Task LoadAllPlayers()
+        public async Task LoadAllPlayers()
         {
             Players.Clear();
 
@@ -121,22 +161,35 @@ namespace RPGFramework
             foreach (var kvp in loaded)
             {
                 Players.Add(kvp.Key, kvp.Value);
-                Console.WriteLine($"Loaded player: {kvp.Value.Name}");
+                GameState.Log(DebugLevel.Debug, $"Player '{kvp.Value.Name}' loaded successfully.");
+            }
+
+            GameState.Log(DebugLevel.Alert, $"{Players.Count} players loaded.");
+        }
+        #endregion
+
+        #region LoadAllCatalogs Method
+        public async Task LoadCatalogs()
+        {
+            foreach (ICatalog catalog in Catalogs)
+            {
+                await catalog.LoadCatalogAsync();
             }
         }
+        #endregion
 
+        #region SaveAllAreas Method
         /// <summary>
         /// Saves all area entities asynchronously to the persistent storage.
         /// </summary>
-        /// <remarks>This method initiates an asynchronous operation to persist 
-        /// the current set of areas. The save operation is performed for all 
-        /// areas contained in the collection at the time of invocation.</remarks>
         /// <returns>A <see cref="Task"/> that represents the asynchronous save operation.</returns>
         private Task SaveAllAreas()
         {
             return Persistence.SaveAreasAsync(Areas.Values);
         }
+        #endregion
 
+        #region SaveAllPlayers Method
         /// <summary>
         /// Saves all player data asynchronously.
         /// </summary>
@@ -151,7 +204,9 @@ namespace RPGFramework
 
             return Persistence.SavePlayersAsync(toSave);
         }
+        #endregion
 
+        #region SavePlayer Method
         /// <summary>
         /// Saves the specified player to persistent storage asynchronously.
         /// </summary>
@@ -161,11 +216,24 @@ namespace RPGFramework
         {
             return Persistence.SavePlayerAsync(p);
         }
+        #endregion
 
+        #region SaveAllCatalogs Method
+        public async Task SaveAllCatalogs()
+        {
+            foreach (ICatalog catalog in Catalogs)
+            {
+                await catalog.SaveCatalogAsync();
+            }
+        }
+        #endregion
+
+        #region Start Method (Async)
         /// <summary>
         /// Initializes and starts the game server 
         ///   loading all areas
         ///   loading all players
+        ///   loading all catalogs
         ///   starting the Telnet server
         ///   launching background threads for periodic tasks.
         /// </summary>
@@ -182,36 +250,24 @@ namespace RPGFramework
 
             IsRunning = true;
 
-            // Initialize game data if it doesn't exist
-            await Persistence.EnsureInitializedAsync(new GamePersistenceInitializationOptions());
+            // Initialize game data if it doesn't exist            
+            await Persistence.EnsureInitializedAsync(new GamePersistenceInitializationOptions()
+            {
+                CopyFilesFromDataSeedToRuntimeData = _OVERWRITE_DATA
+            });
 
             await LoadAllAreas();
             await LoadAllPlayers();
-
-            this.TelnetServer = new TelnetServer(5555);
-            await this.TelnetServer.StartAsync();
-
-
-
-            /* We may want to do this to bootstrap a starting area/room if none are available to be loaded.
-            //Area startArea = new Area() { Id = 0, Name = "Void Area", Description = "Start Area" };
-            //new Room()
-            //{ Id = 0, Name = "The Void", Description = "You are in a void. There is nothing here." };
-
-            //startArea.Rooms.Add(StartingRoom.Id, StartingRoom);
-            //GameState.Instance.Areas.Add(startArea.Id, startArea);
-            */
+            await LoadCatalogs();
 
             // TODO: Consider moving thread methods to their own class
 
             // Start threads that run periodically
-            _saveThread = new Thread(() => SaveTask(10000));
-            _saveThread.IsBackground = true;
-            _saveThread.Start();
+            _saveCts = new CancellationTokenSource();
+            _saveTask = RunAutosaveLoopAsync(TimeSpan.FromMilliseconds(10000), _saveCts.Token);
 
-            _timeOfDayThread = new Thread(() => TimeOfDayTask(15000));
-            _timeOfDayThread.IsBackground = true;
-            _timeOfDayThread.Start();
+            _timeOfDayCts = new CancellationTokenSource();
+            _timeOfDayTask = RunTimeOfDayLoopAsync(TimeSpan.FromMilliseconds(15000), _timeOfDayCts.Token);
 
             // Other threads will go here
             // Weather?
@@ -219,9 +275,13 @@ namespace RPGFramework
             // NPC threads?
             // Room threads?
 
-
+            // This needs to be last
+            this.TelnetServer = new TelnetServer(5555);
+            await this.TelnetServer.StartAsync();
         }
+        #endregion
 
+        #region Stop Method (Async)
         /// <summary>
         /// Stops the server, saving all player and area data, disconnecting online players, 
         /// and terminating the application.
@@ -248,30 +308,65 @@ namespace RPGFramework
             IsRunning = false;
 
             // Wait for threads to finish
-            _saveThread?.Join();
-            _timeOfDayThread?.Join();
+            _saveCts?.Cancel();
+            _timeOfDayCts?.Cancel();
 
             // Exit program
             Environment.Exit(0);
         }
+        #endregion
 
         #endregion --- Methods ---
+
+        #region --- Static Methods ---
+        internal static bool Log(DebugLevel level, string message)
+        {
+            if (level <= GameState.Instance.DebugLevel)
+            {
+                Console.WriteLine($"[{level}] {message}");
+                return true;
+            }
+            return false;
+        }
+
+        internal static bool Log(DebugLevel level, string message, DateTime lastLog, int suppressionSeconds)
+        {
+            if ((DateTime.Now - lastLog).TotalSeconds >= suppressionSeconds)
+            {
+                return Log(level, message);
+            }
+
+            return false;
+        }
+        #endregion
 
         #region --- Thread Methods ---
         /// <summary>
         /// Things that need to be saved periodically
         /// </summary>
         /// <param name="interval"></param>
-        private async void SaveTask(int interval)
+        private async Task RunAutosaveLoopAsync(TimeSpan interval, CancellationToken ct)
         {
-            while (IsRunning)
+            GameState.Log(DebugLevel.Alert, "Autosave thread started.");
+            while (!ct.IsCancellationRequested && IsRunning)
             {
-                await SaveAllPlayers();
-                await SaveAllAreas();
+                try
+                {
+                    await SaveAllPlayers();
+                    await SaveAllAreas();
+                    await SaveAllCatalogs();
 
-                Thread.Sleep(interval);
-                Console.WriteLine("Autosave complete.");
+                    GameState.Log(DebugLevel.Info, "Autosave complete.");
+                }
+                catch (Exception ex)
+                {
+                    GameState.Log(DebugLevel.Error, $"Error during autosave: {ex.Message}");
+                }
+
+                await Task.Delay(interval, ct);
             }
+
+            GameState.Log(DebugLevel.Alert, "Autosave thread stopping.");
         }
 
         /// <summary>
@@ -280,15 +375,25 @@ namespace RPGFramework
         /// and how much time should pass each time. For now it adds 1 hour / minute.
         /// </summary>
         /// <param name="interval"></param>
-        private void TimeOfDayTask(int interval)
+        private async Task RunTimeOfDayLoopAsync(TimeSpan interval, CancellationToken ct)
         {
-            while (IsRunning)
+            GameState.Log(DebugLevel.Alert, "Time of Day thread started.");
+            while (!ct.IsCancellationRequested && IsRunning)
             {
-                Console.WriteLine("Updated time.");
-                double hours = (double)interval / 60000;
-                GameState.Instance.GameDate = GameState.Instance.GameDate.AddHours(hours);
-                Thread.Sleep(interval);
+                try
+                {
+                    GameState.Log(DebugLevel.Debug, "Updating time...");
+                    double hours = interval.TotalMinutes * 60;
+                    GameState.Instance.GameDate = GameState.Instance.GameDate.AddHours(hours);
+                }
+                catch (Exception ex)
+                {
+                    GameState.Log(DebugLevel.Error, $"Error during time update: {ex.Message}");
+                }
+
+                await Task.Delay(interval, ct);
             }
+            GameState.Log(DebugLevel.Alert, "Time of Day thread stopping.");
         }
         #endregion --- Thread Methods ---
 

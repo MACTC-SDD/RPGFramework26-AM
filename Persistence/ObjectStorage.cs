@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using RPGFramework.Enums;
 
 namespace RPGFramework.Persistence
 {
@@ -22,7 +23,7 @@ namespace RPGFramework.Persistence
 
                 string filePath = Path.Combine(path, fileName);
 
-                JsonSerializerOptions options = new JsonSerializerOptions
+                JsonSerializerOptions options = new()
                 {
                     WriteIndented = true
                 };
@@ -32,7 +33,7 @@ namespace RPGFramework.Persistence
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving object: {ex.Message}");
+                GameState.Log(DebugLevel.Error, $"Error saving object:\n{ex.Message}");
             }
         }
 
@@ -56,7 +57,8 @@ namespace RPGFramework.Persistence
 
 
             string jsonString = File.ReadAllText(filePath);
-            return JsonSerializer.Deserialize<T>(jsonString);
+            return JsonSerializer.Deserialize<T>(jsonString)
+                    ?? throw new InvalidDataException($"Failed to deserialize file '{fileName}' to type '{typeof(T).FullName}'");
         }
 
         /// <summary>
@@ -73,13 +75,15 @@ namespace RPGFramework.Persistence
             if (!Directory.Exists(path))
                 throw new DirectoryNotFoundException($"The directory '{path}' doesn't exist");
 
-            List<T> objects = new List<T>();
+            List<T> objects = [];
 
             foreach (string file in Directory.EnumerateFiles(path))
             {
                 string jsonString = File.ReadAllText(file);
-                //Console.WriteLine(jsonString);
-                objects.Add(JsonSerializer.Deserialize<T>(jsonString));
+                objects.Add(
+                    JsonSerializer.Deserialize<T>(jsonString)
+                    ?? throw new InvalidDataException($"Failed to deserialize file '{file}' to type '{typeof(T).FullName}'")
+                );
             }
 
             return objects;

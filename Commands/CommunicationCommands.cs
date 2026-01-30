@@ -14,10 +14,12 @@ namespace RPGFramework.Commands
 
     }
 
+
     internal class SocialCommand : ICommand
     {
-        public string Name => "ip";
+        public string Name => "/soc";
         public IEnumerable<string> Aliases => new List<string> { };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is Player player)
