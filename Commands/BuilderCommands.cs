@@ -174,7 +174,8 @@ namespace RPGFramework.Commands
             }
             else
             {
-                foreach (var tag in r.Tags)
+                object tags = r.Tags;
+                foreach (var tag in tags)
                 {
                     player.WriteLine($"  {tag}");
                 }
@@ -292,7 +293,7 @@ namespace RPGFramework.Commands
 
         
 
-        private static void DeleteRoom(Player player, List<string> parameters)
+        private static void DeleteRoom(Player player, List<string> parameters, Room roomToDelete)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {

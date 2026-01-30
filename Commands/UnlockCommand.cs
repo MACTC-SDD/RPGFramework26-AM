@@ -8,11 +8,8 @@ namespace RPGFramework.Commands
     internal class UnlockCommand : ICommand
     {
         public string Name => "unlock";
-        public IEnumerable<string> Aliases => Array.Empty<string>();
+        public IEnumerable<string> Aliases => [];
 
-        string ICommand.Name => throw new NotImplementedException();
-
-        IEnumerable<string> ICommand.Aliases => throw new NotImplementedException();
 
         internal static object GetAllCommands()
         {

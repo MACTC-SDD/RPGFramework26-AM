@@ -77,5 +77,15 @@ namespace RPGFramework
         {
             throw new NotImplementedException();
         }
+
+        internal void WriteLine(object name)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void WriteLine(object value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
