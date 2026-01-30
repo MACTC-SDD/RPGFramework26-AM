@@ -1,6 +1,9 @@
 ﻿
+using RPGFramework.Commands;
 using RPGFramework.Enums;
+using RPGFramework.Geography;
 using System.ComponentModel;
+using System.Runtime.InteropServices.Swift;
 using System.Transactions;
 
 namespace RPGFramework
@@ -37,6 +40,78 @@ namespace RPGFramework
             }
             CurrentAggressionLevel += amount;
         }
-        
+
+        #region ---- Behavior Methods ----
+
+        //npc leaves the room into a random room.
+        private void NpcLeaveRoom(Character npc)
+        {
+            // Implement leave room logic here
+            List<Exit> exits = GetExits();
+            int exitId = random.Next(exits.Count);
+            Direction choice = exits.ElementAt(exitId).ExitDirection;
+
+            Navigation.Move(npc,choice);
+            return;
+        }
+
+        //Plays when the npc is in an idle state
+        public void PerformIdleBehavior()
+        {
+            // Implement idle behavior logic here
+            int speakingChance = random.Next(1, 20);
+
+            //methods using above numbers
+            NpcSpeakingChance(speakingChance);
+            //save for last option (so it cant talk after it leaves)
+            int LeavingChance = random.Next(1, 20);
+            NpcMovementChance(LeavingChance);
+        }
+
+        //moves if the npc gets a high enough random number.
+        private void NpcMovementChance(int number)
+        {
+            if (Tags.Contains("Wanderer"))
+            {
+                number += 2;
+            }
+            if(number >= 18)
+            {
+                NpcLeaveRoom(this);
+
+            }
+            return;
+        }
+
+        private void NpcSpeakingChance(int number)
+        {
+            if (Tags.Contains("Talkative"))
+            {
+                number += 2;
+            }
+            if (number >= 15)
+            {
+                NpcSpeak();
+            }
+            return;
+        }
+
+        private void NpcSpeak()
+        {
+            if(DialogOptions.Count == 0)
+            {
+                return;
+            }
+            List<string> dialogKeys = DialogOptions.Keys.ToList();
+            int dialogIndex = random.Next(0, dialogKeys.Count);
+            string selectedKey = dialogKeys[dialogIndex];
+
+            List<string> possibleLines = DialogOptions[selectedKey];
+            int lineIndex = random.Next(0, possibleLines.Count);
+            string selectedLine = possibleLines[lineIndex];
+
+            Comm.SendToRoom(GetRoom(), $"{Name} says: \"{selectedLine}\"");
+        }
+        #endregion
     }
 }

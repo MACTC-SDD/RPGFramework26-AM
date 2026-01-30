@@ -23,6 +23,7 @@ namespace RPGFramework
         }
 
         #region --- Properties ---
+        public static Random random = new Random();
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
         public string Description { get; set; } = "";
@@ -33,7 +34,7 @@ namespace RPGFramework
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
         protected List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        public List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Mob", "Hostile", "Greedy", "Healer", "Wimpy"];
+        public List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Mob", "Hostile", "Greedy", "Healer", "Wimpy", "Talkative"];
         //Might need to move later, but for now I need a place to keep them -Shelton
         public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
@@ -70,6 +71,11 @@ namespace RPGFramework
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
         }
 
+        public Area GetArea()
+        {
+            return GameState.Instance.Areas[AreaId];
+        }
+
         // get exits in current room
         public List<Exit> GetExits()
         {
@@ -85,6 +91,11 @@ namespace RPGFramework
         public void SetRoom(int id)
         {
             LocationId = id;
+        }
+
+        public void SetArea(int id)
+        {
+            AreaId = id;
         }
 
         // Set Health to a specific value
@@ -167,6 +178,10 @@ namespace RPGFramework
             {
                 return false;
             }
+        }
+        public List<string> GetTags()
+        {
+            return Tags;
         }
     }
 }
