@@ -1,5 +1,6 @@
 ﻿using RPGFramework.Interfaces;
 using RPGFramework.Enums;
+using Spectre.Console;
 
 namespace RPGFramework.Commands
 {
@@ -9,11 +10,13 @@ namespace RPGFramework.Commands
         {
             return
             [
+                new HelpCommand(),
                 new HelpBuilderCommand(),
             ];
         }
     }
 
+    #region HelpBuilderCommand Class
     internal class HelpBuilderCommand : ICommand
     {
         public string Name => "/help";
@@ -25,7 +28,7 @@ namespace RPGFramework.Commands
             "/help delete <topic>\n";
 
         private readonly GameState _instance = GameState.Instance;
- 
+
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is not Player player)
@@ -134,6 +137,77 @@ namespace RPGFramework.Commands
         {
             player.WriteLine(Help);
             return false;
+        }
+    }
+    #endregion
+
+    internal class HelpCommand : ICommand
+    {
+        public string Name => "help";
+
+        public IEnumerable<string> Aliases => ["h"];
+        public string Help => "Help Entries.\nUsage: help <topic>";
+
+        private readonly GameState _instance = GameState.Instance;
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+                return false;
+
+            if (parameters.Count < 2)
+                return ShowAllEntries(player);
+
+            return ShowEntry(player, parameters[1]);
+        }
+
+        private bool ShowAllEntries(Player player)
+        {
+            // Show generated help
+            List<HelpEntry> commandHelp = CommandHelpScanner.GetAllHelpEntries();
+            var table = new Table();
+            table.AddColumn("All Help Entries").AddColumn("").AddColumn("").AddColumn("");
+            List<string> topics = [];
+
+            foreach (HelpEntry h in commandHelp)
+            {
+                topics.Add(h.Topic);
+                if (topics.Count == 4)
+                {                    
+                    table.AddRow(topics[0], topics[1], topics[2],topics[3]);
+                    topics.Clear();
+                }
+            }
+
+            if (topics.Count > 0)
+            {
+                table.AddRow(topics[0] ?? "", topics.ElementAtOrDefault(1) ?? "", 
+                    topics.ElementAtOrDefault(2) ?? "", topics.ElementAtOrDefault(3) ?? "");
+            }
+
+            player.Write(table);
+            return true;
+        }
+
+        private bool ShowEntry(Player player, string topic)
+        {
+            _ = !_instance.HelpCatalog.TryGetValue(topic, out HelpEntry? help);
+
+            help ??= CommandHelpScanner.GetAllHelpEntries().FirstOrDefault(o => o.Topic.Equals(topic, StringComparison.OrdinalIgnoreCase));
+            
+            if (help == null)
+            {
+                player.WriteLine($"Cound find help topic '{topic}'.");
+                return false;
+            }
+
+            var table = new Table();
+
+            table.AddColumn(new TableColumn(help.Topic));
+
+            table.AddRow(help.Content);
+            player.Write(table);
+            return true;
         }
     }
 }
