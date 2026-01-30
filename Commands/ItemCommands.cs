@@ -26,6 +26,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "inventory";
         public IEnumerable<string> Aliases => new List<string>() { "inv" };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is not Player player)
@@ -50,6 +51,7 @@ namespace RPGFramework.Commands
         public string Name => "/item";
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -170,6 +172,7 @@ namespace RPGFramework.Commands
         public string Name => "/armor";
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -290,6 +293,7 @@ namespace RPGFramework.Commands
         public string Name => "/weapon";
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {

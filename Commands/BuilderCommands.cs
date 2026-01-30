@@ -1,25 +1,78 @@
 ﻿
 using RPGFramework.Enums;
 using RPGFramework.Geography;
+using Spectre.Console;
 using System.Diagnostics;
 using System.Formats.Asn1;
 using System.Reflection.Metadata.Ecma335;
 
 namespace RPGFramework.Commands
 {
+    
     internal class BuilderCommands
     {
         public static List<ICommand> GetAllCommands()
         {
-            return new List<ICommand>
-            {
+            return
+            [
                 new RoomBuilderCommand(),
                 new AreaBuilderCommand(),
-                // Add more builder commands here as needed
-            };
+                new RoomCopyCommand(),
+            ];
         }
     }
+    internal class RoomCopyCommand : ICommand
+    {
+        public string Name => "copy";
+        public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "Clone a room without exits";
 
+        // This matches your existing ICommands
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+                return false;
+
+            // Usage check: /room copy <roomId> <newName>
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("");
+                player.WriteLine("Usage: /room copy <roomId> <newName>");
+                return false;
+            }
+
+            string roomIdText = parameters[1];
+            string newName = string.Join(" ", parameters.Skip(2));
+
+            if (!int.TryParse(roomIdText, out int roomId))
+            {
+                player.WriteLine("Invalid room ID.");
+                return false;
+            }
+
+            // Find the original room in all areas
+            Room originalRoom = GameState.Instance.Areas.Values
+                                        .SelectMany(a => a.Rooms.Values)
+                                        .FirstOrDefault(r => r.Id == roomId);
+
+            if (originalRoom == null)
+            {
+                player.WriteLine($"Room '{roomId}' not found.");
+                return false;
+            }
+
+            // Clone the room
+            Room clonedRoom = originalRoom.CloneWithoutExits(newName);
+            clonedRoom.Id = Room.GetNextId(clonedRoom.AreaId);
+
+            // Add the cloned room to the area
+            GameState.Instance.Areas[clonedRoom.AreaId].Rooms.Add(clonedRoom.Id, clonedRoom);
+
+            player.WriteLine($"Room '{originalRoom.Name}' copied successfully as '{newName}'. (No exits copied)");
+
+            return true;
+        }
+    }
     // CODE REVIEW: Jibril PR #26
     // I added regions to separate the two classes for better readability.
     // You can delete this comment after you've read it.
@@ -32,7 +85,8 @@ namespace RPGFramework.Commands
     {
         public string Name => "/room";
 
-        public IEnumerable<string> Aliases => Array.Empty<string>();
+        public IEnumerable<string> Aliases => [];
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -49,6 +103,7 @@ namespace RPGFramework.Commands
 
             switch (parameters[1].ToLower())
             {
+                case "desc":
                 case "description":
                     RoomSetDescription(player, parameters);
                     break;
@@ -64,6 +119,9 @@ namespace RPGFramework.Commands
                 case "show":
                     RoomShow(player, parameters);
                     break;
+                case "icon":
+                    RoomSetIcon(player, parameters);
+                    break;
                 case "tag":
                     RoomTag(player, parameters);
                     break;
@@ -77,6 +135,7 @@ namespace RPGFramework.Commands
 
         private static void WriteUsage(Player player)
         {
+            player.WriteLine("");
             player.WriteLine("Usage: ");
             player.WriteLine("/room description '<set room desc to this>'");
             player.WriteLine("/room name '<set room name to this>'");
@@ -93,29 +152,7 @@ namespace RPGFramework.Commands
             player.WriteLine("/room delete <roomId>");
             player.WriteLine("/room delete <roomId> confirm");
         }
-
-        // CODE REVIEW: Jibril PR #26
-        // I commented these out, these were probably added by mistake
-        // since they are duplicates of the ones in AreaBuilderCommand
-        // You can delete this comment after you've read it and the code
-        // after you've read it.
-        /*
-        private static void WriteAreaUsage(Player player)
-        {
-            player.WriteLine("Usage: ");
-            player.WriteLine("/area create '<name>' '<description>'");
-            player.WriteLine("/area show");
-        }
-
-        private static void WriteAreaDeleteUsage(Player player)
-        {
-            player.WriteLine("Usage:");
-            player.WriteLine("/area delete <areaId>");
-            player.WriteLine("/area delete <areaId> confirm");
-        }
-        */
-
-
+  
         private static void RoomCreate(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
@@ -133,6 +170,7 @@ namespace RPGFramework.Commands
             // 5: exit description
             if (parameters.Count < 6)
             {
+                player.WriteLine("");
                 player.WriteLine("Usage: /room create '<name>' '<description>' <exit direction> '<exit description>'");
                 return;
             }
@@ -155,10 +193,6 @@ namespace RPGFramework.Commands
 
                 player.WriteLine($"Error creating room: {ex.Message}");
 
-                // CODE REVIEW: Jibril PR #26
-                // You can suppress the null warning like you did with pragmas
-                // but a better way is to use the null-coalescing operator (??) to provide a default value.
-                // You can delete this comment after you've read it.
                 player.WriteLine(message: ex.StackTrace ?? "");
            }
         }
@@ -200,11 +234,15 @@ namespace RPGFramework.Commands
         {
             if (parameters.Count < 3)
             {
+                player.WriteLine("");
                 player.WriteLine(player.GetRoom().Name);
+                /*Try something new*/
             }
             else
             {
-                player.GetRoom().Name = parameters[2];
+                /*player.GetRoom().Name = parameters[2];*/
+                player.GetRoom().Name = string.Join(" ", parameters.Skip(2));
+                player.WriteLine("");
                 player.WriteLine("Room name set.");
             }
         }
@@ -212,8 +250,14 @@ namespace RPGFramework.Commands
         private static void RoomShow(Player player, List<string> parameters)
         {
             Room r = player.GetRoom();
-            player.Write($"Room name: {r.Name}  Room description: {r.Description}  Room Id: {r.Id} Tags:");
-            
+            player.WriteLine("");
+            /*player.WriteLine($"Room name: {r.Name}  Room description: {r.Description}  Room Id: {r.Id} Tags:");*/
+            player.WriteLine(
+            $"Room name: {r.Name}\n" +
+            $"Room description: {r.Description}\n" +
+            $"Room Id: {r.Id}\n" +
+            "Tags:");
+            /*broke up the room show line, because it was crowded*/
             if (r.Tags.Count == 0)
             {
                 player.WriteLine("  None");
@@ -225,9 +269,8 @@ namespace RPGFramework.Commands
                     player.WriteLine($"  {tag}");
                 }
             }
-            
+
             Room room = player.GetRoom();
-            Area area = GameState.Instance.Areas[player.AreaId];
      
             var exits = room.GetExits();
 
@@ -243,7 +286,7 @@ namespace RPGFramework.Commands
             }         
         }
 
-        private static void RoomTag(Player player, List<string>parameters)
+        private static void RoomTag(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
@@ -265,7 +308,7 @@ namespace RPGFramework.Commands
             switch (action)
             {
                 case "add":
-                     if (parameters.Count < 4)
+                    if (parameters.Count < 4)
                     {
                         player.WriteLine("Use: /room tag add <tag>");
                         return;
@@ -273,14 +316,14 @@ namespace RPGFramework.Commands
 
                     string tagToAdd = parameters[3].ToLower();
 
-                    
+
 
                     if (room.Tags.Contains(tagToAdd))
                     {
                         player.WriteLine($"Room already has tag '{tagToAdd}'.");
                         return;
                     }
-                     
+
                     room.Tags.Add(tagToAdd);
                     player.WriteLine($"Tag '{tagToAdd}' added to room.");
                     break;
@@ -322,10 +365,24 @@ namespace RPGFramework.Commands
                     player.WriteLine("Invalid tag");
                     break;
             }
-        
-    }
 
-        
+        }
+
+        private static void RoomSetIcon(Player player, List<string> parameters)
+        {
+            // Show current icon
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("");
+                player.WriteLine(player.GetRoom().MapIcon);
+                return;
+            }
+
+            // Set icon
+            player.GetRoom().MapIcon = parameters[2];
+            player.WriteLine("");
+            player.WriteLine("Room icon set.");
+        }
 
         private static void DeleteRoom(Player player, List<string> parameters)
         {
@@ -415,7 +472,8 @@ namespace RPGFramework.Commands
     {
         public string Name => "/area";
 
-        public IEnumerable<string> Aliases => Array.Empty<string>();
+        public IEnumerable<string> Aliases => [];
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -463,58 +521,6 @@ namespace RPGFramework.Commands
             player.WriteLine("/area delete <areaId> confirm");
         }
 
-        private static void CreateArea(Player player, List<string> parameters)
-        {
-            // 0: /area
-            // 1: create
-            // 2: name
-            // 3: description
-            if (parameters.Count < 4)
-            {
-                WriteAreaUsage(player);
-                return;
-            }
-
-            int newAreaId = GameState.Instance.Areas.Count == 0
-                ? 0
-                : GameState.Instance.Areas.Keys.Max() + 1;
-
-            Area area = new Area
-            {
-                Id = newAreaId,
-                Name = parameters[2],
-                Description = parameters[3],
-                Rooms = new Dictionary<int, Room>(),
-                Exits = new Dictionary<int, Exit>()
-            };
-
-            // Create starting room
-            GameState.Instance.Areas.Add(area.Id, area);
-            
-            Room startRoom = Room.CreateRoom(area.Id, "Start Room", "You are in a newly created area.");
-
-            // Move builder into new area
-            player.AreaId = area.Id;
-            player.LocationId = startRoom.Id;
-
-            player.WriteLine($"Area '{area.Name}' created (ID {area.Id}).");
-        }
-
-        private static void AreaShow(Player player)
-        {
-            Area area = GameState.Instance.Areas[player.AreaId];
-
-            player.WriteLine($"Area name: {area.Id}");
-            player.WriteLine($"Area description: {area.Description}");
-            player.WriteLine($"Area Id: {area.Id}");
-            player.WriteLine($"Rooms ({area.Rooms.Count})");
-
-            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
-            {
-                player.WriteLine($"Room {room.Id}: {room.Name}");
-            }
-        }
-
         private static void AreaDelete(Player player, List<string> parameters)
         {
             if (parameters.Count < 3)
@@ -525,12 +531,18 @@ namespace RPGFramework.Commands
 
             if (!int.TryParse(parameters[2], out int areaId))
             {
+                player.WriteLine("");
+                player.WriteLine(player.GetRoom().Description);
                 WriteAreaUsage(player);
                 return;
             }
 
             if (!GameState.Instance.Areas.TryGetValue(areaId, out var area))
             {
+                string desc = string.Join(" ", parameters.Skip(2));
+                player.GetRoom().Description = desc;
+                player.WriteLine("");
+                player.WriteLine("Room description set.");
                 player.WriteLine("Area not found.");
                 return;
             }
@@ -578,6 +590,168 @@ namespace RPGFramework.Commands
 
             player.WriteLine($"Area {areaId} deleted.");
         }
+
+        private static void AreaShow(Player player)
+        {
+            Area area = GameState.Instance.Areas[player.AreaId];
+
+            player.WriteLine($"Area name: {area.Id}");
+            player.WriteLine($"Area description: {area.Description}");
+            player.WriteLine($"Area Id: {area.Id}");
+            player.WriteLine($"Rooms ({area.Rooms.Count})");
+
+            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
+            {
+                player.WriteLine($"Room {room.Id}: {room.Name}");
+            }
+        }
+
+        private static void CreateArea(Player player, List<string> parameters)
+        {
+            // 0: /area
+            // 1: create
+            // 2: name
+            // 3: description
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("");
+                player.WriteLine(player.GetRoom().MapColor.Replace("[", "").Replace("]", ""));
+                WriteAreaUsage(player);
+                return;
+            }
+
+            int newAreaId = GameState.Instance.Areas.Count == 0
+                ? 0
+                : GameState.Instance.Areas.Keys.Max() + 1;
+
+            Area area = new()
+            {
+                Id = newAreaId,
+                Name = parameters[2],
+                Description = parameters[3],
+                Rooms = [],
+                Exits = []
+            };
+
+            // Create starting room
+            GameState.Instance.Areas.Add(area.Id, area);
+
+            Room startRoom = Room.CreateRoom(area.Id, "Start Room", "You are in a newly created area.");
+
+            // Move builder into new area
+            player.AreaId = area.Id;
+            player.LocationId = startRoom.Id;
+
+            player.WriteLine($"Area '{area.Name}' created (ID {area.Id}).");
+        }
+
+
+
+        private static string EscapeMarkup(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return "";
+            return text.Replace("[", "[[").Replace("]", "]]"); // Escape square brackets
+        }
+    }
+
+    // CODE REVIEW: BUILD TEAM (Landon, Jibril)
+    // There appear to be two AreaBuilderCommand classes in this file.
+    // I'm not sure which one is intended to be used, or maybe pieces of both.
+    // These merged really strangely and I tried to correct it, but please review and adjust as needed.
+    // I renamed the second one to AreaBuilderCommand2 to avoid conflicts.
+    /// <summary>
+    /// /area command for building and editing areas.
+    /// </summary>
+    internal class AreaBuilderCommand2 : ICommand
+    {
+        public string Name => "/area";
+        public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player) return false;
+            if (parameters.Count < 2) { WriteUsage(player); return false; }
+
+            switch (parameters[1].ToLower())
+            {
+                case "name":
+                    AreaSetName(player, parameters);
+                    break;
+
+                case "desc":
+                case "description":
+                    AreaSetDescription(player, parameters);
+                    break;
+
+                default:
+                    WriteUsage(player);
+                    break;
+            }
+
+            return true;
+        }
+
+        private static void WriteUsage(Player player)
+        {
+            player.WriteLine("");
+            player.WriteLine("Usage:");
+            player.WriteLine("/area name <new area name>");
+            player.WriteLine("/area desc <new area description>");
+            player.WriteLine("");
+        }
+
+        private static void AreaSetName(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            // Get the area the player is currently in
+            Area area = GameState.Instance.Areas[player.AreaId];
+
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("");
+                player.WriteLine(area.Name);
+            }
+            else
+            {
+                // Multi-word support
+                area.Name = string.Join(" ", parameters.Skip(2));
+                player.WriteLine("");
+                player.WriteLine("Area name set.");
+            }
+        }
+
+        private static void AreaSetDescription(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            // Get the area the player is currently in
+            Area area = GameState.Instance.Areas[player.AreaId];
+
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("");
+                player.WriteLine(area.Description);
+            }
+            else
+            {
+                /*Multi-word support*/
+                area.Description = string.Join(" ", parameters.Skip(2));
+                player.WriteLine("");
+                player.WriteLine("Area description set.");
+            }
+        }
+
     }
     #endregion
 }
+
