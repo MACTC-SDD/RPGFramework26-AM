@@ -1,6 +1,6 @@
 ﻿
 using RPGFramework.Geography;
-using RPGFramework.Items;
+using System.Security.Cryptography.X509Certificates;
 
 namespace RPGFramework
 {
@@ -15,6 +15,13 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character : IDescribable
     {
+        enum CharacterState { 
+            Idle, 
+            Moving, 
+            Attacking, 
+            Dead 
+        }
+
         #region --- Properties ---
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
@@ -33,7 +40,7 @@ namespace RPGFramework
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = [];
         public Weapon PrimaryWeapon { get; set; }
-        public Inventory PlayerInventory { get; set; } = new Inventory(); 
+        //public Inventory PlayerInventory { get; set; } = new Inventory(); 
         #endregion
 
         #region --- Skill Attributes --- (0-20)
@@ -49,7 +56,7 @@ namespace RPGFramework
         public Character()
         {
             Health = MaxHealth;
-            Weapon w = new() 
+            Weapon w = new Weapon() 
               { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
             PrimaryWeapon = w;
         }
@@ -86,11 +93,11 @@ namespace RPGFramework
             // Doesn't make sense if player is dead
             if (Alive == false)
                 return;
-            
+
 
             // Can't have health < 0
             if (health < 0)
-                health = 0;           
+                health = 0;
 
             // Can't have health > MaxHealth
             if (health > MaxHealth)
@@ -127,6 +134,7 @@ namespace RPGFramework
         public void Heal(int heal)
         {
             SetHealth(Health + heal);
+
         }
 
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
@@ -162,3 +170,4 @@ namespace RPGFramework
         }
     }
 }
+        
