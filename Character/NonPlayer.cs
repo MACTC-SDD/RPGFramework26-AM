@@ -59,9 +59,12 @@ namespace RPGFramework
         public void PerformIdleBehavior()
         {
             // Implement idle behavior logic here
-            int LeavingChance = random.Next(1, 20);
+            int speakingChance = random.Next(1, 20);
 
+            //methods using above numbers
+            NpcSpeakingChance(speakingChance);
             //save for last option (so it cant talk after it leaves)
+            int LeavingChance = random.Next(1, 20);
             NpcMovementChance(LeavingChance);
         }
 
@@ -78,6 +81,36 @@ namespace RPGFramework
 
             }
             return;
+        }
+
+        private void NpcSpeakingChance(int number)
+        {
+            if (Tags.Contains("Talkative"))
+            {
+                number += 2;
+            }
+            if (number >= 15)
+            {
+                NpcSpeak();
+            }
+            return;
+        }
+
+        private void NpcSpeak()
+        {
+            if(DialogOptions.Count == 0)
+            {
+                return;
+            }
+            List<string> dialogKeys = DialogOptions.Keys.ToList();
+            int dialogIndex = random.Next(0, dialogKeys.Count);
+            string selectedKey = dialogKeys[dialogIndex];
+
+            List<string> possibleLines = DialogOptions[selectedKey];
+            int lineIndex = random.Next(0, possibleLines.Count);
+            string selectedLine = possibleLines[lineIndex];
+
+            Comm.SendToRoom(GetRoom(), $"{Name} says: \"{selectedLine}\"");
         }
         #endregion
     }
