@@ -147,11 +147,11 @@ namespace RPGFramework.Workflows
                         $"\nXP:{player.XP}" +
                         $"\nLevel :{player.Level}      " +
                       
-                        $"\nHealth :{player.Health}/{player.MaxHealth}"+$"\tGold :{player.Gold}" +
+                        $"\nHealth :{player.Health}/{player.MaxHealth}"+$"\tGold :{player.Gold}" +  
                         "\n========================================================================================================================" +
                         "\n--Equipment--" + "" +
                         "\nArmor :{player.EquippedArmor}" +
-                         $"\nWeapon :{player.PrimaryWeapon}" + 
+                         "\nWeapon :{player.PrimaryWeapon}" + 
                          $"\n"
 
                         );
