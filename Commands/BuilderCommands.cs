@@ -8,7 +8,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace RPGFramework.Commands
 {
-    
+
     internal class BuilderCommands
     {
         public static List<ICommand> GetAllCommands()
@@ -125,6 +125,9 @@ namespace RPGFramework.Commands
                 case "tag":
                     RoomTag(player, parameters);
                     break;
+                case "spawnable":
+                    RoomSpawnable(player, parameters);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -132,7 +135,28 @@ namespace RPGFramework.Commands
 
             return true;
         }
-
+        private static void RoomSpawnable(Player player, List<string> parameters)
+        {
+            // NPC team is still working on this - Shelton
+            switch (parameters[2].ToLower())
+            {
+                case "add":
+                    int areaId = int.Parse(parameters[3]);
+                    int roomId = int.Parse(parameters[4]);
+                    Room room = GameState.Instance.Areas[areaId].Rooms[roomId];
+                    int spawnChance = int.Parse(parameters[6]);
+                    if(parameters[5].ToLower() == "npc")
+                    {
+                        room.AddToSpawnableNpcs(parameters[7], spawnChance);
+                    }
+                    else if (parameters[5].ToLower() == "mob")
+                    {
+                        room.AddToSpawnableMobs(parameters[7], spawnChance);
+                    }
+                    room.AddToSpawnableMobs(parameters[5], spawnChance);
+                    break;
+            }
+        }
         private static void WriteUsage(Player player)
         {
             player.WriteLine("");
@@ -142,6 +166,9 @@ namespace RPGFramework.Commands
             player.WriteLine("/room create '<name>' '<description>' <exit direction> '<exit description>'");
             player.WriteLine("/room show 'Details about the room you are in'");
             player.WriteLine("/room Tag '<add or remove room tags>'");
+            player.WriteLine("/room spawnable add '<areaid>' '<roomid>' '<name>' '<chance>'");//Still in progress -NPC team
+            player.WriteLine("/room spawnable remove '<areaid>' '<roomid>' '<name>'");//Still in progress -NPC team
+            player.WriteLine("/room spawnable chance '<name>' '<chance>'");//Still in progress -NPC team
         }
 
         private static void WriteDeleteUsage(Player player)
@@ -152,7 +179,8 @@ namespace RPGFramework.Commands
             player.WriteLine("/room delete <roomId>");
             player.WriteLine("/room delete <roomId> confirm");
         }
-  
+        #region RoomCommandMethods
+
         private static void RoomCreate(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
@@ -194,7 +222,7 @@ namespace RPGFramework.Commands
                 player.WriteLine($"Error creating room: {ex.Message}");
 
                 player.WriteLine(message: ex.StackTrace ?? "");
-           }
+            }
         }
 
         private static void RoomSetColor(Player player, List<string> parameters)
@@ -246,7 +274,7 @@ namespace RPGFramework.Commands
                 player.WriteLine("Room name set.");
             }
         }
-        
+
         private static void RoomShow(Player player, List<string> parameters)
         {
             Room r = player.GetRoom();
@@ -271,7 +299,7 @@ namespace RPGFramework.Commands
             }
 
             Room room = player.GetRoom();
-     
+
             var exits = room.GetExits();
 
             if (exits.Count == 0)
@@ -283,7 +311,7 @@ namespace RPGFramework.Commands
             foreach (var exit in exits)
             {
                 player.WriteLine($" Room Exit(s): Id: {exit.Id} {exit.ExitDirection}  -> Room {exit.DestinationRoomId} ({exit.Description})");
-            }         
+            }
         }
 
         private static void RoomTag(Player player, List<string> parameters)
@@ -421,7 +449,7 @@ namespace RPGFramework.Commands
             }
 
             //  confirm
-            
+
             bool confirmed = parameters.Count >= 4 &&
                              parameters[3].Equals("confirm", StringComparison.OrdinalIgnoreCase);
 
@@ -447,7 +475,7 @@ namespace RPGFramework.Commands
 
 
             // Move players out of the room
- 
+
             int fallbackRoomId = GameState.Instance.Areas[areaId].Rooms.Keys
                 .First(id => id != roomToDelete.Id);
 
@@ -466,8 +494,8 @@ namespace RPGFramework.Commands
 
     }
     #endregion
-    
-    #region AreaBuilderCommand
+    #endregion
+        #region AreaBuilderCommand
     internal class AreaBuilderCommand : ICommand
     {
         public string Name => "/area";

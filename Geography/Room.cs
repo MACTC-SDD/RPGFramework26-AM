@@ -21,12 +21,14 @@ namespace RPGFramework.Geography
 
         // Name of the room
         public string Name { get; set; } = "";
-       
-        public Dictionary<string, int> SpawnableMobs { get; set; } = new Dictionary<string, int>();
 
+        public Dictionary<string, int> SpawnableMobs { get; set; } = new Dictionary<string, int>();
+        public List<Mob> Mobs { get; set; } = [];
+        public Dictionary<string, int> SpawnableNpcs { get; set; } = new Dictionary<string, int>();
+        public List<NonPlayer> Npcs{ get; set; } = [];
         public int MaxSpawnedAllowed { get; set; } = 3;
         public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-
+        public List<Player> Players { get; set; } = [];
         // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
         #endregion --- Properties ---
@@ -246,6 +248,17 @@ namespace RPGFramework.Geography
 
             // Send a message to all players in the room
             Comm.SendToRoomExcept(this, $"{character.Name} enters the room.", character);
+            if(character is NonPlayer npc){ 
+                Npcs.Add(npc);
+            }
+            else if(character is Player player)
+            {
+                Players.Add(player);
+            }
+            else if (character is Mob mob)
+            {
+                Mobs.Add(mob);
+            }
         }
 
         /// <summary>
@@ -257,6 +270,120 @@ namespace RPGFramework.Geography
         {
            // Send a message to all players in the room
             Comm.SendToRoomExcept(this, $"{character.Name} leaves the room.", character);
+            if (character is NonPlayer npc)
+            {
+                Npcs.Remove(npc);
+            }
+            else if (character is Player player)
+            {
+                Players.Remove(player);
+            }
+            else if (character is Mob mob)
+            {
+                Mobs.Remove(mob);
+            }
+        }
+        #endregion
+
+        #region --- Methods (NPC Handling) ---
+        /// <summary>
+        ///  Currently just working on spawning mobs in rooms based on SpawnableMobs dictionary. 
+        ///  (commands not working yet)
+        /// </summary>
+        public void SpawnMobsInRoom()
+        {
+            if(Players.Count <= 0)
+            {
+                // Don't spawn mobs if players aren't present
+                return;
+            }
+
+            Area area = GameState.Instance.Areas[AreaId];
+            Room room = this;
+            // Count current mobs in the room
+            int currentMobCount = Mobs.Count;
+            Random rand = new Random();
+            foreach(var kvp in SpawnableMobs)
+            {
+                string npcName = kvp.Key;
+                int maxToSpawn = kvp.Value;
+                // Spawn mobs until we reach the max allowed or the room's max spawn limit
+                if (currentMobCount >= MaxSpawnedAllowed)
+                {
+                    break;
+                }
+                int numberRolled = rand.Next(1, 20);
+                if(numberRolled >= SpawnableMobs[npcName])
+                {
+                    SpawnMob(npcName);
+                }
+            }
+            return;
+        }
+
+        public void AddToSpawnableMobs(string npcName, int spawnChance)
+        {
+            if (!SpawnableMobs.ContainsKey(npcName))
+            {
+                SpawnableMobs.Add(npcName, spawnChance);
+            }
+            return;
+        }
+
+        public void AddToSpawnableNpcs(string npcName, int spawnChance)
+        {
+            if (!SpawnableNpcs.ContainsKey(npcName))
+            {
+                SpawnableNpcs.Add(npcName, spawnChance);
+            }
+            return;
+        }
+        private void SpawnMob(string npcName)
+        {
+            Mob mob = GameState.Instance.MobCatalog[npcName];
+            Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
+
+            Mobs.Add(mob);
+            return;
+        }
+
+        public void SpawnNpcsInRoom()
+        {
+            if (Players.Count <= 0)
+            {
+                // Don't spawn npcs if players aren't present
+                return;
+            }
+            Area area = GameState.Instance.Areas[AreaId];
+            Room room = this;
+            // Count current npcs in the room
+            int currentNpcCount = Npcs.Count;
+            Random rand = new Random();
+            foreach (var kvp in SpawnableNpcs)
+            {
+                string npcName = kvp.Key;
+                int maxToSpawn = kvp.Value;
+                // Spawn npcs until we reach the max allowed or the room's max spawn limit
+                if (currentNpcCount >= MaxSpawnedAllowed)
+                {
+                    break;
+                }
+                int numberRolled = rand.Next(1, 20);
+                if (numberRolled >= SpawnableNpcs[npcName])
+                {
+                    SpawnNpc(npcName);
+                }
+            }
+            return;
+        }
+
+        private void SpawnNpc(string npcName)
+        {
+            Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
+            NonPlayer npc = GameState.Instance.NPCCatalog[npcName];
+            npc.Spawned = true;
+            Npcs.Add(npc);
+            return;
         }
         #endregion
     }
