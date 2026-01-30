@@ -174,9 +174,12 @@ namespace RPGFramework
 
         }
 
+    
         public void WeaponStrengthDamage(int strength)
         {
-            int Damage = (Strength +/*weapon.damage*/);
+            RPGFramework.Weapon test = new RPGFramework.Weapon();
+     
+            Double Damage = Strength + test.Damage;
         }
 
         public bool WillDodge()

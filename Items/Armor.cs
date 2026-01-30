@@ -19,21 +19,27 @@ namespace RPGFramework
 
         //armor based damage reduction
         private void Stats() {
+            switch (Type) { 
 
             //Highest armor tier
-            //case armormaterial.somthing
-            DamageReduction = 10;
-            MaxDurability = 100;
+            case ArmorType.Heavy:
+                DamageReduction = 10;
+                MaxDurability = 100;
+                break;
 
-            //Mid armor tier
-            //case armormaterial.somthing
-            DamageReduction = Random.Shared.Next(3, 6);
-            MaxDurability = Random.Shared.Next(40, 50);
+                //Mid armor tier
+                case ArmorType.Medium:
+                    DamageReduction = Random.Shared.Next(3, 6);
+                MaxDurability = Random.Shared.Next(40, 50);
+                    break;
 
-            //Low armor tier
-            //case armormaterial.somthing
-            DamageReduction = 3;
-            MaxDurability = 25;
+                //Low armor tier
+                case ArmorType.Light:
+                    DamageReduction = 3;
+                MaxDurability = 25;
+                    break;
+
+            }
         }
         //end armor damage reduction
 
@@ -48,6 +54,8 @@ namespace RPGFramework
             Durability = Math.Max(0, Durability);
 
             return reducedDamage;
+
+            //end damage to durability
         }
     }
     internal enum ArmorMaterial
