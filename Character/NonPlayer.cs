@@ -2,6 +2,7 @@
 using RPGFramework.Commands;
 using RPGFramework.Enums;
 using RPGFramework.Geography;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices.Swift;
 using System.Transactions;
@@ -16,7 +17,7 @@ namespace RPGFramework
     internal class NonPlayer : Character
     {
         //additional variables from NPCs
-        public Dictionary<string, List<string>> DialogOptions { get; protected set; } = new Dictionary<string, List<string>>();
+        public List<DialogGroup> DialogGroups { get; protected set; } = new List<DialogGroup>();
         public int CurrentAggressionLevel { get; protected set; } = 0;
         public int MaxAggressionLevel { get; protected set; } = 10;
         public int MinAgressionLevel { get; protected set; } = 0;
@@ -62,8 +63,6 @@ namespace RPGFramework
         {
             // Implement idle behavior logic here
             int speakingChance = random.Next(1, 20);
-
-            //methods using above numbers
             NpcSpeakingChance(speakingChance);
             //save for last option (so it cant talk after it leaves)
             int LeavingChance = random.Next(1, 20);
@@ -93,26 +92,36 @@ namespace RPGFramework
             }
             if (number >= 15)
             {
-                NpcSpeak();
+                NpcSpeakRandomly();
             }
             return;
         }
 
-        private void NpcSpeak()
+        private void NpcSpeakRandomly()
         {
-            if(DialogOptions.Count == 0)
+            if (DialogGroups.Count == 0)
             {
                 return;
             }
-            List<string> dialogKeys = DialogOptions.Keys.ToList();
-            int dialogIndex = random.Next(0, dialogKeys.Count);
-            string selectedKey = dialogKeys[dialogIndex];
-
-            List<string> possibleLines = DialogOptions[selectedKey];
-            int lineIndex = random.Next(0, possibleLines.Count);
-            string selectedLine = possibleLines[lineIndex];
-
+            int index = random.Next(DialogGroups.Count);
+            string selectedLine = DialogGroups[index].GetRandomDialogLine();
             Comm.SendToRoom(GetRoom(), $"{Name} says: \"{selectedLine}\"");
+        }
+        public void AddDialogGroup(DialogGroup group)
+        {
+            DialogGroups.Add(group);
+        }
+        public void RemoveDialogGroup(DialogGroup group)
+        {
+            DialogGroups.Remove(group);
+        }
+        public bool HasDialogGroup(string groupName)
+        {
+            return DialogGroups.Any(g => string.Equals(g.GroupName, groupName, StringComparison.OrdinalIgnoreCase));
+        }
+        public DialogGroup GetDialogGroup(string groupName)
+        {
+            return DialogGroups.FirstOrDefault(g => string.Equals(g.GroupName, groupName, StringComparison.OrdinalIgnoreCase));
         }
         #endregion
     }

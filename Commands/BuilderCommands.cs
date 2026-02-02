@@ -5,6 +5,7 @@ using Spectre.Console;
 using System.Diagnostics;
 using System.Formats.Asn1;
 using System.Reflection.Metadata.Ecma335;
+using System.Xml.Linq;
 
 namespace RPGFramework.Commands
 {
@@ -147,6 +148,11 @@ namespace RPGFramework.Commands
             player.WriteLine("/room spawnable add '<areaid>' '<roomid>' '<mob/npc>' '<name>' '<chance>'");
             player.WriteLine("/room spawnable remove '<areaid>' '<roomid>' '<mob/npc>' '<name>'");
             player.WriteLine("/room spawnable chance '<areaid>' '<roomid>' '<mob/npc>' '<name>' '<chance>'");
+            player.WriteLine("/room spawnable list '<areaid>' '<roomid>'");
+            player.WriteLine("/room spawn '<areaid>' '<roomid>' '<mob/npc> '<name>''");
+            player.WriteLine("/room triggerspawn '<areaid>' '<roomid>'");
+            player.WriteLine("/room triggerdeletion '<areaid>' '<roomid>'");
+            player.WriteLine("/room kill '<areaid>' '<roomid>' '<mob/npc> ' <name>'");
         }
 
         private static void WriteDeleteUsage(Player player)
@@ -509,6 +515,51 @@ namespace RPGFramework.Commands
                     break;
                 case "list":
                     room.ListSpawnables(player, type);
+                    break;
+                case "spawn":
+                    areaId = int.Parse(parameters[2]);
+                    roomId = int.Parse(parameters[3]);
+                    room = GameState.Instance.Areas[areaId].Rooms[roomId];
+                    if (parameters[4].ToLower() == "mob")
+                    {
+                        if (GameState.Instance.MobCatalog.ContainsKey(parameters[5]))
+                        {
+                            room.SpawnMob(parameters[5]);
+                        }
+                        else
+                        {
+                            player.WriteLine("Mob does not exist!");
+                        }
+                    }
+                    else if (parameters[4].ToLower() == "npc")
+                    {
+                        if (GameState.Instance.NPCCatalog.ContainsKey(parameters[5]))
+                        {
+                            room.SpawnNpc(parameters[5]);
+                        }
+                        else
+                        {
+                            player.WriteLine("Npc does not exist!");
+                        }
+                    }
+                        break;
+                case "triggerspawn":
+                    areaId = int.Parse(parameters[2]);
+                    roomId = int.Parse(parameters[3]);
+                    room = GameState.Instance.Areas[areaId].Rooms[roomId];
+                    room.SpawnNpcsInRoom();
+                    break;
+                case "triggerdeletion":
+                    areaId = int.Parse(parameters[2]);
+                    roomId = int.Parse(parameters[3]);
+                    room = GameState.Instance.Areas[areaId].Rooms[roomId];
+                    room.DespawnEntitiesInRoom();
+                    break;
+                case "kill":
+                    areaId = int.Parse(parameters[2]);
+                    roomId = int.Parse(parameters[3]);
+                    room = GameState.Instance.Areas[areaId].Rooms[roomId];
+                    room.DespawnEntity(parameters[5], parameters[4]);
                     break;
                 default:
                     player.WriteLine("Invalid spawnable command.");

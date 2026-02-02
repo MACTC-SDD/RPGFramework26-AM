@@ -427,7 +427,7 @@ namespace RPGFramework.Geography
             return;
         }
 
-        private void SpawnMob(string npcName)
+        public void SpawnMob(string npcName)
         {
             Mob mob = GameState.Instance.MobCatalog[npcName];
             Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
@@ -466,13 +466,59 @@ namespace RPGFramework.Geography
             return;
         }
 
-        private void SpawnNpc(string npcName)
+        public void SpawnNpc(string npcName)
         {
             Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
             NonPlayer npc = GameState.Instance.NPCCatalog[npcName];
             npc.Spawned = true;
             Npcs.Add(npc);
             return;
+        }
+
+        public void SpawnEntitiesInRoom()
+        {
+            SpawnMobsInRoom();
+            SpawnNpcsInRoom();
+            return;
+        }
+
+        public void DespawnEntitiesInRoom()
+        {
+            foreach (var mob in Mobs)
+            {
+                mob.Spawned = false;
+            }
+            Mobs.Clear();
+            foreach(var npc in Npcs)
+            {
+                npc.Spawned = false;
+            }
+            Npcs.Clear();
+            return;
+        }
+        public void DespawnEntity(string mobName, string type)
+        {
+            if (type.ToLower() == "mob")
+            {
+                Mob? mobToRemove = Mobs.Find(m => m.Name.Equals(mobName, StringComparison.OrdinalIgnoreCase));
+                if (mobToRemove != null)
+                {
+                    mobToRemove.Spawned = false;
+                    Mobs.Remove(mobToRemove);
+                    Comm.SendToRoom(this, $"{mobName} has been despawned from the room.");
+                }
+            }
+            else if(type.ToLower() == "npc")
+            {
+                NonPlayer? npcToRemove = Npcs.Find(m => m.Name.Equals(mobName, StringComparison.OrdinalIgnoreCase));
+                if (npcToRemove != null)
+                {
+                    npcToRemove.Spawned = false;
+                    Npcs.Remove(npcToRemove);
+                    Comm.SendToRoom(this, $"{mobName} has been despawned from the room.");
+                }
+            }
+                return;
         }
         #endregion
     }
