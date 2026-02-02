@@ -28,6 +28,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "inventory";
         public IEnumerable<string> Aliases => new List<string>() { "inv" };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is not Player player)
@@ -52,6 +53,7 @@ namespace RPGFramework.Commands
         public string Name => "/item";
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -98,7 +100,7 @@ namespace RPGFramework.Commands
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -188,6 +190,7 @@ namespace RPGFramework.Commands
         public string Name => "/armor";
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -234,7 +237,7 @@ namespace RPGFramework.Commands
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -308,6 +311,7 @@ namespace RPGFramework.Commands
         public string Name => "/weapon";
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -359,8 +363,8 @@ namespace RPGFramework.Commands
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
-                return false;
+                player.WriteLine("Your Role is: " + player.Role.ToString());
+                return;
             }
 
             // 0: /weapon

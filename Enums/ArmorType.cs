@@ -1,4 +1,4 @@
-﻿namespace RPGFramework.Enums
+namespace RPGFramework.Enums
 {
     internal enum ArmorType
     {

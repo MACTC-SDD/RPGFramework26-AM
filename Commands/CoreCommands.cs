@@ -29,6 +29,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "afk";
         public IEnumerable<string> Aliases => new List<string> { };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is Player player)
@@ -45,6 +46,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "ip";
         public IEnumerable<string> Aliases => new List<string> { };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is Player player)
@@ -60,6 +62,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "look";
         public IEnumerable<string> Aliases => new List<string> { "l" };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is Player player)
@@ -81,6 +84,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "quit";
         public IEnumerable<string> Aliases => new List<string> { "exit" };
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -96,7 +100,8 @@ namespace RPGFramework.Commands
     internal class SayCommand : ICommand
     {
         public string Name => "say";
-        public IEnumerable<string> Aliases => new List<string> { "\"".Normalize(), "'".Normalize() };
+        public IEnumerable<string> Aliases => new List<string> { "\"", "'" };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             // If no message and it's a player, tell them to say something
@@ -114,6 +119,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "time";
         public IEnumerable<string> Aliases => new List<string> { };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is Player player)

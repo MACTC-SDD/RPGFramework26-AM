@@ -1,5 +1,6 @@
-﻿using RPGFramework.Geography;
+using RPGFramework.Geography;
 using RPGFramework.Items;
+using System.Security.Cryptography.X509Certificates;
 
 namespace RPGFramework
 {
@@ -22,6 +23,7 @@ namespace RPGFramework
         }
 
         #region --- Properties ---
+        public static Random random = new Random();
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
         public string Description { get; set; } = "";
@@ -31,13 +33,15 @@ namespace RPGFramework
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
-        public List<string> Tags { get; set; } = new List<string>(); // (for scripting or special behavior)
+        protected List<string> Tags { get; set; } = []; // (for scripting or special behavior)
+        public List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Mob", "Hostile", "Greedy", "Healer", "Wimpy", "Talkative"];
+        //Might need to move later, but for now I need a place to keep them -Shelton
         public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
-        public List<Armor> EquippedArmor { get; set; } = new List<Armor>();
+        public List<Armor> EquippedArmor { get; set; } = [];
         public Weapon PrimaryWeapon { get; set; }
-        public Inventory PlayerInventory { get; set; } = new Inventory(); 
+        //public Inventory PlayerInventory { get; set; } = new Inventory(); 
         #endregion
 
         #region --- Skill Attributes --- (0-20)
@@ -67,9 +71,31 @@ namespace RPGFramework
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
         }
 
+        public Area GetArea()
+        {
+            return GameState.Instance.Areas[AreaId];
+        }
+
+        // get exits in current room
+        public List<Exit> GetExits()
+        {
+            Room currentRoom = GetRoom();
+            List<Exit> exits = new List<Exit>();
+            foreach (int exitId in currentRoom.ExitIds)
+            {
+                exits.Add(GameState.Instance.Areas[AreaId].Exits[exitId]);
+            }
+            return exits;
+        }
+
         public void SetRoom(int id)
         {
             LocationId = id;
+        }
+
+        public void SetArea(int id)
+        {
+            AreaId = id;
         }
 
         // Set Health to a specific value
@@ -78,11 +104,11 @@ namespace RPGFramework
             // Doesn't make sense if player is dead
             if (Alive == false)
                 return;
-            
+
 
             // Can't have health < 0
             if (health < 0)
-                health = 0;           
+                health = 0;
 
             // Can't have health > MaxHealth
             if (health > MaxHealth)
@@ -97,6 +123,18 @@ namespace RPGFramework
             }
         }
 
+        // Set Max Health to a specific value, use sparingly, mostly for creating characters
+        public void SetMaxHealth(int maxHealth)
+        {
+            if (maxHealth < 1)
+                maxHealth = 1;
+            MaxHealth = maxHealth;
+            // Ensure current health is not greater than new max health
+
+            Health = MaxHealth;
+        }
+
+
         // Remove some amount from health
         public void TakeDamage(int damage)
         {
@@ -107,12 +145,8 @@ namespace RPGFramework
         public void Heal(int heal)
         {
             SetHealth(Health + heal);
-        }
 
-        // CODE REVIEW: Shelton - PR #18
-        // There is really no reason to be a method, you can just set the property directly.
-        // I commented it out and you can just delete this comment once you've reviewed.
-        //public void SetDescription(string Desc) { Description = Desc; }
+        }
 
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
         {
@@ -123,10 +157,70 @@ namespace RPGFramework
         {
             throw new NotImplementedException();
         }
-        object IDescribable.Name
+
+        //Add tags to character
+        public bool AddTag(string tag)
         {
-            get => Name;
-            set => Name = value?.ToString() ?? "";
+           if(ValidTags.Contains(tag) && !Tags.Contains(tag))
+           {
+                Tags.Add(tag);
+                return true;
+           }
+            else
+            {
+                return false;
+            }
+        }
+        //removes tags from character
+        public bool RemoveTag(string tag)
+        {
+            if (Tags.Contains(tag))
+            {
+                Tags.Remove(tag);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        //Attack Resolution
+        public bool WillHit()
+        {
+
+
+
+            int HitChance = 50 + (Dexterity) * 5; /* Add - Enemy.Dexterity*/
+            HitChance = Math.Clamp(HitChance, 5, 95);
+            int roll = Random.Shared.Next(1, 101);
+            bool hit = roll <= HitChance;
+            return hit;
+
+        }
+
+    
+        public void WeaponStrengthDamage(int strength)
+        {
+            RPGFramework.Weapon test = new RPGFramework.Weapon();
+     
+            Double Damage = Strength + test.Damage;
+        }
+
+        public bool WillDodge()
+        {
+            int DodgeChance = Dexterity;
+
+
+
+            int Dodge = Random.Shared.Next(1, 101);
+            bool dodgedroll = Dodge <= DodgeChance;
+            return dodgedroll;
+        }
+        //End Attack Resolution
+        public List<string> GetTags()
+        {
+            return Tags;
         }
     }
 }
+        

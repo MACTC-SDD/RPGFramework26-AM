@@ -1,5 +1,10 @@
 ﻿
+using RPGFramework.Commands;
 using RPGFramework.Enums;
+using RPGFramework.Geography;
+using System.ComponentModel;
+using System.Runtime.InteropServices.Swift;
+using System.Transactions;
 
 namespace RPGFramework
 {
@@ -11,57 +16,104 @@ namespace RPGFramework
     internal class NonPlayer : Character
     {
         //additional variables from NPCs
-        public string ShortDescription { get; private set; } = "";
-        public string LongDescription { get; private set; } = "";
-        public int CurrentAgressionLevel { get; private set; } = 0; // (the higher the value, the more aggressive actions can be taken)
-        public int MaxAgressionLevel { get; private set; } = 10; // (the maximum aggression level for this NPC)
-        public int MinAgressionLevel { get; private set; } = 0; // (the minimum aggression level for this NPC)
-
-        // CODE REVIEW: Shelton - PR #18
-        // There is really no reason to be fields, and you already have all of this information
-        // as properties with private set, so I removed these methods.
-        // I also moved them to the top with the rest of the fields/properties.
-        // You can delete this comment once you've reviewed.
-        //public int GetAgressionLevel() { return CurrentAgressionLevel; } // Not needed you already have CurrentAgressionLevel property
-        //public string GetShortDescription() { return ShortDescription; }
-        //public string GetLongDescription() { return LongDescription; }
-
-        // CODE REVIEW: Shelton - PR #18
-        // We want to make sure we have a default constructor for serialization purposes (and in general).
-        // I added it, so you can just delete this comment.
+        public Dictionary<string, List<string>> DialogOptions { get; protected set; } = new Dictionary<string, List<string>>();
+        public int CurrentAggressionLevel { get; protected set; } = 0;
+        public int MaxAggressionLevel { get; protected set; } = 10;
+        public int MinAgressionLevel { get; protected set; } = 0;
+        public bool Spawned { get; set; } = false;
+        public NonPlayerType NpcType { get; protected set; } = NonPlayerType.Default;
+        public CharacterState CurrentState { get; protected set; } = CharacterState.Idle;
         public NonPlayer()
         {
         }
 
-        public NonPlayer(string name, string shortDesc, string longDesc, int level)
-        {
-            Name = name;
-            ShortDescription = shortDesc;
-            LongDescription = longDesc;
-            Level = level;
-        }
-
         public void IncrementAgressionLevel(int amount)
         {
-            if (amount < MaxAgressionLevel || amount > -MaxAgressionLevel)
+            if(amount + CurrentAggressionLevel > MaxAggressionLevel)
             {
-                CurrentAgressionLevel += amount;
+                CurrentAggressionLevel = MaxAggressionLevel;
+                return;
             }
-            else if (amount + CurrentAgressionLevel > MaxAgressionLevel)
+            else if(amount + CurrentAggressionLevel < MinAgressionLevel)
             {
-                CurrentAgressionLevel = MaxAgressionLevel;
+                CurrentAggressionLevel = MinAgressionLevel;
+                return;
             }
-            else if (CurrentAgressionLevel - amount < MinAgressionLevel)
-            {
-                CurrentAgressionLevel = MinAgressionLevel;
-            }
-            else
-            {
-                CurrentAgressionLevel += amount;
-            }
+            CurrentAggressionLevel += amount;
         }
 
+        #region ---- Behavior Methods ----
 
-        
+        //npc leaves the room into a random room.
+        private void NpcLeaveRoom(Character npc)
+        {
+            // Implement leave room logic here
+            List<Exit> exits = GetExits();
+            int exitId = random.Next(exits.Count);
+            Direction choice = exits.ElementAt(exitId).ExitDirection;
+
+            Navigation.Move(npc,choice);
+            GetRoom();
+            return;
+        }
+
+        //Plays when the npc is in an idle state
+        public void PerformIdleBehavior()
+        {
+            // Implement idle behavior logic here
+            int speakingChance = random.Next(1, 20);
+
+            //methods using above numbers
+            NpcSpeakingChance(speakingChance);
+            //save for last option (so it cant talk after it leaves)
+            int LeavingChance = random.Next(1, 20);
+            NpcMovementChance(LeavingChance);
+        }
+
+        //moves if the npc gets a high enough random number.
+        private void NpcMovementChance(int number)
+        {
+            if (Tags.Contains("Wanderer"))
+            {
+                number += 2;
+            }
+            if(number >= 18)
+            {
+                NpcLeaveRoom(this);
+
+            }
+            return;
+        }
+
+        private void NpcSpeakingChance(int number)
+        {
+            if (Tags.Contains("Talkative"))
+            {
+                number += 2;
+            }
+            if (number >= 15)
+            {
+                NpcSpeak();
+            }
+            return;
+        }
+
+        private void NpcSpeak()
+        {
+            if(DialogOptions.Count == 0)
+            {
+                return;
+            }
+            List<string> dialogKeys = DialogOptions.Keys.ToList();
+            int dialogIndex = random.Next(0, dialogKeys.Count);
+            string selectedKey = dialogKeys[dialogIndex];
+
+            List<string> possibleLines = DialogOptions[selectedKey];
+            int lineIndex = random.Next(0, possibleLines.Count);
+            string selectedLine = possibleLines[lineIndex];
+
+            Comm.SendToRoom(GetRoom(), $"{Name} says: \"{selectedLine}\"");
+        }
+        #endregion
     }
 }

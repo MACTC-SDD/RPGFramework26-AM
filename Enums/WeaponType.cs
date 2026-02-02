@@ -1,16 +1,18 @@
 ﻿namespace RPGFramework.Enums
 {
+    // CODE REVIEW: Liam (PR #21)
+    // Before you start actually creating weapons, alphabatize this list.
     internal enum WeaponType
     {
         LongSword,
-        Shortsword,
+        ShortSword,
         Claymore,
         Cutlass,
         BattleAxe,
         Hatchet,
         Mace,
         Warhammer,
-        staff,
+        Staff,
         Wands,
         Dagger,
         Spear,
@@ -38,8 +40,9 @@
         Saber,
         Wakizashi,
         Flintlock,
-
+        Sword
     }
+
     public enum EquipmentSlot
     {
         Head,

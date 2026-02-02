@@ -1,13 +1,26 @@
-﻿namespace RPGFramework.Enums
+namespace RPGFramework.Enums
 {
     internal enum WeaponMaterial
     {
         Wood,
-        rusty,
-        stone,
+        Bone,
+        Rusty,
+        Stone,
         Iron,
         Steel,
         Mythril,
-        Obsidian
+        Obsidian,
+        Copper,
+        Bronze,
+        DragonBone,
+        Crystal,
+        Tungsten,
+        VoidMetal,
+        StarMetal,
+        Gold,
+        Basalt,
+        MoonSilver,
+        
     }
 }
+    

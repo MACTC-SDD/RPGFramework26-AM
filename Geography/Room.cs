@@ -21,11 +21,16 @@ namespace RPGFramework.Geography
 
         // Name of the room
         public string Name { get; set; } = "";
-       
-        public List<string> Tags { get; set; } = new List<string>(); // (for scripting or special behavior)
 
+        public Dictionary<string, int> SpawnableMobs { get; set; } = new Dictionary<string, int>();
+        public List<Mob> Mobs { get; set; } = [];
+        public Dictionary<string, int> SpawnableNpcs { get; set; } = new Dictionary<string, int>();
+        public List<NonPlayer> Npcs{ get; set; } = [];
+        public int MaxSpawnedAllowed { get; set; } = 3;
+        public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
+        public List<Player> Players { get; set; } = [];
         // List of exits from the room
-        public List<int> ExitIds { get; set; } = new List<int>();
+        public List<int> ExitIds { get; set; } = [];
         #endregion --- Properties ---
 
         #region --- Methods ---
@@ -47,7 +52,7 @@ namespace RPGFramework.Geography
             }
 
             // Make sure the destination room doesn't already have an exit in the opposite direction
-            if (returnExit 
+            if (returnExit
                 && destinationRoom.GetExits().Any(e => e.ExitDirection == Navigation.GetOppositeDirection(direction)))
             {
                 player.WriteLine("The destination room already has an exit coming from the opposite direction.");
@@ -55,23 +60,27 @@ namespace RPGFramework.Geography
             }
 
             // Create a new Exit object from this room
-            Exit exit = new Exit();
-            exit.Id = Exit.GetNextId(AreaId);
-            exit.SourceRoomId = Id;
-            exit.DestinationRoomId = destinationRoom.Id;
-            exit.ExitDirection = direction;
-            exit.Description = exitDescription;
+            Exit exit = new()
+            {
+                Id = Exit.GetNextId(AreaId),
+                SourceRoomId = Id,
+                DestinationRoomId = destinationRoom.Id,
+                ExitDirection = direction,
+                Description = exitDescription
+            };
             ExitIds.Add(exit.Id);
             GameState.Instance.Areas[AreaId].Exits.Add(exit.Id, exit);
 
             // Create a new exit from the destination room back to this room
             if (returnExit)
             {
-                Exit exit1 = new Exit();
-                exit1.Id = Exit.GetNextId(destinationRoom.AreaId);
-                exit1.SourceRoomId = destinationRoom.Id;
-                exit1.DestinationRoomId = Id;
-                exit1.ExitDirection = Navigation.GetOppositeDirection(direction);
+                Exit exit1 = new()
+                {
+                    Id = Exit.GetNextId(destinationRoom.AreaId),
+                    SourceRoomId = destinationRoom.Id,
+                    DestinationRoomId = Id,
+                    ExitDirection = Navigation.GetOppositeDirection(direction)
+                };
                 exit1.Description = exitDescription.Replace(direction.ToString(), exit1.ExitDirection.ToString());
                 destinationRoom.ExitIds.Add(exit1.Id);
                 GameState.Instance.Areas[destinationRoom.AreaId].Exits.Add(exit1.Id, exit1);
@@ -86,10 +95,12 @@ namespace RPGFramework.Geography
         /// <returns></returns>
         public static Room CreateRoom(int areaId, string name, string description)
         {
-            Room room = new Room();
-            room.Id = GetNextId(areaId);
-            room.Name = name;
-            room.Description = description;
+            Room room = new()
+            {
+                Id = GetNextId(areaId),
+                Name = name,
+                Description = description
+            };
             GameState.Instance.Areas[areaId].Rooms.Add(room.Id, room);
 
             return room;
@@ -98,6 +109,24 @@ namespace RPGFramework.Geography
         public static Room CreateRoom(Area area, string name, string description)
         {
             return CreateRoom(area.Id, name, description);
+        }
+
+        /// <summary>
+        /// Create a copy of this room without copying exits.
+        /// </summary>
+        public Room CloneWithoutExits(string newName)
+        {
+            Room newRoom = new Room
+            {
+                Name = newName,
+                Description = this.Description,
+                MapColor = this.MapColor,
+                MapIcon = this.MapIcon,
+                Tags = new List<string>(this.Tags),
+                AreaId = this.AreaId // Important: assign the same area
+            };
+
+            return newRoom;
         }
 
         /// <summary>
@@ -111,8 +140,9 @@ namespace RPGFramework.Geography
             GameState.Instance.Areas[areaId].Rooms.Remove(roomId);
 
             // Remove all exits from the room
-            List<Exit> exits = GameState.Instance.Areas[areaId].Exits.Values
-                .Where(e => e.SourceRoomId == roomId || e.DestinationRoomId == roomId).ToList();
+            List<Exit> exits = [.. GameState.Instance.Areas[areaId]
+                .Exits
+                .Values.Where(e => e.SourceRoomId == roomId || e.DestinationRoomId == roomId)];
 
             foreach (Exit e in exits)
             {
@@ -132,9 +162,8 @@ namespace RPGFramework.Geography
         public List<Exit> GetExits()
         {
             // This works just like the loop in GetPlaysersInRoom, but is shorter
-            // This style of list maniuplation is called "LINQ"
-            return GameState.Instance.Areas[AreaId].Exits.Values
-                .Where(e => e.SourceRoomId == Id).ToList();
+            // This style of list manipulation is called "LINQ"
+            return [.. GameState.Instance.Areas[AreaId].Exits.Values.Where(e => e.SourceRoomId == Id)];
         }
 
         /// <summary>
@@ -191,11 +220,11 @@ namespace RPGFramework.Geography
         public static List<Player> GetPlayersInRoom(Room room)
         {
             // Loop through GameState.ConnectedPlayers and return a list of players in the room
-            List<Player> playersInRoom = new List<Player>();
+            List<Player> playersInRoom = [];
             foreach (Player p in GameState.Instance.Players.Values)
             {
-                if (p.IsOnline 
-                    && p.AreaId == room.AreaId 
+                if (p.IsOnline
+                    && p.AreaId == room.AreaId
                     && p.LocationId == room.Id)
                 {
                     playersInRoom.Add(p);
@@ -207,7 +236,7 @@ namespace RPGFramework.Geography
         #endregion --- Methods ---
 
         #region --- Methods (Events) ---
-        
+
         /// <summary>
         /// When a character enters a room, do this.
         /// </summary>
@@ -215,10 +244,21 @@ namespace RPGFramework.Geography
         public void EnterRoom(Character character, Room fromRoom)
         {
             // Send a message to the player
-            if (character is Player) ((Player)character).WriteLine(Description);
+            Comm.SendToIfPlayer(character, Description);
 
             // Send a message to all players in the room
             Comm.SendToRoomExcept(this, $"{character.Name} enters the room.", character);
+            if(character is NonPlayer npc){ 
+                Npcs.Add(npc);
+            }
+            else if(character is Player player)
+            {
+                Players.Add(player);
+            }
+            else if (character is Mob mob)
+            {
+                Mobs.Add(mob);
+            }
         }
 
         /// <summary>
@@ -230,6 +270,120 @@ namespace RPGFramework.Geography
         {
            // Send a message to all players in the room
             Comm.SendToRoomExcept(this, $"{character.Name} leaves the room.", character);
+            if (character is NonPlayer npc)
+            {
+                Npcs.Remove(npc);
+            }
+            else if (character is Player player)
+            {
+                Players.Remove(player);
+            }
+            else if (character is Mob mob)
+            {
+                Mobs.Remove(mob);
+            }
+        }
+        #endregion
+
+        #region --- Methods (NPC Handling) ---
+        /// <summary>
+        ///  Currently just working on spawning mobs in rooms based on SpawnableMobs dictionary. 
+        ///  (commands not working yet)
+        /// </summary>
+        public void SpawnMobsInRoom()
+        {
+            if(Players.Count <= 0)
+            {
+                // Don't spawn mobs if players aren't present
+                return;
+            }
+
+            Area area = GameState.Instance.Areas[AreaId];
+            Room room = this;
+            // Count current mobs in the room
+            int currentMobCount = Mobs.Count;
+            Random rand = new Random();
+            foreach(var kvp in SpawnableMobs)
+            {
+                string npcName = kvp.Key;
+                int maxToSpawn = kvp.Value;
+                // Spawn mobs until we reach the max allowed or the room's max spawn limit
+                if (currentMobCount >= MaxSpawnedAllowed)
+                {
+                    break;
+                }
+                int numberRolled = rand.Next(1, 20);
+                if(numberRolled >= SpawnableMobs[npcName])
+                {
+                    SpawnMob(npcName);
+                }
+            }
+            return;
+        }
+
+        public void AddToSpawnableMobs(string npcName, int spawnChance)
+        {
+            if (!SpawnableMobs.ContainsKey(npcName))
+            {
+                SpawnableMobs.Add(npcName, spawnChance);
+            }
+            return;
+        }
+
+        public void AddToSpawnableNpcs(string npcName, int spawnChance)
+        {
+            if (!SpawnableNpcs.ContainsKey(npcName))
+            {
+                SpawnableNpcs.Add(npcName, spawnChance);
+            }
+            return;
+        }
+        private void SpawnMob(string npcName)
+        {
+            Mob mob = GameState.Instance.MobCatalog[npcName];
+            Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
+
+            Mobs.Add(mob);
+            return;
+        }
+
+        public void SpawnNpcsInRoom()
+        {
+            if (Players.Count <= 0)
+            {
+                // Don't spawn npcs if players aren't present
+                return;
+            }
+            Area area = GameState.Instance.Areas[AreaId];
+            Room room = this;
+            // Count current npcs in the room
+            int currentNpcCount = Npcs.Count;
+            Random rand = new Random();
+            foreach (var kvp in SpawnableNpcs)
+            {
+                string npcName = kvp.Key;
+                int maxToSpawn = kvp.Value;
+                // Spawn npcs until we reach the max allowed or the room's max spawn limit
+                if (currentNpcCount >= MaxSpawnedAllowed)
+                {
+                    break;
+                }
+                int numberRolled = rand.Next(1, 20);
+                if (numberRolled >= SpawnableNpcs[npcName])
+                {
+                    SpawnNpc(npcName);
+                }
+            }
+            return;
+        }
+
+        private void SpawnNpc(string npcName)
+        {
+            Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
+            NonPlayer npc = GameState.Instance.NPCCatalog[npcName];
+            npc.Spawned = true;
+            Npcs.Add(npc);
+            return;
         }
         #endregion
     }

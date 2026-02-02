@@ -15,7 +15,7 @@ namespace RPGFramework.Persistence
     internal sealed class JsonGamePersistence : IGamePersistence
     {
         #region Initialization Methods
-        private static void CopyDirectoryIfMissing(string sourceDir, string destDir)
+        private static void CopyDirectoryIfMissing(string sourceDir, string destDir, bool overwrite = false)
         {
             foreach (string sourcePath in Directory.EnumerateFiles(sourceDir, "*", SearchOption.AllDirectories))
             {
@@ -28,24 +28,24 @@ namespace RPGFramework.Persistence
                     Directory.CreateDirectory(destParent);
                 }
 
-                // Never overwrite runtime data.
-                if (!File.Exists(destPath))
+                // Never overwrite runtime data unless explicitly told to.
+                if (!File.Exists(destPath) || overwrite)
                 {
-                    File.Copy(sourcePath, destPath);
+                    File.Copy(sourcePath, destPath, overwrite);
                 }
             }
         }
 
         private static void CreateStarterArea()
         {
-            Area area = new Area
+            Area area = new()
             {
-                Id = 0,
+                Id = 0,                
                 Name = "Starter Area",
                 Description = "The first place new players enter."
             };
 
-            Room room = new Room
+            Room room = new()
             {
                 Id = 0,
                 AreaId = 0,
@@ -60,18 +60,20 @@ namespace RPGFramework.Persistence
 
         public Task EnsureInitializedAsync(GamePersistenceInitializationOptions options)
         {
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
+            ArgumentNullException.ThrowIfNull(options);
 
             string baseDir = AppContext.BaseDirectory;
 
             string runtimeDataDir = Path.Combine(baseDir, options.RuntimeDataRelativePath);
             string runtimeAreasDir = Path.Combine(runtimeDataDir, "areas");
             string runtimePlayersDir = Path.Combine(runtimeDataDir, "players");
+            string runtimeCatalogsDir = Path.Combine(runtimeDataDir, "catalogs");
 
-            Directory.CreateDirectory(runtimeDataDir);
-            Directory.CreateDirectory(runtimeAreasDir);
-            Directory.CreateDirectory(runtimePlayersDir);
+            List<DirectoryInfo> dataDirectories = new List<DirectoryInfo>();
+            dataDirectories.Add(Directory.CreateDirectory(runtimeDataDir));
+            dataDirectories.Add(Directory.CreateDirectory(runtimeAreasDir));
+            dataDirectories.Add(Directory.CreateDirectory(runtimePlayersDir));
+            dataDirectories.Add(Directory.CreateDirectory(runtimeCatalogsDir));
 
             if (!string.IsNullOrWhiteSpace(options.SeedDataRelativePath))
             {
@@ -91,6 +93,21 @@ namespace RPGFramework.Persistence
                 if (!hasAnyAreaFile)
                 {
                     CreateStarterArea();
+                }
+            }
+
+            // If CopyFilesFromDataSeed was set, copy all files from seed directories to runtime directories.
+            if (options.CopyFilesFromDataSeedToRuntimeData)
+            {                 
+                if (!string.IsNullOrWhiteSpace(options.SeedDataRelativePath))
+                {
+                    string seedDataDir = Path.Combine(baseDir, options.SeedDataRelativePath);
+                    // Avoid accidental "copy the folder into itself" scenarios.
+                    if (Directory.Exists(seedDataDir) &&
+                        !PathsReferToSameDirectory(seedDataDir, runtimeDataDir))
+                    {
+                        CopyDirectoryIfMissing(seedDataDir, runtimeDataDir, options.CopyFilesFromDataSeedToRuntimeData);
+                    }
                 }
             }
 
@@ -115,7 +132,11 @@ namespace RPGFramework.Persistence
         public Task<IReadOnlyDictionary<int, Area>> LoadAreasAsync()
         {
             var areas = ObjectStorage.LoadAllObjects<Area>("data/areas/");
-            var dict = areas.ToDictionary(a => a.Id);
+            /* var dict = areas.ToDictionary(a => a.Id);*/
+            var dict = areas
+         .GroupBy(a => a.Id)
+         .Select(g => g.First())
+         .ToDictionary(a => a.Id);
             return Task.FromResult((IReadOnlyDictionary<int, Area>)dict);
         }
 
@@ -126,25 +147,10 @@ namespace RPGFramework.Persistence
             return Task.FromResult((IReadOnlyDictionary<string, Player>)dict);
         }
 
-        public Task<IReadOnlyDictionary<string, Item>> LoadItemsAsync()
+        public Task<T?> LoadCatalogAsync<T>(string catalogName) where T : class
         {
-            var items = ObjectStorage.LoadObject<Dictionary<string, Item>>("data/catalogs/","items-catalog.json")
-                        ?? new Dictionary<string, Item>();
-            return Task.FromResult((IReadOnlyDictionary<string, Item>)items);
-        }
-
-        public Task<IReadOnlyDictionary<string, Armor>> LoadArmorAsync()
-        {
-            var armor = ObjectStorage.LoadObject<Dictionary<string, Armor>>("data/catalogs/", "armor-catalog.json")
-                        ?? new Dictionary<string, Armor>();
-            return Task.FromResult((IReadOnlyDictionary<string, Armor>)armor);
-        }
-
-        public Task<IReadOnlyDictionary<string, Weapon>> LoadWeaponsAsync()
-        {
-            var weapons = ObjectStorage.LoadObject<Dictionary<string, Weapon>>("data/catalogs/", "weapons-catalog.json")
-                          ?? new Dictionary<string, Weapon>();
-            return Task.FromResult((IReadOnlyDictionary<string, Weapon>)weapons);
+            var catalog = ObjectStorage.LoadObject<T?>("data/catalogs/", $"{catalogName}.json");
+            return Task.FromResult(catalog);
         }
         #endregion
 
@@ -174,22 +180,12 @@ namespace RPGFramework.Persistence
             ObjectStorage.SaveObject(player, "data/players/", $"{player.Name}.json");
             return Task.CompletedTask;
         }
-        public Task SaveItemCatalogAsync(Dictionary<string, Item> items)
-        {
-            ObjectStorage.SaveObject(items, "data/catalogs/", $"items-catalog.json");
-            return Task.CompletedTask; }
-        public Task SaveArmorCatalogAsync(Dictionary<string, Armor> armor)
-        {
-            ObjectStorage.SaveObject(armor, "data/catalogs/", $"armor-catalog.json");
-            return Task.CompletedTask;
-        }
-        public Task SaveWeaponCatalogAsync(Dictionary<string, Weapon> weapons)
-        {
-            ObjectStorage.SaveObject(weapons, "data/catalogs/", $"weapons-catalog.json");
-            return Task.CompletedTask;
-        }
 
-        
+        public Task SaveCatalogAsync(object catalog, string catalogName)
+        {
+            ObjectStorage.SaveObject(catalog, "data/catalogs/", $"{catalogName}.json");
+            return Task.CompletedTask;
+        }
         #endregion
     }
 }
