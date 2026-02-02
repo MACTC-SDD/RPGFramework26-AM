@@ -21,9 +21,42 @@ namespace RPGFramework.Commands
     /// <summary>
     /// /room command for building and editing rooms.
     /// </summary>
-    internal class RoomBuilderCommand : ICommand
+        internal class RoomBuilderCommand : ICommand
     {
         public string Name => "/room";
+
+        public string Name2 => "/exit";
+
+        public IEnumerable<string> Aliases2 => Array.Empty<string>();
+
+        public bool Execute2(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+            {
+                return false;
+            }
+
+            if (parameters.Count < 2)
+            {
+                WriteUsage(player);
+                return false;
+            }
+
+           // switch (parameters[1].ToLower())
+         //   {
+         //       case "description":
+         //           ExitSetDescription(player, parameters);
+          //          break;
+               // case "create":
+                 //   ExitCreate(player, parameters);
+                   // break;
+               // default:
+                 //   WriteUsage(player);
+                   // break;
+            //}
+
+            return true;
+        }
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
 
@@ -39,7 +72,7 @@ namespace RPGFramework.Commands
                 WriteUsage(player);
                 return false;
             }
-
+             
             switch (parameters[1].ToLower())
             {
                 case "description":
