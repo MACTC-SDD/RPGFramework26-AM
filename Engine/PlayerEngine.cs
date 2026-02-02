@@ -72,15 +72,5 @@ namespace RPGFramework
 
             return ((System.Net.IPEndPoint)Network.Client.Client.RemoteEndPoint).Address.ToString();
         }
-
-        internal object GetItem()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal object GetWeapon()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
