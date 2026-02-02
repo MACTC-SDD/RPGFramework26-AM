@@ -4,6 +4,7 @@
     {
         public static List<ICommand> GetAllCommands()
         {
+            TestItemSizeCommand testItemSizeCommand = new();
             return new List<ICommand>
             {
                 new TestItemSizeCommand(),
@@ -28,6 +29,7 @@
 
         // These are the aliases that can also be used to execute this command. This can be empty.
         public IEnumerable<string> Aliases => new List<string>() { "ex" };
+        public string Help => "";
 
         // What will happen when the command is executed
         public bool Execute(Character character, List<string> parameters)
@@ -42,6 +44,7 @@
             return true;
         }
     }
+   
 
     internal class TestItemCommand : ICommand
     {
@@ -50,25 +53,27 @@
 
         // These are the aliases that can also be used to execute this command. This can be empty.
         public IEnumerable<string> Aliases => new List<string>() {  };
+        public string Help => "";
 
         // What will happen when the command is executed
         public bool Execute(Character character, List<string> parameters)
         {
             // A lot of times we want to make sure it's a Player issuing the command, but not always
-            if (character is Player player)
-            {
-                player.WriteLine("This is an example command.");
-                Item i = new Item();
-                i.Name = character.Name;
-                i.Description = "Test Item";
-                GameState.Instance.ItemCatalog.Add(i.Name, i);
-            }
+            if (character is not Player player)
+                return false;
+
+
+            player.WriteLine("This is an example command.");
+            Item i = new Item();
+            i.Name = character.Name;
+            i.Description = "Test Item";
+            GameState.Instance.ItemCatalog.Add(i.Name, i);
+
 
             // If the command failed to run for some reason, return false
             return true;
         }
     }
-
 
     /// <summary>
     /// Measures the memory usage of creating a large number of <see cref="Item"/> instances.
@@ -80,6 +85,7 @@
     {
         public string Name => "testitemsize";
         public IEnumerable<string> Aliases => new List<string>() { };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             long startMem = GC.GetTotalMemory(true);

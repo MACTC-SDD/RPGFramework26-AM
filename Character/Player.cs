@@ -1,8 +1,8 @@
-﻿using System.Text.Json.Serialization;
+﻿using RPGFramework.Enums;
 using Spectre.Console;
 using Spectre.Console.Rendering;
-
-using RPGFramework.Enums;
+using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace RPGFramework
 {
@@ -21,14 +21,61 @@ namespace RPGFramework
         public int MapRadius { get; set; } = 2; // How far the player can see on the map
         public string Password { get; private set; } = "SomeGarbage";
         public TimeSpan PlayTime { get; set; } = new TimeSpan();
-        public PlayerRole PlayerRole { get; set; }
+        public PlayerRole Role { get; set; }
         #endregion
-
+        /*Made a small change?, undid it as it was for just testing*/
         public string DisplayName()
         {
             // We could add colors and other things later, for now, just afk
             return Name + (IsAFK ? " (AFK)" : "");
 
+        }
+        /// <summary>
+        /// Checks if a player with the specified name exists in the provided dictionary. This is case-insensitive!
+        /// That is why we don't just use players.ContainsKey.
+        /// </summary>
+        /// <param name="playerName"></param>
+        /// <param name="players"></param>
+        /// <returns></returns>
+        public static bool Exists(string playerName, Dictionary<string, Player> players)
+        {
+            // Check dictionary keys in a case-insensitive manner
+            return players.Keys.Any(name => string.Equals(name, playerName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Searches for a player by name in the specified collection and returns the corresponding player if found.
+        /// This search is case-insensitive, which is why we should use this method instead of directly accessing the dictionary.
+        /// </summary>
+        /// <param name="playerName">The name of the player to locate. The comparison is case-insensitive.</param>
+        /// <param name="players">A dictionary containing player names as keys and their corresponding Player objects as values. Cannot be
+        /// null. This will usually be GameState.Instance.Players in our case.</param>
+        /// <returns>The Player object associated with the specified name if found; otherwise, null.</returns>
+        public static Player? FindPlayer(string playerName, Dictionary<string, Player> players)
+        {
+            foreach (var kvp in players)
+            {
+                if (string.Equals(kvp.Key, playerName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return kvp.Value;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Attempts to find a player with the specified name in the provided collection.
+        /// </summary>
+        /// <param name="playerName">The name of the player to locate. Cannot be null.</param>
+        /// <param name="players">A dictionary containing player names as keys and corresponding <see cref="Player"/> objects as values.
+        /// Cannot be null.</param>
+        /// <param name="player">When this method returns, contains the <see cref="Player"/> object associated with the specified name, if
+        /// found;</param>
+        /// <returns><see langword="true"/> if a player with the specified name is found; otherwise, <see langword="false"/>.</returns>
+        public static bool TryFindPlayer(string playerName, Dictionary<string, Player> players, out Player? player)
+        {
+            player = FindPlayer(playerName, players);
+            return player != null;
         }
         
         /// <summary>
@@ -55,6 +102,8 @@ namespace RPGFramework
             Network?.Client.Close();
         }
 
+
+        
         /// <summary>
         /// Save the player to the database.
         /// </summary>
@@ -77,15 +126,17 @@ namespace RPGFramework
         public void Write(string message)
         {
             WriteNewLineIfNeeded();
-            Console.Write(message);
-            Console.Write(Network.TelnetConnection.CurrentLineText); // Re-write current input line
+            Console?.Write(message);
+            var line = Network?.TelnetConnection?.CurrentLineText;
+            Console?.Write(line ?? String.Empty); // Re-write current input line
         }
 
         public void Write(IRenderable renderable)
         {
             WriteNewLineIfNeeded();
-            Console.Write(renderable);
-            Console.Write(Network.TelnetConnection.CurrentLineText); // Re-write current input line
+            Console?.Write(renderable);
+            var line = Network?.TelnetConnection?.CurrentLineText;
+            Console?.Write(line ?? String.Empty); // Re-write current input line
         }
 
         
@@ -97,8 +148,9 @@ namespace RPGFramework
         public void WriteLine(string message)
         {
             WriteNewLineIfNeeded();
-            Console.MarkupLine(message);
-            Console.Write(Network.TelnetConnection.CurrentLineText); // Re-write current input line
+            Console?.MarkupLine(message);
+            var line = Network?.TelnetConnection?.CurrentLineText;
+            Console?.Write(line ?? String.Empty); // Re-write current input line
         }
         private void WriteNewLineIfNeeded()
         {
@@ -108,10 +160,12 @@ namespace RPGFramework
                 return;
             if (Network.NeedsOutputNewline)
             {
-                Console.Write("\r\n");
+                Console?.Write("\r\n");
             }
         }
 
+
+        
 
     }
 

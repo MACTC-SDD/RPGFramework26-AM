@@ -1,8 +1,10 @@
 ﻿using RPGFramework.Display;
 using RPGFramework.Enums;
 using RPGFramework.Items;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace RPGFramework.Commands
@@ -26,6 +28,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "inventory";
         public IEnumerable<string> Aliases => new List<string>() { "inv" };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is not Player player)
@@ -50,6 +53,7 @@ namespace RPGFramework.Commands
         public string Name => "/item";
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -75,6 +79,9 @@ namespace RPGFramework.Commands
                 case "create":
                     ItemCreate(player, parameters);
                     break;
+                case "delete":
+                    ItemDelete(player, parameters);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -89,6 +96,7 @@ namespace RPGFramework.Commands
             player.WriteLine("/item description '<set item desc to this>'");
             player.WriteLine("/item name '<set item name to this>'");
             player.WriteLine("/item create '<name>' '<description>''");
+            player.WriteLine("/item delete '<name>'");
         }
 
         private static void ItemCreate(Player player, List<string> parameters)
@@ -96,7 +104,7 @@ namespace RPGFramework.Commands
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -104,6 +112,7 @@ namespace RPGFramework.Commands
             // 1: create
             // 2: name
             // 3: description
+
             if (parameters.Count < 4)
             {
                 player.WriteLine("Usage: /item create '<name>' '<description>'");
@@ -114,10 +123,47 @@ namespace RPGFramework.Commands
                     Name = parameters[2],
                     Description = parameters[3]
                 };
+            if (GameState.Instance.ItemCatalog.ContainsKey(newItem.Name))
+            {
 
+            }
+            else
+            {
+                GameState.Instance.ItemCatalog.Add(newItem.Name, new Item());
+            }
                 // Here you would typically add the item to a database or game world
                 player.WriteLine($"Item '{newItem.Name}' created successfully with description: {newItem.Description}");
             
+        }
+
+        private static void ItemDelete(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            // Parameters:
+            // 0: /item
+            // 1: delete
+            // 2: name
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("Usage: /item delete '<name>'");
+                return;
+            }
+
+            string itemName = parameters[2];
+
+            if (GameState.Instance.ItemCatalog.Remove(itemName))
+            {
+                player.WriteLine($"Item '{itemName}' deleted successfully.");
+            }
+            else
+            {
+                player.WriteLine($"Item '{itemName}' not found in catalog.");
+            }
         }
 
         private static void ItemSetDescription(Player player, List<string> parameters)
@@ -127,28 +173,43 @@ namespace RPGFramework.Commands
                 player.WriteLine("You do not have permission to do that.");
                 return;
             }
-
-            if (parameters.Count < 3)
+            var item = GameState.Instance.ItemCatalog[parameters[3]];
+            if (item is IDescribable describableItem)
             {
-                //player.WriteLine(player.GetItem().Description);
+                if (parameters.Count < 4)
+                {
+                    player.WriteLine(describableItem.Description);
+                }
+                else
+                {
+                    describableItem.Description = parameters[3];
+                    player.WriteLine("Item description set.");
+                }
             }
             else
             {
-                //player.GetItem().Description = parameters[2];
-                player.WriteLine("Room description set.");
+                player.WriteLine("No item selected or item does not support naming.");
             }
         }
 
         private static void ItemSetName(Player player, List<string> parameters)
         {
+            if (!GameState.Instance.ItemCatalog.TryGetValue(parameters[3], out Item? item) || item == null)
+            {
+                player.WriteLine("Item not found.");
+                return;
+            }
+
 
             if (parameters.Count < 3)
             {
-                player.WriteLine(player.GetRoom().Name);
+                // Roundabout, we know Item has a Name, no need for IDescribable here
+                // Fix: Avoid possible null reference by using null-coalescing operator
+                //player.WriteLine(describableItem.Name?.ToString() ?? string.Empty);
             }
             else
             {
-                //player.GetItem().Name = parameters[2];
+                item.Name = parameters[2];
                 player.WriteLine("Item name set.");
             }
         }
@@ -163,6 +224,7 @@ namespace RPGFramework.Commands
         public string Name => "/armor";
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -209,7 +271,7 @@ namespace RPGFramework.Commands
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
+                player.WriteLine("Your Role is: " + player.Role.ToString());
                 return;
             }
 
@@ -227,7 +289,14 @@ namespace RPGFramework.Commands
                 Name = parameters[2],
                 Description = parameters[3]
             };
+            if (GameState.Instance.ArmorCatalog.ContainsKey(newArmor.Name))
+            {
 
+            }
+            else
+            {
+                GameState.Instance.ArmorCatalog.Add(newArmor.Name, new Armor());
+            }
             // Here you would typically add the item to a database or game world
             player.WriteLine($"Armor '{newArmor.Name}' created successfully with description: {newArmor.Description}");
 
@@ -276,6 +345,7 @@ namespace RPGFramework.Commands
         public string Name => "/weapon";
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -301,9 +371,13 @@ namespace RPGFramework.Commands
                 case "create":
                     WeaponCreate(player, parameters);
                     break;
+                case "damage":
+                    WeaponSetDamage(player, parameters);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
+                
             }
 
             return true;
@@ -315,37 +389,102 @@ namespace RPGFramework.Commands
             player.WriteLine("/weapon description '<set item desc to this>'");
             player.WriteLine("/weapon name '<set item name to this>'");
             player.WriteLine("/weapon create '<name>' '<description>''");
+            player.WriteLine("/weapon '<name>' set damage '<set weapon damage to this>'");
         }
 
-        private static void WeaponCreate(Player player, List<string> parameters)
+        private static bool WeaponCreate(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.PlayerRole.ToString());
-                return;
+                return false;
             }
 
-            // 0: /item
+            // 0: /weapon
             // 1: create
             // 2: name
             // 3: description
-            if (parameters.Count < 4)
+            // 4: damage
+            // 5: attack time
+            // 6: range
+            // 7: type
+            // 8: material
+            if (parameters.Count < 9)
             {
-                player.WriteLine("Usage: /armor create '<name>' '<description>'");
-                return;
+                player.WriteLine("Usage: /weapon create '<name>' '<description>' ' <damage>' '<attack time>' '<range>' '<type>' '<material>'");
+                return false;
+            }
+
+            if (!Int32.TryParse(parameters[4], out int damage))
+            {
+                player.WriteLine("Invalid damage value.");
+                return false;
+            }
+            if (!Int32.TryParse(parameters[5], out int attackspeed))
+            {
+                player.WriteLine("Invalid Attack Speed value.");
+                return false;
+            }
+            if (!Int32.TryParse(parameters[6], out int range))
+            {
+                player.WriteLine("Invalid range value.");
+                return false;
+            }
+            if (!Enum.TryParse(parameters[7], true, out WeaponType type))
+            {
+                player.WriteLine("Invalid weapon type.");
+                return false;
+            }
+            if (!Enum.TryParse(parameters[8], true, out WeaponMaterial material))
+            {
+                player.WriteLine("Invalid weapon material.");
+                return false;
             }
             Weapon newWeapon = new Weapon
             {
                 Name = parameters[2],
-                Description = parameters[3]
+                Description = parameters[3],
+                Damage = damage,
+                AttackTime = attackspeed,
+                Range = range,
+                Type = type,
+                Material = material,
             };
-
-            // Here you would typically add the item to a database or game world
-            player.WriteLine($"Weapon '{newWeapon.Name}' created successfully with description: {newWeapon.Description}");
-
+            if (GameState.Instance.WeaponCatalog.ContainsKey(newWeapon.Name))
+            {
+                player.WriteLine("A weapon with that name already exists.");
+                return false;
+            }
+            else
+            {
+                GameState.Instance.WeaponCatalog.Add(newWeapon.Name, newWeapon);
+                player.WriteLine($"Weapon '{newWeapon.Name}' created successfully with description: {newWeapon.Description}");
+                return true;
+            }
         }
+            // Here you would typically add the item to a database or game world
 
+        
+
+        // 0: /weapon
+        // 1: 'Weapon name'
+        // 2: set
+        // 3: (property name)
+        // 4: (property value)
+
+        private static void WeaponSetName(Player player, List<string> parameters)
+        {
+
+            if (parameters.Count < 2)
+            {
+                player.WriteLine(GameState.Instance.WeaponCatalog[parameters[2]]);
+            }
+            else
+            {
+                // = GameState.Instance.WeaponCatalog[parameters[2]];
+                player.WriteLine("Weapon name set.");
+            }
+        }
         private static void WeaponSetDescription(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
@@ -353,39 +492,66 @@ namespace RPGFramework.Commands
                 player.WriteLine("You do not have permission to do that.");
                 return;
             }
-
             if (parameters.Count < 3)
             {
-                //player.WriteLine(player.GetWeapon().Description);
+                player.WriteLine("Not enough parameters");
+                return;
             }
-            else
-            {
-                //player.GetWeapon().Description = parameters[2];
-                player.WriteLine("Weapon description set.");
-            }
-        }
 
-        private static void WeaponSetName(Player player, List<string> parameters)
+            var weapon = GameState.Instance.WeaponCatalog[parameters[2]];
+                if (weapon == null)
+                {
+                    player.WriteLine("No weapon selected.");
+                    return;
+                }
+
+                if (parameters.Count < 4)
+                {
+                    player.WriteLine(weapon.Description);
+                }
+                else
+                {
+                    weapon.Description = parameters[3];
+                    player.WriteLine("Weapon description set.");
+                }
+        }
+        private static void WeaponSetDamage(Player player, List<string> parameters)
         {
-
-            if (parameters.Count < 3)
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
-                // player.WriteLine(player.GetWeapon().Name);
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Not enough parameters");
+                return;
+            }
+
+            var weapon = GameState.Instance.WeaponCatalog[parameters[2]];
+            if (weapon == null)
+            {
+                player.WriteLine("No weapon selected.");
+                return;
+            }
+
+            if (parameters.Count < 5)
+            {
+                player.WriteLine($"Weapon Damage:{weapon.Damage}");
+                return;
             }
             else
             {
-                //player.GetWeapon().Name = parameters[2];
-                player.WriteLine("Weapon name set.");
+            
             }
         }
+
+
 
         public bool Execute(Character character, List<int> parameters)
         {
             throw new NotImplementedException();
         }
     }
-
-
-
 }
 
