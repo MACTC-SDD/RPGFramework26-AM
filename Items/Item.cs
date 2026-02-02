@@ -11,7 +11,7 @@ namespace RPGFramework
         public bool IsGettable { get; set; } // Can the item be picked up
         public bool IsStackable { get; set; } = false;
 
-        public int Level { get; set; } = 0;
+        public double Level { get; set; } = 0;
         public string Name { get; set; } = "";
         public List<string> Tags { get; set; } = new List<string>();
         public int UsesRemaining { get; set; } = -1; // -1 means unlimited uses

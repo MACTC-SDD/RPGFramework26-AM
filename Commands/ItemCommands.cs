@@ -95,30 +95,76 @@ namespace RPGFramework.Commands
             player.WriteLine("/item create '<name>' '<description>''");
         }
 
-        private static void ItemCreate(Player player, List<string> parameters)
+        private static bool ItemCreate(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
                 player.WriteLine("Your Role is: " + player.Role.ToString());
-                return;
+                return false;
             }
 
             // 0: /item
             // 1: create
             // 2: name
             // 3: description
-
-            if (parameters.Count < 4)
+            // 4: IsDroppable?
+            // 5: IsGettable?
+            // 6: IsStackable?
+            // 7: Level
+            // 8: Value
+            // 9: Weight
+            if (parameters.Count < 8)
             {
-                player.WriteLine("Usage: /item create '<name>' '<description>'");
-                return;
+                player.WriteLine("Usage: /item create '<name>' '<description>' '<isdroppable>' '<isgettable>' '<isstackable>' '<level>'");
+                return false;
             }
-                Item newItem = new Item
-                {
-                    Name = parameters[2],
-                    Description = parameters[3]
-                };
+            if (parameters.Count < 10)
+            {
+                player.WriteLine("Usage: /item create '<name>' '<description>' '<isdroppable>' '<isgettable>' '<isstackable>' '<level>' '<value>' '<weight>'");
+                return false;
+            }
+            if (!bool.TryParse(parameters[4], out bool isdroppable))
+            {
+                player.WriteLine("Invalid IsDroppable value.");
+                return false;
+            }
+            if (!bool.TryParse(parameters[5], out bool isgettable))
+            {
+                player.WriteLine("Invalid IsGettable value.");
+                return false;
+            }
+            if (!bool.TryParse(parameters[6], out bool isstackable))
+            {
+                player.WriteLine("Invalid IsStackable value.");
+                return false;
+            }
+            if (!Int32.TryParse(parameters[7], out int level))
+            {
+                player.WriteLine("Invalid level value.");
+                return false;
+            }
+            if (!Int32.TryParse(parameters[8], out int value))
+            {
+                player.WriteLine("Invalid value value.");
+                return false;
+            }
+            if (!Int32.TryParse(parameters[9], out int weight))
+            {
+                player.WriteLine("Invalid weight value.");
+                return false;
+            }
+            Item newItem = new Item
+            {
+                Name = parameters[2],
+                Description = parameters[3],
+                IsDroppable = isdroppable,
+                IsGettable = isgettable,
+                IsStackable = isstackable,
+                Level = level,
+                Value = value,
+                Weight = weight
+            };
             if (GameState.Instance.ItemCatalog.ContainsKey(newItem.Name))
             {
 
@@ -127,9 +173,9 @@ namespace RPGFramework.Commands
             {
                 GameState.Instance.ItemCatalog.Add(newItem.Name, new Item());
             }
-                // Here you would typically add the item to a database or game world
-                player.WriteLine($"Item '{newItem.Name}' created successfully with description: {newItem.Description}");
-            
+            // Here you would typically add the item to a database or game world
+            player.WriteLine($"Item '{newItem.Name}' created successfully with description: {newItem.Description}");
+            return true;
         }
 
         private static void ItemSetDescription(Player player, List<string> parameters)
