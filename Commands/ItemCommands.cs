@@ -82,6 +82,9 @@ namespace RPGFramework.Commands
                 case "delete":
                     ItemDelete(player, parameters);
                     break;
+                case "list":
+                    ItemList(player);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -97,6 +100,7 @@ namespace RPGFramework.Commands
             player.WriteLine("/item name '<set item name to this>'");
             player.WriteLine("/item create '<name>' '<description>''");
             player.WriteLine("/item delete '<name>'");
+            player.WriteLine("/item list");
         }
 
         private static void ItemCreate(Player player, List<string> parameters)
@@ -163,6 +167,29 @@ namespace RPGFramework.Commands
             else
             {
                 player.WriteLine($"Item '{itemName}' not found in catalog.");
+            }
+        }
+
+        private static void ItemList(Player player)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            var catalog = GameState.Instance.ItemCatalog;
+
+            if (catalog.Count == 0)
+            {
+                player.WriteLine("The item catalog is currently empty.");
+                return;
+            }
+
+            player.WriteLine("Current Item Catalog:");
+            foreach (var itemName in catalog.Keys)
+            {
+                player.WriteLine($"- {itemName}");
             }
         }
 
