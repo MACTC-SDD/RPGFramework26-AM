@@ -185,7 +185,7 @@ namespace RPGFramework
 
 
 
-            int HitChance = 50 + (Dexterity -/*Enemy.Dexterity*/ ) * 5;
+            int HitChance = 50 + (Dexterity) * 5; /* Add - Enemy.Dexterity*/
             HitChance = Math.Clamp(HitChance, 5, 95);
             int roll = Random.Shared.Next(1, 101);
             bool hit = roll <= HitChance;
