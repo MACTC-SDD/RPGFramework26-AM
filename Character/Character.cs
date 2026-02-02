@@ -28,12 +28,13 @@ namespace RPGFramework
         public string Description { get; set; } = "";
         public int Gold { get; set; } = 0;
         public int Health { get; protected set; } = 0;
+        public int Id { get; set; }
         public int Level { get; protected set; } = 1;
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
         public List<string> Tags { get; set; } = new List<string>(); // (for scripting or special behavior)
-        public Character Target { get; set; } = null; // (for combat or interaction)
+        public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = new List<Armor>();
