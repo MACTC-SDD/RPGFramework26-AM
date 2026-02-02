@@ -77,6 +77,9 @@ namespace RPGFramework.Commands
                 case "create":
                     ItemCreate(player, parameters);
                     break;
+                case "delete":
+                    ItemDelete(player, parameters);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -91,6 +94,7 @@ namespace RPGFramework.Commands
             player.WriteLine("/item description '<set item desc to this>'");
             player.WriteLine("/item name '<set item name to this>'");
             player.WriteLine("/item create '<name>' '<description>''");
+            player.WriteLine("/item delete '<name>'");
         }
 
         private static void ItemCreate(Player player, List<string> parameters)
@@ -127,6 +131,36 @@ namespace RPGFramework.Commands
                 // Here you would typically add the item to a database or game world
                 player.WriteLine($"Item '{newItem.Name}' created successfully with description: {newItem.Description}");
             
+        }
+
+        private static void ItemDelete(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            // Parameters:
+            // 0: /item
+            // 1: delete
+            // 2: name
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("Usage: /item delete '<name>'");
+                return;
+            }
+
+            string itemName = parameters[2];
+
+            if (GameState.Instance.ItemCatalog.Remove(itemName))
+            {
+                player.WriteLine($"Item '{itemName}' deleted successfully.");
+            }
+            else
+            {
+                player.WriteLine($"Item '{itemName}' not found in catalog.");
+            }
         }
 
         private static void ItemSetDescription(Player player, List<string> parameters)
