@@ -88,6 +88,7 @@ namespace RPGFramework.Commands
         public string Name2 => "/exit";
 
         public IEnumerable<string> Aliases2 => Array.Empty<string>();
+        public string Help => "";
 
         public bool Execute2(Character character, List<string> parameters)
         {
