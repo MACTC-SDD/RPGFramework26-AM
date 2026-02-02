@@ -292,6 +292,7 @@ namespace RPGFramework.Commands
                 player.WriteLine($"/{_entityName} dialog delete '<character>' '<category>'");
                 player.WriteLine($"/{_entityName} dialog delete '<character>' '<category>' '<line to remove>'");
                 player.WriteLine($"/{_entityName} dialog add '<character'> <category>' '<line to add>'");
+                player.WriteLine($"/{_entityName} dialog add '<character'> <category>'");
                 if (_entityName == "shopkeep")
                 {
                     player.WriteLine($"/{_entityName} inventory add '<character'> '<itemID>'");
@@ -428,14 +429,14 @@ namespace RPGFramework.Commands
         #endregion
 
         #region DeleteNpcDialogLine Method
-        protected static bool DeleteNpcDialogLine(Player player, List<string> parameters)
+        protected static void DeleteNpcDialogLine(Player player, List<string> parameters)
         {
             // We shouldn't have to check for npc. We just won't include it in the options
             // for mobs or whatever if it isn't appropriate.
             if (parameters.Count < 6)
             {
                 player.WriteLine("Usage: /npc dialog delete '<category>' '<character>' '<line to remove>'");
-                return false;
+                return;
             }
             string name = parameters[4];
             string category = parameters[3].ToLower();
@@ -443,9 +444,11 @@ namespace RPGFramework.Commands
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
-                return false;
-
-            return npc.DialogOptions[category].Remove(description);
+            {   
+                player.WriteLine($"{_entityName} '{name}' not found.");
+                return;
+            }
+            npc.GetDialogGroup(category).RemoveDialogLine(description);
         }
         #endregion
 
@@ -464,20 +467,24 @@ namespace RPGFramework.Commands
             if (npc == null)
                 return false;
 
-            return npc.DialogOptions.Remove(category);
+            return npc.DialogGroups.Remove(npc.GetDialogGroup(category));
         }
         #endregion
 
         #region NpcListDialog Method
         protected static bool NpcListDialog(Player player, List<string> parameters)
         {
-            // Need to look at the format for this one, I wasn't sure of the parameters
-            if (parameters[0].Equals("/npc"))
+            string name = parameters[3];
+            NonPlayer? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
             {
-                foreach (var dialog in GameState.Instance.NPCCatalog[parameters[4]].DialogOptions)
-                {
-                    player.WriteLine(dialog.Key);
-                }
+                return false;
+            }
+            int index = 0;
+            foreach (DialogGroup dialog in npc.DialogGroups)
+            {
+               player.WriteLine(dialog.GetDialogLine(index));
+                index++;
             }
             return true;
         }
@@ -497,13 +504,23 @@ namespace RPGFramework.Commands
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
-                return false;
-
-            foreach (var dialog in GameState.Instance.NPCCatalog[parameters[3]].DialogOptions[category])
             {
-                player.WriteLine(dialog);
+                return false;
             }
-            return true;
+            DialogGroup dialogGroup = npc.GetDialogGroup(category);
+            if (dialogGroup == null)
+            {
+                player.WriteLine($"Dialog category '{category}' not found for {_entityName} '{name}'.");
+                return false;
+            }
+            else
+            {
+                foreach (var dialogLine in dialogGroup.DialogLines)
+                {
+                    player.WriteLine(dialogLine);
+                }
+                return true;
+            }
         }
         #endregion
 
@@ -542,8 +559,38 @@ namespace RPGFramework.Commands
                 return false;
 
             // Might need to check if category exists first
-            npc.DialogOptions[category].Add(dialogLine);
+            if (npc.HasDialogGroup(category)){
+                DialogGroup dialogCategory = npc.GetDialogGroup(category);
+                if (!dialogCategory.HasDialogLine(dialogLine))
+                {
+                    dialogCategory.AddDialogLine(dialogLine);
+                }
+            }
             player.WriteLine($"Dialog line added to category '{category}' for {_entityName} '{name}'.");
+            return true;
+        }
+        #endregion
+
+        #region NpcAddDialogCategory Method
+        protected static bool NpcAddDialogCategory(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine("Usage: /npc dialog add category '<character'> <category>'");
+                return false;
+            }
+            string name = parameters[4];
+            string category = parameters[4].ToLower();
+            NonPlayer? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return false;
+            if (!npc.HasDialogGroup(category))
+            {
+                DialogGroup dialogCategory = new DialogGroup();
+                dialogCategory.GroupName = category;
+                npc.DialogGroups.Add(dialogCategory);
+            }
+            player.WriteLine($"Dialog category '{category}' added to {_entityName} '{name}'.");
             return true;
         }
         #endregion
@@ -658,6 +705,11 @@ namespace RPGFramework.Commands
         protected static void NpcDialogCommands(Player player, List<string> parameters)
         {
             if (parameters[2].Equals("add"))
+            {
+                NpcAddDialog(player, parameters);
+                return;
+            }
+            if (parameters[2].Equals("add") && parameters[4].Equals("category"))
             {
                 NpcAddDialog(player, parameters);
                 return;
