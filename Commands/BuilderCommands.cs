@@ -135,28 +135,6 @@ namespace RPGFramework.Commands
 
             return true;
         }
-        private static void RoomSpawnable(Player player, List<string> parameters)
-        {
-            // NPC team is still working on this - Shelton
-            switch (parameters[2].ToLower())
-            {
-                case "add":
-                    int areaId = int.Parse(parameters[3]);
-                    int roomId = int.Parse(parameters[4]);
-                    Room room = GameState.Instance.Areas[areaId].Rooms[roomId];
-                    int spawnChance = int.Parse(parameters[6]);
-                    if(parameters[5].ToLower() == "npc")
-                    {
-                        room.AddToSpawnableNpcs(parameters[7], spawnChance);
-                    }
-                    else if (parameters[5].ToLower() == "mob")
-                    {
-                        room.AddToSpawnableMobs(parameters[7], spawnChance);
-                    }
-                    room.AddToSpawnableMobs(parameters[5], spawnChance);
-                    break;
-            }
-        }
         private static void WriteUsage(Player player)
         {
             player.WriteLine("");
@@ -166,9 +144,9 @@ namespace RPGFramework.Commands
             player.WriteLine("/room create '<name>' '<description>' <exit direction> '<exit description>'");
             player.WriteLine("/room show 'Details about the room you are in'");
             player.WriteLine("/room Tag '<add or remove room tags>'");
-            player.WriteLine("/room spawnable add '<areaid>' '<roomid>' '<name>' '<chance>'");//Still in progress -NPC team
-            player.WriteLine("/room spawnable remove '<areaid>' '<roomid>' '<name>'");//Still in progress -NPC team
-            player.WriteLine("/room spawnable chance '<name>' '<chance>'");//Still in progress -NPC team
+            player.WriteLine("/room spawnable add '<areaid>' '<roomid>' '<mob/npc>' '<name>' '<chance>'");
+            player.WriteLine("/room spawnable remove '<areaid>' '<roomid>' '<mob/npc>' '<name>'");
+            player.WriteLine("/room spawnable chance '<areaid>' '<roomid>' '<mob/npc>' '<name>' '<chance>'");
         }
 
         private static void WriteDeleteUsage(Player player)
@@ -491,7 +469,52 @@ namespace RPGFramework.Commands
 
             player.WriteLine($"Room {roomToDelete.Id} deleted.");
         }
-
+        //For npc and mob spawning in rooms - Shelton
+        private static void RoomSpawnable(Player player, List<string> parameters)
+        {
+            int areaId = int.Parse(parameters[3]);
+            int roomId = int.Parse(parameters[4]);
+            Room room = GameState.Instance.Areas[areaId].Rooms[roomId];
+            string type = parameters[5].ToLower();
+            if (room == null)
+            {
+                player.WriteLine("Room not found.");
+                return;
+            }
+            switch (parameters[2].ToLower())
+            {
+                case "add":
+                    int spawnChance = int.Parse(parameters[7]);
+                    if (type == "npc")
+                    {
+                        room.AddToSpawnable(parameters[6], spawnChance, player, type);
+                    }
+                    else if (type == "mob")
+                    {
+                        room.AddToSpawnable(parameters[6], spawnChance, player, type);
+                    }
+                    break;
+                case "remove":
+                    if (parameters[5].ToLower() == "npc")
+                    {
+                        room.RemoveFromSpawnable(parameters[6], player, type);
+                    }
+                    else if (parameters[5].ToLower() == "mob")
+                    {
+                        room.RemoveFromSpawnable(parameters[6], player, type);
+                    }
+                    break;
+                case "chance":
+                    room.ModifyChance(parameters[6], player, type, int.Parse(parameters[7]));
+                    break;
+                case "list":
+                    room.ListSpawnables(player, type);
+                    break;
+                default:
+                    player.WriteLine("Invalid spawnable command.");
+                    return;
+            }
+        }
     }
     #endregion
     #endregion
