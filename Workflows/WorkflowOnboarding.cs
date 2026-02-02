@@ -77,7 +77,7 @@ namespace RPGFramework.Workflows
                     else
                     {
                         player.WriteLine("Invalid class chosen. Please choose from: Warrior, Mage, Rogue!");
-                        
+
                     }
                     break;
                 case 3:
@@ -92,11 +92,11 @@ namespace RPGFramework.Workflows
                     player.WriteLine(Name + ": Onboarding complete! ");
                     player.WriteLine("============================================================================" +
                         "\nYour stats are:" +
-                        "\nClass :" + WorkflowData["ChosenClass"] + 
+                        "\nClass :" + WorkflowData["ChosenClass"] +
                         $"\nDexterity : {player.Dexterity}" +
                         "\n\tIncrease 'Dex' To Have A To Get The First Attack! " +
-                        "\n{player.EquippedArmor}" + 
-                        $"\nHealth : {player.Health} out of {player.MaxHealth}" + 
+                        "\n{player.EquippedArmor}" +
+                        $"\nHealth : {player.Health} out of {player.MaxHealth}" +
                         "\n\tYour Health Is Limited; Make Sure To Choose Your Actions Wisely! " +
                         $"\nConstitution : {player.Constitution}" +
                         "\n \tI don't remember what this is." +
@@ -107,10 +107,10 @@ namespace RPGFramework.Workflows
                         $"\nLevel : {player.Level}" +
                         "\n\tHow Many Levels Gained Through Getting XP!" +
                         $"\nCurrent Playtime for user {player.Name}" +
-                        $"\n\t{player.PlayTime} " 
+                        $"\n\t{player.PlayTime} "
                         +
                         "\n\tHow Many Hours, Minutes, Se- you get it." +
-                        $"\nCurrent Weapon : {player.PrimaryWeapon}"
+                        $"\nCurrent Weapon : {player.PrimaryWeapon.Name}"
                         +
                         "\n\tThe Weapon You Pulled Out The Monster That Probably Has Some Type Of Diease You Don't Need To Be Getting Close To..." +
                         $"\nStrength : {player.Strength}" +
@@ -122,22 +122,22 @@ namespace RPGFramework.Workflows
                         "\n============================================================================"
                         );
                     player.WriteLine("Type 'help' to see a list of available commands.");
-                    player.WriteLine("Ready? (type yes if ready to start game)");
-                    
-                    
+                    player.WriteLine("For Best Quality, Please Set Screen To Full Size!" + "\nReady? (type yes if ready to start game)");
+
+
                     CurrentStep++;
                     break;
-                   case 5:
+                case 5:
                     player.Console!.Clear();
                     player.WriteLine
                         (
-                        "                                                  --{Area}–                   " +
+                        $"                                                    --{player.AreaId}–                   " +
                         "\n========================================================================================================================" +
                        $"\n                                       Room Level : {player.LocationId}" +
                         "\n========================================================================================================================" +
-                       "\n"+
+                       "\n" +
                         "\n" +
-                       
+                         $"\n {player.Target} " +
                          "\n" +
                           "\n" +
                         "\n========================================================================================================================" +
@@ -145,19 +145,26 @@ namespace RPGFramework.Workflows
                         "\n========================================================================================================================" +
                         $"\nPlayer Name:{player.Name}" + $"" +
                         $"\nXP:{player.XP}" +
-                        $"\nLevel :{player.Level}      " +
-                      
-                        $"\nHealth :{player.Health}/{player.MaxHealth}"+$"\tGold :{player.Gold}" +  
+                        $"\nLevel :{player.Level}" +
+                        $"\n Playtime : {player.PlayTime}" +
+
+                        $"\nHealth :{player.Health}/{player.MaxHealth}" + $"\tGold :{player.Gold}" +
                         "\n========================================================================================================================" +
                         "\n--Equipment--" + "" +
-                        "\nArmor :{player.EquippedArmor}" +
-                         "\nWeapon :{player.PrimaryWeapon}" + 
-                         $"\n"
+                       "\nArmor :{player.EquippedArmor}" +
+                         $"\nWeapon :{player.PrimaryWeapon.Name}" +
+                         $"\n Weapon DMG : {player.PrimaryWeapon.Damage}" +
+                         $"\n Weapon Attack Speed : {player.PrimaryWeapon.AttackTime}" +
+                         $"\n Weapon Material : {player.PrimaryWeapon.Material}" +
+                         $"\n{player.PrimaryWeapon.DisplayText}" +
+                         $"\n" 
+                         
+                    
 
                         );
                     player.CurrentWorkflow = null;
                     break;
-            }
+            } while (NotInCombat == false) { }
         }    
     }
 }

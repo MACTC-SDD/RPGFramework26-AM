@@ -1,6 +1,7 @@
 ﻿using RPGFramework.Enums;
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using System;
 using System.Numerics;
 using System.Text.Json.Serialization;
 
@@ -163,9 +164,11 @@ namespace RPGFramework
                 Console?.Write("\r\n");
             }
         }
-
-
+       
         
+        
+
+
 
     }
 

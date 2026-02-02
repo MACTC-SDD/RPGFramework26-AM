@@ -15,11 +15,12 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character : IDescribable
     {
-        enum CharacterState { 
-            Idle, 
-            Moving, 
-            Attacking, 
-            Dead 
+        enum CharacterState
+        {
+            Idle,
+            Moving,
+            Attacking,
+            Dead
         }
 
         #region --- Properties ---
@@ -56,8 +57,8 @@ namespace RPGFramework
         public Character()
         {
             Health = MaxHealth;
-            Weapon w = new Weapon() 
-              { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
+            Weapon w = new Weapon()
+            { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
             PrimaryWeapon = w;
         }
 
@@ -145,11 +146,11 @@ namespace RPGFramework
         //Add tags to character
         public bool AddTag(string tag)
         {
-           if(ValidTags.Contains(tag) && !Tags.Contains(tag))
-           {
+            if (ValidTags.Contains(tag) && !Tags.Contains(tag))
+            {
                 Tags.Add(tag);
                 return true;
-           }
+            }
             else
             {
                 return false;
@@ -168,6 +169,28 @@ namespace RPGFramework
                 return false;
             }
         }
+        //ux team adding some stuff don't mind me
+        public void PlayerAction(int action)
+        {
+            static void AttackEnemy(Player player, NonPlayer enemy)
+            {
+
+                // enemy.Health -= player.PrimaryWeapon.Damage;
+                player.WriteLine(enemy.Description);
+                player.WriteLine($"You strike the {enemy.Name} for {player.PrimaryWeapon.Damage} damage!");
+
+                //if (enemy.HP <= 0)
+                {
+                    player.WriteLine($"The {enemy.Name} collapses. You defeated it!");
+                    return;
+                }
+
+                player.Health -= enemy.Attack;
+                player.WriteLine($"The {enemy.Name} hits you for {enemy.Attack} damage!");
+            }
+        }
     }
 }
+
+
         
