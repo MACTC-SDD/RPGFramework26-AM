@@ -87,7 +87,13 @@ internal class TelnetServer
             player.Login();
 
             // MOTD Should Be Settable in Game Settings
-            player.Write(RPGPanel.GetPanel("Welcome to the game!", "Welcome!"));
+            player.Write(
+        $"\n                          Welcome {playerName}                         " +         
+        "\n========================================================================" +
+        "\n                              RPG WORLD                                 " +
+        "\n                             TYPE : START                               " +
+        "\n========================================================================" +
+        "\r\n");
             MapRenderer.RenderLocalMap(player);
 
             GameState.Log(DebugLevel.Alert, $"Player '{playerName}' has connected successfully.");

@@ -39,6 +39,7 @@ namespace RPGFramework
         private CancellationTokenSource? _timeOfDayCts;
         private Task? _timeOfDayTask;
 
+        private int _logSuppressionSeconds = 30;
         #endregion
 
         #region --- Properties ---
@@ -64,6 +65,7 @@ namespace RPGFramework
         [JsonIgnore] public Catalog<string, Weapon> WeaponCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, Armor> ArmorCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, Shopkeep> ShopCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, HelpEntry> HelpCatalog { get; set; } = [];
 
         [JsonIgnore] public TelnetServer? TelnetServer { get; private set; }
         #endregion
@@ -84,11 +86,12 @@ namespace RPGFramework
 
         private GameState()
         {
+            Catalogs.Add(ArmorCatalog);
+            Catalogs.Add(ItemCatalog);
+            Catalogs.Add(HelpCatalog);
             Catalogs.Add(MobCatalog);
             Catalogs.Add(NPCCatalog);
-            Catalogs.Add(ItemCatalog);
             Catalogs.Add(WeaponCatalog);
-            Catalogs.Add(ArmorCatalog);
             Catalogs.Add(ShopCatalog);
         }
 
@@ -318,14 +321,25 @@ namespace RPGFramework
         #endregion --- Methods ---
 
         #region --- Static Methods ---
-        internal static void Log(DebugLevel level, string message)
+        internal static bool Log(DebugLevel level, string message)
         {
             if (level <= GameState.Instance.DebugLevel)
             {
                 Console.WriteLine($"[{level}] {message}");
+                return true;
             }
+            return false;
         }
 
+        internal static bool Log(DebugLevel level, string message, DateTime lastLog, int suppressionSeconds)
+        {
+            if ((DateTime.Now - lastLog).TotalSeconds >= suppressionSeconds)
+            {
+                return Log(level, message);
+            }
+
+            return false;
+        }
         #endregion
 
         #region --- Thread Methods ---

@@ -40,7 +40,7 @@ namespace RPGFramework.Persistence
         {
             Area area = new()
             {
-                Id = 0,
+                Id = 0,                
                 Name = "Starter Area",
                 Description = "The first place new players enter."
             };
@@ -132,7 +132,11 @@ namespace RPGFramework.Persistence
         public Task<IReadOnlyDictionary<int, Area>> LoadAreasAsync()
         {
             var areas = ObjectStorage.LoadAllObjects<Area>("data/areas/");
-            var dict = areas.ToDictionary(a => a.Id);
+            /* var dict = areas.ToDictionary(a => a.Id);*/
+            var dict = areas
+         .GroupBy(a => a.Id)
+         .Select(g => g.First())
+         .ToDictionary(a => a.Id);
             return Task.FromResult((IReadOnlyDictionary<int, Area>)dict);
         }
 
