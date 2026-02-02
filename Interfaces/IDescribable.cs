@@ -3,5 +3,6 @@
     internal interface IDescribable
     {
         string Description { get; set; }
+        object Name { get; set; }
     }
 }

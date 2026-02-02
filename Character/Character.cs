@@ -1,5 +1,5 @@
-﻿
 using RPGFramework.Geography;
+using RPGFramework.Items;
 using System.Security.Cryptography.X509Certificates;
 
 namespace RPGFramework
@@ -149,6 +149,11 @@ namespace RPGFramework
         }
 
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void WriteLine(object description)
         {
             throw new NotImplementedException();
         }
