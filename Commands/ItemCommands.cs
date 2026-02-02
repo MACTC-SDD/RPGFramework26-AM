@@ -160,23 +160,23 @@ namespace RPGFramework.Commands
 
         private static void ItemSetName(Player player, List<string> parameters)
         {
-            var item = GameState.Instance.ItemCatalog[parameters[3]];
-            if (item is IDescribable describableItem)
+            if (!GameState.Instance.ItemCatalog.TryGetValue(parameters[3], out Item? item) || item == null)
             {
-                if (parameters.Count < 3)
-                {
-                    // Fix: Avoid possible null reference by using null-coalescing operator
-                    player.WriteLine(describableItem.Name?.ToString() ?? string.Empty);
-                }
-                else
-                {
-                    describableItem.Name = parameters[2];
-                    player.WriteLine("Item name set.");
-                }
+                player.WriteLine("Item not found.");
+                return;
+            }
+
+
+            if (parameters.Count < 3)
+            {
+                // Roundabout, we know Item has a Name, no need for IDescribable here
+                // Fix: Avoid possible null reference by using null-coalescing operator
+                //player.WriteLine(describableItem.Name?.ToString() ?? string.Empty);
             }
             else
             {
-                player.WriteLine("No item selected or item does not support naming.");
+                item.Name = parameters[2];
+                player.WriteLine("Item name set.");
             }
         }
 
@@ -363,8 +363,7 @@ namespace RPGFramework.Commands
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.Role.ToString());
-                return;
+                return false;
             }
 
             // 0: /weapon

@@ -18,13 +18,6 @@ namespace RPGFramework
         public double Value { get; set; } = 0;
         public double Weight { get; set; } = 0;
 
-        // Explicit interface implementation for IDescribable.Name (object type)
-        object IDescribable.Name
-        {
-            get => Name;
-            set => Name = value?.ToString() ?? "";
-        }
-
         internal static Item ItemCreation(int areaId, int v1, int v2)
         {
             throw new NotImplementedException();
