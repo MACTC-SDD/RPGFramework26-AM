@@ -21,13 +21,15 @@ namespace RPGFramework
 
         public double Range { get; set; }
 
-        public double Abilities { get; set; }
+        public string Abilities { get; set; }
 
         public WeaponType Type { get; set; }
 
         public WeaponMaterial Material { get; set; }
 
         public bool IsTwoHanded { get; private set; }
+
+        public double AbilitiesDamage { get; set; }
 
         public Weapon (string name, int damage, bool isTwoHanded)
         {

@@ -5,7 +5,7 @@ namespace RPGFramework
 {
     internal class Item : IDescribable
     {
-        internal EquipmentBase.EquipmentSlot slot;
+        internal EquipmentBase slot;
 
         public int Id { get; set; } = 0;
         public string Description { get; set; } = ""; // What you see when you look at it

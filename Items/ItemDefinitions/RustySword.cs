@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using RPGFramework.Enums;
 using RPGFramework.Items;
 
 namespace RPGFramework.Items

@@ -25,6 +25,11 @@ namespace RPGFramework
             EquipmentSlot = slot;
             Defense = defense;
         }
+
+        public Armor()
+        {
+        }
+
         public ArmorRarity Rarity { get; set; }
 
 

@@ -39,7 +39,8 @@ namespace RPGFramework.Enums
         Wakizashi,
         TableLeg,
         Saber,
-        FlintLock
+        FlintLock,
+        Sword
     }
     public enum EquipmentSlot
     {
