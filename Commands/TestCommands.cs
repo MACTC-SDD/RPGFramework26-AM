@@ -31,19 +31,19 @@ namespace RPGFramework.Commands
         public string Name => "example";
 
         // These are the aliases that can also be used to execute this command. This can be empty.
-        public IEnumerable<string> Aliases => new List<string>() { "ex" };
+        public IEnumerable<string> Aliases => [];
         public string Help => "";
 
         // What will happen when the command is executed
         public bool Execute(Character character, List<string> parameters)
         {
             // A lot of times we want to make sure it's a Player issuing the command, but not always
-            if (character is Player player)
-            {
-                player.WriteLine("This is an example command.");
-            }
+            if (character is not Player player)
+                return false;
 
             // If the command failed to run for some reason, return false
+            player.WriteLine("This is an example command.");
+
             return true;
         }
     }
@@ -54,8 +54,8 @@ namespace RPGFramework.Commands
         public string Name => "tb";
 
         // These are the aliases that can also be used to execute this command. This can be empty.
-        public IEnumerable<string> Aliases => new List<string>() {  };
-        public string Help => "";
+        public IEnumerable<string> Aliases => [];
+        public string Help => "Start a test battle.";
 
         // What will happen when the command is executed
         public bool Execute(Character character, List<string> parameters)
