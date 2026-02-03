@@ -18,7 +18,7 @@ namespace RPGFramework.Workflows
         public Dictionary<string, object> WorkflowData { get; set; } = new Dictionary<string, object>();
         public bool gamestarted = false;
         public string Chosenclass = "";
-        public bool NotInCombat = true;
+       
         public string started = "";
         public void Execute(Player player, List<string> parameters)
         {
@@ -141,7 +141,7 @@ namespace RPGFramework.Workflows
                          "\n" +
                           "\n" +
                         "\n========================================================================================================================" +
-                        $"\n{player.Name} Just :____! <-- Player Action Goes Here! " +
+                        "\n({player.Name} Just :____!) <-- Player Action Goes Here! " +
                         "\n========================================================================================================================" +
                         $"\nPlayer Name:{player.Name}" + $"" +
                         $"\nXP:{player.XP}" +
@@ -164,7 +164,10 @@ namespace RPGFramework.Workflows
                         );
                     player.CurrentWorkflow = null;
                     break;
-            } while (NotInCombat == false) { }
+            } while (player.NotInCombat == false) 
+            {
+               // player.playerAction = ;
+            }
         }    
     }
 }

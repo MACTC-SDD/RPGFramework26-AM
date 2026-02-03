@@ -16,8 +16,10 @@ namespace RPGFramework
         }
 
         //not sure if its neccesary, but it doesn't hurt to have it.
-        public Mob(string name, string desc, int level, Dictionary<string, string[]> dialogOptions, int maxRoomsToChase)
+        public Mob(int maxhealth, int health, string name, string desc, int level, Dictionary<string, string[]> dialogOptions, int maxRoomsToChase)
         {
+            MaxHealth = maxhealth;
+            Health = health;
             Name = name;
             Description = desc;
             Level = level;

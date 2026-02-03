@@ -169,28 +169,12 @@ namespace RPGFramework
                 return false;
             }
         }
-        //ux team adding some stuff don't mind me
-        public void PlayerAction(int action)
-        {
-            static void AttackEnemy(Player player, NonPlayer enemy)
-            {
+        
 
-                // enemy.Health -= player.PrimaryWeapon.Damage;
-                player.WriteLine(enemy.Description);
-                player.WriteLine($"You strike the {enemy.Name} for {player.PrimaryWeapon.Damage} damage!");
 
-                //if (enemy.HP <= 0)
-                {
-                    player.WriteLine($"The {enemy.Name} collapses. You defeated it!");
-                    return;
-                }
 
-                player.Health -= enemy.Attack;
-                player.WriteLine($"The {enemy.Name} hits you for {enemy.Attack} damage!");
-            }
+
         }
     }
-}
 
 
-        
