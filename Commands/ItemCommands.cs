@@ -162,11 +162,11 @@ namespace RPGFramework.Commands
 
             if (GameState.Instance.ItemCatalog.Remove(itemName))
             {
-                player.WriteLine($"Item '{itemName}' deleted successfully.");
+                player.WriteLine($"Item '{itemName}' was successfully chucked into The Twilight Zone, never to be seen again.");
             }
             else
             {
-                player.WriteLine($"Item '{itemName}' not found in catalog.");
+                player.WriteLine($"Item '{itemName}' not found in the Item Catalog.");
             }
         }
 
@@ -484,6 +484,8 @@ namespace RPGFramework.Commands
             player.WriteLine("/weapon name '<set item name to this>'");
             player.WriteLine("/weapon create '<name>' '<description>''");
             player.WriteLine("/weapon '<name>' set damage '<set weapon damage to this>'");
+            player.WriteLine("/weapon delete '<name>'");
+            player.WriteLine("/weapon list");
         }
 
         private static bool WeaponCreate(Player player, List<string> parameters)
