@@ -277,6 +277,12 @@ namespace RPGFramework.Commands
                 case "create":
                     ArmorCreate(player, parameters);
                     break;
+                case "delete":
+                    ArmorDelete(player, parameters);
+                    break;
+                case "list":
+                    ArmorList(player);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -291,6 +297,8 @@ namespace RPGFramework.Commands
             player.WriteLine("/armor description '<set item desc to this>'");
             player.WriteLine("/armor name '<set item name to this>'");
             player.WriteLine("/armor create '<name>' '<description>''");
+            player.WriteLine("/armor delete '<name>'");
+            player.WriteLine("/armor list");
         }
 
         private static void ArmorCreate(Player player, List<string> parameters)
@@ -327,6 +335,59 @@ namespace RPGFramework.Commands
             // Here you would typically add the item to a database or game world
             player.WriteLine($"Armor '{newArmor.Name}' created successfully with description: {newArmor.Description}");
 
+        }
+
+        private static void ArmorDelete(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            // Parameters:
+            // 0: /armor
+            // 1: delete
+            // 2: name
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("Usage: /armor delete '<name>'");
+                return;
+            }
+
+            string armorName = parameters[2];
+
+            if (GameState.Instance.ArmorCatalog.Remove(armorName))
+            {
+                player.WriteLine($"You just deleted Armor '{armorName}'...that had to hurt...");
+            }
+            else
+            {
+                player.WriteLine($"Armor '{armorName}' doesn't exist...");
+            }
+        }
+
+        private static void ArmorList(Player player)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            var catalog = GameState.Instance.ArmorCatalog;
+
+            if (catalog.Count == 0)
+            {
+                player.WriteLine("What the... It looks like the Armor Catalog is currently EMPTY.");
+                return;
+            }
+
+            player.WriteLine("Current Armor Catalog:");
+            foreach (var armorName in catalog.Keys)
+            {
+                player.WriteLine($"- {armorName}");
+            }
         }
 
         private static void ArmorSetDescription(Player player, List<string> parameters)
