@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using RPGFramework.Combat;
+using RPGFramework.Commands;
+using RPGFramework.Geography;
 
 namespace RPGFramework.Combat_Stuff
 {
@@ -170,6 +169,57 @@ namespace RPGFramework.Combat_Stuff
                 Console.WriteLine($"{enemyNames[i]} Health: {enemyHealth[i.ToString()]}");
                 Console.WriteLine($"{enemyNames[i]} Damage Dealt: {enemyDamageDealt[i.ToString()]}\n");
             }
+        }
+    }
+
+    internal class AttackCommand : ICommand
+    {
+        // This is the command a player would type to execute this command
+        public string Name => "attack";
+
+        // These are the aliases that can also be used to execute this command. This can be empty.
+        public IEnumerable<string> Aliases => [];
+        public string Help => "";
+
+        private readonly GameState _instance = GameState.Instance;
+
+        // What will happen when the command is executed
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+                return false;
+
+            if (parameters.Count < 2)
+            {
+                player.WriteLine("Usage: attack <target>");
+                return false;
+            }
+
+            // If PVP
+            //Character target = Player.FindPlayer(parameters[1], _instance.Players);
+            
+            Character? target = Room.FindMob(parameters[1], player.GetRoom());
+
+            if (target == null)
+            {
+                player.WriteLine("Target not found.");
+                return false;
+            }
+
+            // TODO Check if already in combat with this target
+               
+            Battle b = new()
+            { 
+                Attacker = player, 
+                Defender = target, 
+                StartArea = player.GetArea(), 
+                StartRoom = player.GetRoom() 
+            };
+
+            _instance.Battles.Add(b);
+            player.WriteLine($"You have started attacking {target.Name}!");
+            // If the command failed to run for some reason, return false
+            return true;
         }
     }
 }
