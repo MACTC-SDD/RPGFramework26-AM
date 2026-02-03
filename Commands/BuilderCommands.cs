@@ -19,7 +19,7 @@ namespace RPGFramework.Commands
             ];
         }
     }
-
+    
     // CODE REVIEW: Jibril PR #26
     // I added regions to separate the two classes for better readability.
     // You can delete this comment after you've read it.
@@ -71,6 +71,9 @@ namespace RPGFramework.Commands
                 default:
                     WriteUsage(player);
                     break;
+                case "validate":
+                    RoomValidate(player, parameters);
+                    break;
             }
 
             return true;
@@ -84,8 +87,85 @@ namespace RPGFramework.Commands
             player.WriteLine("/room create '<name>' '<description>' <exit direction> '<exit description>'");
             player.WriteLine("/room show 'Details about the room you are in'");
             player.WriteLine("/room Tag '<add or remove room tags>'");
+            player.WriteLine("/room validate <roomId>");
         }
 
+        private static void RoomValidate(Player player, List<string> parameters)  /*Made changes here*/
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            if (parameters.Count < 3)
+            {
+                WriteUsage(player);
+                return;
+            }
+
+            if (!int.TryParse(parameters[2], out int roomId))
+            {
+                player.WriteLine("Invalid room id.");
+                return;
+            }
+
+            ValidateRoom(player, roomId);  /*Made changes here*/
+        }
+
+        private static void ValidateRoom(Player player, int roomId)  /*Made changes here*/
+        {
+            Room? room = null;
+            Area? area = null;
+
+            foreach (var a in GameState.Instance.Areas.Values)
+            {
+                if (a.Rooms.TryGetValue(roomId, out room))
+                {
+                    area = a;
+                    break;
+                }
+            }
+
+            if (room == null || area == null)
+            {
+                player.WriteLine($"Room {roomId} does not exist.");
+                return;
+            }
+
+            player.WriteLine($"Validating room {roomId}...");
+            bool hasErrors = false;
+
+            foreach (int exitId in room.ExitIds)
+            {
+                if (!area.Exits.TryGetValue(exitId, out Exit? exit))
+                {
+                    player.WriteLine($"Exit ID {exitId} does not exist in this area.");
+                    hasErrors = true;
+                    continue;
+                }
+
+                if (exit.DestinationRoomId <= 0)
+                {
+                    player.WriteLine($"Exit {exit.Id} has no destination.");
+                    hasErrors = true;
+                    continue;
+                }
+
+                if (!area.Rooms.ContainsKey(exit.DestinationRoomId))
+                {
+                    player.WriteLine(
+                        $"Exit {exit.Id} points to invalid room id {exit.DestinationRoomId}."
+                    );
+                    hasErrors = true;
+                }
+            }
+
+            if (!hasErrors)
+            {
+                player.WriteLine("Room validation passed. No issues found.");
+            }
+        }
         private static void WriteDeleteUsage(Player player)
         {
             player.WriteLine("Usage:");
