@@ -21,9 +21,14 @@ namespace RPGFramework.Geography
 
         // Name of the room
         public string Name { get; set; } = "";
-       
-        public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
 
+        public Dictionary<string, int> SpawnableMobs { get; set; } = new Dictionary<string, int>();
+        public List<Mob> Mobs { get; set; } = [];
+        public Dictionary<string, int> SpawnableNpcs { get; set; } = new Dictionary<string, int>();
+        public List<NonPlayer> Npcs{ get; set; } = [];
+        public int MaxSpawnedAllowed { get; set; } = 3;
+        public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
+        public List<Player> Players { get; set; } = [];
         // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
         #endregion --- Properties ---
@@ -47,7 +52,7 @@ namespace RPGFramework.Geography
             }
 
             // Make sure the destination room doesn't already have an exit in the opposite direction
-            if (returnExit 
+            if (returnExit
                 && destinationRoom.GetExits().Any(e => e.ExitDirection == Navigation.GetOppositeDirection(direction)))
             {
                 player.WriteLine("The destination room already has an exit coming from the opposite direction.");
@@ -104,6 +109,24 @@ namespace RPGFramework.Geography
         public static Room CreateRoom(Area area, string name, string description)
         {
             return CreateRoom(area.Id, name, description);
+        }
+
+        /// <summary>
+        /// Create a copy of this room without copying exits.
+        /// </summary>
+        public Room CloneWithoutExits(string newName)
+        {
+            Room newRoom = new Room
+            {
+                Name = newName,
+                Description = this.Description,
+                MapColor = this.MapColor,
+                MapIcon = this.MapIcon,
+                Tags = new List<string>(this.Tags),
+                AreaId = this.AreaId // Important: assign the same area
+            };
+
+            return newRoom;
         }
 
         /// <summary>
@@ -200,8 +223,8 @@ namespace RPGFramework.Geography
             List<Player> playersInRoom = [];
             foreach (Player p in GameState.Instance.Players.Values)
             {
-                if (p.IsOnline 
-                    && p.AreaId == room.AreaId 
+                if (p.IsOnline
+                    && p.AreaId == room.AreaId
                     && p.LocationId == room.Id)
                 {
                     playersInRoom.Add(p);
@@ -213,7 +236,7 @@ namespace RPGFramework.Geography
         #endregion --- Methods ---
 
         #region --- Methods (Events) ---
-        
+
         /// <summary>
         /// When a character enters a room, do this.
         /// </summary>
@@ -225,6 +248,17 @@ namespace RPGFramework.Geography
 
             // Send a message to all players in the room
             Comm.SendToRoomExcept(this, $"{character.Name} enters the room.", character);
+            if(character is NonPlayer npc){ 
+                Npcs.Add(npc);
+            }
+            else if(character is Player player)
+            {
+                Players.Add(player);
+            }
+            else if (character is Mob mob)
+            {
+                Mobs.Add(mob);
+            }
         }
 
         /// <summary>
@@ -236,6 +270,255 @@ namespace RPGFramework.Geography
         {
            // Send a message to all players in the room
             Comm.SendToRoomExcept(this, $"{character.Name} leaves the room.", character);
+            if (character is NonPlayer npc)
+            {
+                Npcs.Remove(npc);
+            }
+            else if (character is Player player)
+            {
+                Players.Remove(player);
+            }
+            else if (character is Mob mob)
+            {
+                Mobs.Remove(mob);
+            }
+        }
+        #endregion
+
+        #region --- Methods (NPC Handling) ---
+        /// <summary>
+        ///  Currently just working on spawning mobs in rooms based on SpawnableMobs dictionary. 
+        ///  (commands not working yet)
+        /// </summary>
+        public void SpawnMobsInRoom()
+        {
+            if(Players.Count <= 0)
+            {
+                // Don't spawn mobs if players aren't present
+                return;
+            }
+
+            Area area = GameState.Instance.Areas[AreaId];
+            Room room = this;
+            // Count current mobs in the room
+            int currentMobCount = Mobs.Count;
+            Random rand = new Random();
+            foreach(var kvp in SpawnableMobs)
+            {
+                string npcName = kvp.Key;
+                int maxToSpawn = kvp.Value;
+                // Spawn mobs until we reach the max allowed or the room's max spawn limit
+                if (currentMobCount >= MaxSpawnedAllowed)
+                {
+                    break;
+                }
+                int numberRolled = rand.Next(1, 20);
+                if(numberRolled >= SpawnableMobs[npcName])
+                {
+                    SpawnMob(npcName);
+                }
+            }
+            return;
+        }
+
+        public void AddToSpawnable(string npcName, int spawnChance, Player player, string type)
+        {
+            if (type.ToLower() == "mob")
+            {
+                if (!SpawnableMobs.ContainsKey(npcName))
+                {
+                    SpawnableMobs.Add(npcName, spawnChance);
+                    player.WriteLine($"{npcName} added to spawnable mobs with a spawn chance of {spawnChance}.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is already in the spawnable mobs list.");
+                }
+            }
+            else if (type.ToLower() == "npc")
+            {
+                if (!SpawnableNpcs.ContainsKey(npcName))
+                {
+                    SpawnableNpcs.Add(npcName, spawnChance);
+                    player.WriteLine($"{npcName} added to spawnable npcs with a spawn chance of {spawnChance}.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is already in the spawnable npcs list.");
+                }
+            }
+            return;
+        }
+
+        public void RemoveFromSpawnable(string npcName, Player player, string type)
+        {
+            if (type.ToLower() == "mob")
+            {
+                if (SpawnableMobs.ContainsKey(npcName))
+                {
+                    SpawnableMobs.Remove(npcName);
+                    player.WriteLine($"{npcName} removed from spawnable mobs.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is not in the spawnable mobs list.");
+                }
+            }
+            else if (type.ToLower() == "npc")
+            {
+                if (SpawnableNpcs.ContainsKey(npcName))
+                {
+                    SpawnableNpcs.Remove(npcName);
+                    player.WriteLine($"{npcName} removed from spawnable npcs.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is not in the spawnable npcs list.");
+                }
+            }
+            return;
+        }
+        public void ModifyChance(string npcName, Player player, string type, int chance)
+        {
+            if (type.ToLower() == "mob")
+            {
+                if (SpawnableMobs.ContainsKey(npcName))
+                {
+                    SpawnableMobs[npcName] = chance;
+                    player.WriteLine($"{npcName} spawn chance modified to {chance}.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is not in the spawnable mobs list.");
+                }
+            }
+            else if( type.ToLower() == "npc")
+            {
+                if (SpawnableNpcs.ContainsKey(npcName))
+                {
+                    SpawnableNpcs[npcName] = chance;
+                    player.WriteLine($"{npcName} spawn chance modified to {chance}.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is not in the spawnable npcs list.");
+                }
+            }
+        }
+
+        public void ListSpawnables(Player player, string type)
+        {
+            if (type.ToLower() == "mob")
+            {
+                player.WriteLine("Spawnable Mobs:");
+                foreach (var kvp in SpawnableMobs)
+                {
+                    player.WriteLine($"- {kvp.Key}: Spawn Chance {kvp.Value}");
+                }
+            }
+            else if (type.ToLower() == "npc")
+            {
+                player.WriteLine("Spawnable NPCs:");
+                foreach (var kvp in SpawnableNpcs)
+                {
+                    player.WriteLine($"- {kvp.Key}: Spawn Chance {kvp.Value}");
+                }
+            }
+            return;
+        }
+
+        public void SpawnMob(string npcName)
+        {
+            Mob mob = GameState.Instance.MobCatalog[npcName];
+            Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
+
+            Mobs.Add(mob);
+            return;
+        }
+
+        public void SpawnNpcsInRoom()
+        {
+            if (Players.Count <= 0)
+            {
+                // Don't spawn npcs if players aren't present
+                return;
+            }
+            Area area = GameState.Instance.Areas[AreaId];
+            Room room = this;
+            // Count current npcs in the room
+            int currentNpcCount = Npcs.Count;
+            Random rand = new Random();
+            foreach (var kvp in SpawnableNpcs)
+            {
+                string npcName = kvp.Key;
+                int maxToSpawn = kvp.Value;
+                // Spawn npcs until we reach the max allowed or the room's max spawn limit
+                if (currentNpcCount >= MaxSpawnedAllowed)
+                {
+                    break;
+                }
+                int numberRolled = rand.Next(1, 20);
+                if (numberRolled >= SpawnableNpcs[npcName])
+                {
+                    SpawnNpc(npcName);
+                }
+            }
+            return;
+        }
+
+        public void SpawnNpc(string npcName)
+        {
+            Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
+            NonPlayer npc = GameState.Instance.NPCCatalog[npcName];
+            npc.Spawned = true;
+            Npcs.Add(npc);
+            return;
+        }
+
+        public void SpawnEntitiesInRoom()
+        {
+            SpawnMobsInRoom();
+            SpawnNpcsInRoom();
+            return;
+        }
+
+        public void DespawnEntitiesInRoom()
+        {
+            foreach (var mob in Mobs)
+            {
+                mob.Spawned = false;
+            }
+            Mobs.Clear();
+            foreach(var npc in Npcs)
+            {
+                npc.Spawned = false;
+            }
+            Npcs.Clear();
+            return;
+        }
+        public void DespawnEntity(string mobName, string type)
+        {
+            if (type.ToLower() == "mob")
+            {
+                Mob? mobToRemove = Mobs.Find(m => m.Name.Equals(mobName, StringComparison.OrdinalIgnoreCase));
+                if (mobToRemove != null)
+                {
+                    mobToRemove.Spawned = false;
+                    Mobs.Remove(mobToRemove);
+                    Comm.SendToRoom(this, $"{mobName} has been despawned from the room.");
+                }
+            }
+            else if(type.ToLower() == "npc")
+            {
+                NonPlayer? npcToRemove = Npcs.Find(m => m.Name.Equals(mobName, StringComparison.OrdinalIgnoreCase));
+                if (npcToRemove != null)
+                {
+                    npcToRemove.Spawned = false;
+                    Npcs.Remove(npcToRemove);
+                    Comm.SendToRoom(this, $"{mobName} has been despawned from the room.");
+                }
+            }
+                return;
         }
         #endregion
     }

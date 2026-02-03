@@ -16,10 +16,10 @@ namespace RPGFramework.Commands
             CharacterCommands.GetAllCommands().ForEach(o => Register(o));
             CommunicationCommands.GetAllCommands().ForEach(o => Register(o));
             CoreCommands.GetAllCommands().ForEach(o => Register(o));
+            HelpCommands.GetAllCommands().ForEach(o => Register(o));
             InventoryCommands.GetAllCommands().ForEach(o => Register(o));
             NavigationCommands.GetAllCommands().ForEach(o => Register(o));
             TestCommands.GetAllCommands().ForEach(o => Register(o));
-
             UXCommands.GetAllCommands().ForEach(o => Register(o));
             ItemCommands.GetAllCommands().ForEach(o => Register(o));
         }

@@ -4,11 +4,11 @@
     {
         public static List<ICommand> GetAllCommands()
         {
+            TestItemSizeCommand testItemSizeCommand = new();
             return new List<ICommand>
             {
                 new TestItemSizeCommand(),
                 new TestItemCommand(),
-                new TestHelpCommand(),
                 // Add more test commands here as needed
             };
         }
@@ -74,36 +74,6 @@
             return true;
         }
     }
-
-    internal class TestHelpCommand : ICommand
-    {
-        // This is the command a player would type to execute this command
-        public string Name => "/testhelp";
-
-        // These are the aliases that can also be used to execute this command. This can be empty.
-        public IEnumerable<string> Aliases => new List<string>() { };
-        public string Help => "";
-
-        // What will happen when the command is executed
-        public bool Execute(Character character, List<string> parameters)
-        {
-            // A lot of times we want to make sure it's a Player issuing the command, but not always
-            if (character is not Player player)
-                return false;
-
-            List<string> helps = CommandHelpScanner.GetAllHelpEntries();
-
-            foreach (string help in helps)
-            {
-                player.WriteLine(help);
-            }
-
-
-            // If the command failed to run for some reason, return false
-            return true;
-        }
-    }
-
 
     /// <summary>
     /// Measures the memory usage of creating a large number of <see cref="Item"/> instances.

@@ -4,11 +4,11 @@ namespace RPGFramework.Commands
 {
     internal static class CommandHelpScanner
     {
-        public static List<string> GetAllHelpEntries(Assembly? assembly = null)
+        public static List<HelpEntry> GetAllHelpEntries(Assembly? assembly = null)
         {
             assembly ??= Assembly.GetExecutingAssembly();
 
-            List<string> entries = [];
+            List<HelpEntry> entries = [];
 
             IEnumerable<Type> commandTypes = assembly
                 .GetTypes()
@@ -26,13 +26,20 @@ namespace RPGFramework.Commands
                     if (command == null)
                         continue;
 
-                    entries.Add(command.Help);
+                    string category = command.Name.StartsWith('/')
+                        ? "System Commands"
+                        : "Commands";
+
+                    entries.Add(new HelpEntry() { Topic = command.Name, Category = category, Content = command.Help }) ;
                 }
                 catch (Exception ex)
-                {
-                    
-                        entries.Add($"Help unavailable for command ({t.Name}): {ex.GetType().Name}");
-                    
+                {                    
+                        entries.Add(new HelpEntry()
+                        {
+                            Topic = t.Name,
+                            Category = "Command",
+                            Content = $"Help unavailable for command ({t.Name}): {ex.GetType().Name}"
+                        });                    
                 }
             }
             return entries;
