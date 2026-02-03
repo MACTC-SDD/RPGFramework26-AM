@@ -37,8 +37,12 @@ namespace RPGFramework
         #region --- Fields ---
         private CancellationTokenSource? _saveCts;
         private Task? _saveTask;
+
         private CancellationTokenSource? _timeOfDayCts;
         private Task? _timeOfDayTask;
+
+        private CancellationTokenSource? _battleCts;
+        private Task? _battleTask;
 
         private int _logSuppressionSeconds = 30;
         #endregion
@@ -84,7 +88,7 @@ namespace RPGFramework
         // Move starting area/room to configuration settings
         public int StartAreaId { get; set; } = 0;
         public int StartRoomId { get; set; } = 0;
-       
+
         #endregion --- Properties ---
 
         private GameState()
@@ -274,6 +278,9 @@ namespace RPGFramework
             _timeOfDayCts = new CancellationTokenSource();
             _timeOfDayTask = RunTimeOfDayLoopAsync(TimeSpan.FromMilliseconds(15000), _timeOfDayCts.Token);
 
+            _battleCts = new CancellationTokenSource();
+            _battleTask = RunBattleManagerLoopAsync(TimeSpan.FromSeconds(5), _battleCts.Token);
+
             // Other threads will go here
             // Weather?
             // Area threads?
@@ -298,8 +305,8 @@ namespace RPGFramework
         /// will terminate upon completion.</returns>
         /// TODO: Allow user to supply a duration to avoid immediate shutdown
         public async Task Stop()
-        {               
-            await SaveAllPlayers(includeOffline: true);         
+        {
+            await SaveAllPlayers(includeOffline: true);
             await SaveAllAreas();
 
             foreach (var player in Players.Values.Where(p => p.IsOnline))
@@ -400,7 +407,27 @@ namespace RPGFramework
             }
             GameState.Log(DebugLevel.Alert, "Time of Day thread stopping.");
         }
-        #endregion --- Thread Methods ---
 
+        private async Task RunBattleManagerLoopAsync(TimeSpan interval, CancellationToken ct)
+        {
+            GameState.Log(DebugLevel.Alert, "Battle Manager thread started.");
+            while (!ct.IsCancellationRequested && IsRunning)
+            {
+                try
+                {
+                    GameState.Log(DebugLevel.Debug, "Updating battles...");
+                    foreach (Battle b in Battles)
+                    {
+                        b.ProcessTurn();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GameState.Log(DebugLevel.Error, $"Error during battle update: {ex.Message}");
+                }
+                await Task.Delay(interval, ct);
+            }
+        }
+        #endregion --- Thread Methods ---
     }
 }

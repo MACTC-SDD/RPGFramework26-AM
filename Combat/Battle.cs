@@ -7,17 +7,28 @@ namespace RPGFramework.Combat
 {
     internal class Battle
     {
-        public required Character Attacker { get; set; }
-        public required Character Defender { get; set; }
+        public  Character Attacker { get; set; }
+        public  Character Defender { get; set; }
         public Character? Initiative { get; private set; }
         public Character? NonInitiative { get; private set; }
         public DateTime? AttackTime { get; set; }
         public DateTime? StartTime { get; private set; } = DateTime.Now;
 
-        public required Area StartArea { get; set; }
-        public required Room StartRoom { get; set; }
+        public  Area StartArea { get; set; }
+        public  Room StartRoom { get; set; }
         public BattleState BattleState { get; private set; } = BattleState.Combat;
 
+        public Battle(Character attacker, Character defender, Area startArea, Room startRoom)
+        {
+            Attacker = attacker;
+            Defender = defender;
+            StartArea = startArea;
+            StartRoom = startRoom;
+            AttackTime = DateTime.Now;
+            RollInitiative();
+            Attacker.Target = Defender;
+        }
+        
         public Battle()
         {
             AttackTime = DateTime.Now;
@@ -43,16 +54,24 @@ namespace RPGFramework.Combat
         }
         public void ProcessTurn()
         {
-            if (BattleState != BattleState.Combat) { return; }
+            //if (BattleState != BattleState.Combat) { return; }
 
-            if (Attacker.Alive == false || Defender.Alive == false)
-            {
-                EndBattle();
-            }
+            // Check if both alive
+            //if (Attacker.Alive == false || Defender.Alive == false)
+            //{
+            //    EndBattle();
+            //}
 
-            //Initiatve player deals damage
-            //IF non initiative player is still alive deal damage to initiative 
+            GameState.Log(DebugLevel.Debug, $"Processing turn for battle between {Attacker.Name} and {Defender.Name}");
+            // Are they in same room
 
+            // Calculate init player damage done and apply to non init player
+
+            // Is non init player still alive?
+
+            // Calculate non init player damage done and apply to init player
+
+            // Check if battle has timed out (maybe do that first?)
 
 
         }
