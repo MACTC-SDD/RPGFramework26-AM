@@ -462,6 +462,12 @@ namespace RPGFramework.Commands
                 case "damage":
                     WeaponSetDamage(player, parameters);
                     break;
+                case "delete":
+                    WeaponDelete(player, parameters);
+                    break;
+                case "list":
+                    WeaponList(player);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -550,9 +556,61 @@ namespace RPGFramework.Commands
                 return true;
             }
         }
-            // Here you would typically add the item to a database or game world
 
-        
+        private static void WeaponDelete(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            // Parameters:
+            // 0: /weapon
+            // 1: delete
+            // 2: name
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("Usage: /weapon delete '<name>'");
+                return;
+            }
+
+            string weaponName = parameters[2];
+
+            if (GameState.Instance.WeaponCatalog.Remove(weaponName))
+            {
+                player.WriteLine($"You have removed Weapon '{weaponName}' from existance");
+            }
+            else
+            {
+                player.WriteLine($"Weapon '{weaponName}' doesn't exist");
+            }
+        }
+
+        private static void WeaponList(Player player)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            var catalog = GameState.Instance.WeaponCatalog;
+
+            if (catalog.Count == 0)
+            {
+                player.WriteLine("The Weapon Catalog is a blank, empty page.");
+                return;
+            }
+
+            player.WriteLine("Current Weapon Catalog:");
+            foreach (var weaponName in catalog.Keys)
+            {
+                player.WriteLine($"- {weaponName}");
+            }
+        }
+
+        // Here you would typically add the item to a database or game world
 
         // 0: /weapon
         // 1: 'Weapon name'
