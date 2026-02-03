@@ -155,6 +155,11 @@ namespace RPGFramework.Geography
             DeleteRoom(room.AreaId, room.Id);
         }
 
+        public static Mob? FindMob(string name, Room room)
+        {
+            return room.Mobs.Find(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+        
         /// <summary>
         /// Return a list of Exit objects that are in this room.
         /// </summary>

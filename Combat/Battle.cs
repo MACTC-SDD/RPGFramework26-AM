@@ -1,6 +1,8 @@
 ﻿using RPGFramework;
 using RPGFramework.Geography;
 using RPGFramework.Enums;
+using RPGFramework.Interfaces;
+
 namespace RPGFramework.Combat
 {
     internal class Battle
@@ -8,9 +10,10 @@ namespace RPGFramework.Combat
         public required Character Attacker { get; set; }
         public required Character Defender { get; set; }
         public Character? Initiative { get; private set; }
-
         public Character? NonInitiative { get; private set; }
         public DateTime? AttackTime { get; set; }
+        public DateTime? StartTime { get; private set; } = DateTime.Now;
+
         public required Area StartArea { get; set; }
         public required Room StartRoom { get; set; }
         public BattleState BattleState { get; private set; } = BattleState.Combat;
@@ -20,8 +23,8 @@ namespace RPGFramework.Combat
             AttackTime = DateTime.Now;
             RollInitiative();
             Attacker?.Target = Defender;
-
         }
+
         private void RollInitiative()
         {
             Random random = new Random();
@@ -58,4 +61,6 @@ namespace RPGFramework.Combat
             BattleState = BattleState.CombatComplete;
         }
     }
+
+
 }

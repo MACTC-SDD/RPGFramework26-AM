@@ -1,5 +1,6 @@
 ﻿
 using System.Text.Json.Serialization;
+using RPGFramework.Combat;
 using RPGFramework.Enums;
 using RPGFramework.Geography;
 using RPGFramework.Interfaces;
@@ -51,7 +52,9 @@ namespace RPGFramework
         /// <summary>
         /// All Areas are loaded into this dictionary
         /// </summary>
-        [JsonIgnore] public Dictionary<int, Area> Areas { get; set; } = [];          
+        [JsonIgnore] public Dictionary<int, Area> Areas { get; set; } = [];
+
+        [JsonIgnore] public List<Battle> Battles { get; set; } = [];
 
         /// <summary>
         /// All Players are loaded into this dictionary, with the player's name as the key 
