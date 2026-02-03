@@ -8,6 +8,7 @@
 
         public DialogGroup() { }
 
+        #region Methods
         public void AddKeyword(string keyword)
         {
             if (!keywords.Contains(keyword, StringComparer.OrdinalIgnoreCase))
@@ -29,6 +30,23 @@
         public List<string> GetKeywords()
         {
             return new List<string>(keywords);
+        }
+
+        public void ClearKeywords()
+        {
+            keywords.Clear();
+        }
+
+        public bool CheckKeywordsInText(string text)
+        {
+            foreach (var keyword in keywords)
+            {
+                if (text.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void AddDialogLine(string line)
@@ -77,5 +95,6 @@
             }
             return DialogLines[index];
         }
+        #endregion
     }
 }

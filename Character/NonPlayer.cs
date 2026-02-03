@@ -4,8 +4,10 @@ using RPGFramework.Enums;
 using RPGFramework.Geography;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.InteropServices.Swift;
 using System.Transactions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RPGFramework
 {
@@ -45,6 +47,60 @@ namespace RPGFramework
 
         #region ---- Behavior Methods ----
 
+        public void PerformBehavior()
+        {
+            CheckAggressionLevel();
+            switch (CurrentState)
+            {
+                case CharacterState.Idle:
+                    PerformIdleBehavior();
+                    break;
+                case CharacterState.Aggressive:
+                    PerformAggressiveBehavior();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void CheckPlayerDialogue(string playerDialogue)
+        {
+            foreach(var group in DialogGroups)
+            {
+                if(group.CheckKeywordsInText(playerDialogue))
+                {
+                    if(group.GroupName.Equals("aggresive", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (Tags.Contains("Hostile"))
+                        {
+                            IncrementAgressionLevel(4);
+                        }
+                        else if(Tags.Contains("Peaceful"))
+                        {
+                            IncrementAgressionLevel(1);
+                        }
+                        else {
+                            IncrementAgressionLevel(2);
+                        }
+                    }
+                    string response = group.GetRandomDialogLine();
+                    Comm.SendToRoom(GetRoom(), $"{Name} says: \"{response}\"");
+                    return;
+                }
+            }
+        }
+        protected void CheckAggressionLevel()
+        {
+            if(CurrentAggressionLevel >= MaxAggressionLevel * 0.7)
+            {
+                CurrentState = CharacterState.Aggressive;
+            }
+            else
+            {
+                CurrentState = CharacterState.Idle;
+            }
+        }
+
         //npc leaves the room into a random room.
         private void NpcLeaveRoom(Character npc)
         {
@@ -59,7 +115,7 @@ namespace RPGFramework
         }
 
         //Plays when the npc is in an idle state
-        public void PerformIdleBehavior()
+        protected void PerformIdleBehavior()
         {
             // Implement idle behavior logic here
             int speakingChance = random.Next(1, 20);
@@ -67,6 +123,25 @@ namespace RPGFramework
             //save for last option (so it cant talk after it leaves)
             int LeavingChance = random.Next(1, 20);
             NpcMovementChance(LeavingChance);
+        }
+
+        //Plays when the npc is in an aggressive state
+        protected void PerformAggressiveBehavior()
+        {
+            int number = random.Next(1, 20);
+            if (Tags.Contains("Talkative") || Tags.Contains("Hostile"))
+            {
+                number += 2;
+            }
+            if(number >= 18)
+            {
+                //Implement Attack Logic later
+            }
+            if (number >= 12)
+            {
+                NpcSpeakRandomly("aggresive");
+            }
+                return;
         }
 
         //moves if the npc gets a high enough random number.
@@ -92,19 +167,26 @@ namespace RPGFramework
             }
             if (number >= 15)
             {
-                NpcSpeakRandomly();
+                NpcSpeakRandomly("idle");
             }
             return;
         }
 
-        private void NpcSpeakRandomly()
+        private void NpcSpeakRandomly(string type)
         {
             if (DialogGroups.Count == 0)
             {
                 return;
             }
-            int index = random.Next(DialogGroups.Count);
-            string selectedLine = DialogGroups[index].GetRandomDialogLine();
+
+            DialogGroup typeGroup = GetDialogGroup(type);
+
+            if(typeGroup == null || typeGroup.DialogLines.Count == 0)
+            {
+                return;
+            }
+
+            string selectedLine = typeGroup.GetRandomDialogLine();
             Comm.SendToRoom(GetRoom(), $"{Name} says: \"{selectedLine}\"");
         }
         public void AddDialogGroup(DialogGroup group)

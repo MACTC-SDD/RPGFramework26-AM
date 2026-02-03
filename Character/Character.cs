@@ -34,7 +34,7 @@ namespace RPGFramework
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
         protected List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        public List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Mob", "Hostile", "Greedy", "Healer", "Wimpy", "Talkative"];
+        public List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Peaceful", "Mob", "Hostile", "Greedy", "Healer", "Wimpy", "Talkative"];
         //Might need to move later, but for now I need a place to keep them -Shelton
         public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;

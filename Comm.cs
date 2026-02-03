@@ -48,6 +48,13 @@ namespace RPGFramework
                     player.WriteLine(message);
                 }
             }
+            foreach (NonPlayer npc in room.Npcs)
+            {
+                if (npc != except)
+                {
+                    npc.CheckPlayerDialogue(message);
+                }
+            }
         }
 
         /// <summary>

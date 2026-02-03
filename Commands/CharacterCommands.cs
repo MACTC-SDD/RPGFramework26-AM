@@ -607,7 +607,10 @@ namespace RPGFramework.Commands
             string tag = parameters[3];
             Character? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
+            {
+                player.WriteLine($"Npc '{name}' not found.");
                 return;
+            }
             bool completed = npc.AddTag(tag);
             if (!completed)
             {
