@@ -46,7 +46,7 @@ namespace RPGFramework.Combat
     internal class CombatManager
     {
         public CombatState State { get; private set; } = CombatState.Exploration;
-        public List<Character> Combatants { get; private set; } = new();
+        public List<Character> Combatants { get; private set; } = [];
         public int TurnIndex { get; private set; }
 
         public Character CurrentTurn => Combatants[TurnIndex];
@@ -77,7 +77,7 @@ namespace RPGFramework.Combat
                 return;
 
             // 🔒 Authority check
-            if (command.PlayerId != CurrentTurn.Id)
+            //if (command.PlayerId != CurrentTurn.Id)
             {
                 Console.WriteLine("❌ Invalid command: not your turn.");
                 return;
@@ -139,7 +139,8 @@ namespace RPGFramework.Combat
         private void ResolveCommand(CombatCommand command)
         {
             var actor = CurrentTurn;
-            var target = Combatants.FirstOrDefault(c => c.Id == command.TargetId);
+            //var target = Combatants.FirstOrDefault(c => c.Id == command.TargetId);
+            NonPlayer target = new(); // Placeholder for target lookup
 
             if (target == null)
             {
