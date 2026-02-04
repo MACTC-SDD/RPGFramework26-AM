@@ -18,8 +18,8 @@ namespace RPGFramework
         public bool IsOnline { get; set; }
 
         // Properties
-        public int playerAction { get; set; }
-        public bool NotInCombat = true;
+        
+       
         public DateTime LastLogin { get; set; }
         public int MapRadius { get; set; } = 2; // How far the player can see on the map
         public string Password { get; private set; } = "SomeGarbage";
@@ -166,7 +166,7 @@ namespace RPGFramework
                 Console?.Write("\r\n");
             }
         }
-       //ux team again don't mind me - LD
+       
        
         
         

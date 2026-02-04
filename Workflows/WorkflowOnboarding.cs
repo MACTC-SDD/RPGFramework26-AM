@@ -10,6 +10,8 @@ namespace RPGFramework.Workflows
 {
     internal class WorkflowOnboarding : IWorkflow
     {
+        public bool inCombat = false;
+        public int action { get; set; } 
         public int CurrentStep { get; set; } = 0;
         public string Description => "Guides new players through the initial setup and familiarization with the game mechanics.";
         public string Name => "Onboarding Workflow";
@@ -52,7 +54,7 @@ namespace RPGFramework.Workflows
                     else
                     {
                         player.SetPassword(parameters[0]);
-                        player.WriteLine($"{player.Name} : Welcome to the game! Let's start by choosing your character class. (don't use caps)");
+                        player.WriteLine($"{player.Name} : Welcome to the game! Let's start by choosing your character class.");
                         player.WriteLine(
                              "============================================================================"
                            + "\n Warrior \tMage \tRogue" +
@@ -86,13 +88,15 @@ namespace RPGFramework.Workflows
                     CurrentStep++;
                     break;
                 case 4:
-                    // Onboarding complete
-                    // TODO: Set PlayerClass (or maybe do that in step above) and save Player
+                      
+                    
+                        // Onboarding complete
+                        // TODO: Set PlayerClass (or maybe do that in step above) and save Player
 
-                    player.WriteLine(Name + ": Onboarding complete! ");
+                        player.WriteLine(Name + ": Onboarding complete! ");
                     player.WriteLine("============================================================================" +
                         "\nYour stats are:" +
-                        "\nClass :" + WorkflowData["ChosenClass"] +
+                        "\nClass : " + WorkflowData["ChosenClass"] +
                         $"\nDexterity : {player.Dexterity}" +
                         "\n\tIncrease 'Dex' To Have A To Get The First Attack! " +
                         "\n{player.EquippedArmor}" +
@@ -128,46 +132,69 @@ namespace RPGFramework.Workflows
                     CurrentStep++;
                     break;
                 case 5:
-                    player.Console!.Clear();
-                    player.WriteLine
-                        (
-                        $"                                                    --{player.AreaId}–                   " +
-                        "\n========================================================================================================================" +
-                       $"\n                                       Room Level : {player.LocationId}" +
-                        "\n========================================================================================================================" +
-                       "\n" +
-                        "\n" +
-                         $"\n {player.Target} " +
-                         "\n" +
-                          "\n" +
-                        "\n========================================================================================================================" +
-                        "\n({player.Name} Just :____!) <-- Player Action Goes Here! " +
-                        "\n========================================================================================================================" +
-                        $"\nPlayer Name:{player.Name}" + $"" +
-                        $"\nXP:{player.XP}" +
-                        $"\nLevel :{player.Level}" +
-                        $"\n Playtime : {player.PlayTime}" +
 
-                        $"\nHealth :{player.Health}/{player.MaxHealth}" + $"\tGold :{player.Gold}" +
-                        "\n========================================================================================================================" +
-                        "\n--Equipment--" + "" +
-                       "\nArmor :{player.EquippedArmor}" +
-                         $"\nWeapon :{player.PrimaryWeapon.Name}" +
-                         $"\n Weapon DMG : {player.PrimaryWeapon.Damage}" +
-                         $"\n Weapon Attack Speed : {player.PrimaryWeapon.AttackTime}" +
-                         $"\n Weapon Material : {player.PrimaryWeapon.Material}" +
-                         $"\n{player.PrimaryWeapon.DisplayText}" +
-                         $"\n" 
-                         
-                    
+                    if (player.Health <= 0)
+                    {
+                        player.Console!.Clear();
+                  player.WriteLine("Game Over..." + $"\nHope You Enjoyed {player.Name}");
+                   }
+                    else
+                   {
+                        player.Console!.Clear();
+                        player.WriteLine
+                            (
+                            $"                                               --Area : {player.AreaId}–-                   " +
+                            "\n========================================================================================================================" +
+                            $"\n                                         Room Level : {player.LocationId}" +
+                            "\n========================================================================================================================" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n {player.Target} " +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n========================================================================================================================" +
+                            "\n" +
+                            "\n({action} Just :____!) <-- Player Action Goes Here! " +
+                            "\n" +
+                            "\n========================================================================================================================" +
+                            "\n" +
+                            $"\nPlayer Name:{player.Name}" + $"" +
+                            $"\nXP:{player.XP}" +
+                            $"\nLevel :{player.Level}" +
+                            $"\nHealth :{player.Health}/{player.MaxHealth}" + $"\tGold :{player.Gold}" +
+                            $"\n Playtime : {player.PlayTime}" +
+                            "\n" +
+                            "\n========================================================================================================================" +
+                            $"\n" +
+                            "\n--Equipment--" + "" +
+                            "\nArmor :{player.EquippedArmor}" + "\n" +
+                            $"\nWeapon :{player.PrimaryWeapon.Name}" + "\n" +
+                            $"\n Weapon DMG : {player.PrimaryWeapon.Damage}" + "\n" +
+                            $"\n Weapon Attack Speed : {player.PrimaryWeapon.AttackTime}" + "\n" +
+                            $"\n Weapon Material : {player.PrimaryWeapon.Material}" + "\n" +
+                            $"\n{player.PrimaryWeapon.DisplayText}" + "\n" +
+                            $"\n"
 
-                        );
-                    player.CurrentWorkflow = null;
+
+
+                            );
+
+                        player.CurrentWorkflow = null;
+
+                   }
                     break;
-            } while (player.NotInCombat == false) 
-            {
-               // player.playerAction = ;
-            }
+            } 
+            
         }    
     }
 }

@@ -15,6 +15,7 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character : IDescribable
     {
+
         enum CharacterState
         {
             Idle,
@@ -175,6 +176,6 @@ namespace RPGFramework
 
 
         }
-    }
+    } 
 
 
