@@ -33,7 +33,7 @@ namespace RPGFramework.Commands
                 return false;
             }
             player.WriteLine("Inventory:");
-            for (int i = 0; i < 16; i++)
+            for (int i = 1; i < 17; i++)
             {
                 player.WriteLine($"Slot {i}: ");
             }

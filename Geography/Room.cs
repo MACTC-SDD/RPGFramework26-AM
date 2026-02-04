@@ -14,6 +14,8 @@ namespace RPGFramework.Geography
 
         // Description of the room
         public string Description { get; set; } = "";
+        //Items in the room
+        public List<Item> Items { get; set; } = [];
 
         // Icon to display on map
         public string MapIcon { get; set; } = DisplaySettings.RoomMapIcon;
@@ -130,6 +132,10 @@ namespace RPGFramework.Geography
         public static void DeleteRoom(Room room)
         {
             DeleteRoom(room.AreaId, room.Id);
+        }
+         public Item? FindItem(string itemName)
+        {
+            return Items.Find(x => x.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
