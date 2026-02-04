@@ -133,19 +133,18 @@ namespace RPGFramework.Workflows
                     break;
                 case 5:
 
-                    if (player.Health <= 0)
-                    {
+                   // if (player.Health <= 0)
+                 //   {
+                 //       player.Console!.Clear();
+                //  player.WriteLine("Game Over..." + $"\nHope You Enjoyed {player.Name}");
+                //   }
+                 //   else
+                //   {
                         player.Console!.Clear();
-                  player.WriteLine("Game Over..." + $"\nHope You Enjoyed {player.Name}");
-                   }
-                    else
-                   {
-                        player.Console!.Clear();
-                        player.WriteLine
-                            (
-                            $"                                               --Area : {player.AreaId}–-                   " +
+                        string output =
+                            $"                                                 --Area : {player.AreaId}–-                   " +
                             "\n========================================================================================================================" +
-                            $"\n                                         Room Level : {player.LocationId}" +
+                            $"\n                                             Room Level : {player.LocationId}" +
                             "\n========================================================================================================================" +
                             "\n" +
                             "\n" +
@@ -168,30 +167,62 @@ namespace RPGFramework.Workflows
                             "\n" +
                             "\n========================================================================================================================" +
                             "\n" +
-                            $"\nPlayer Name:{player.Name}" + $"" +
+                            $"\nPlayer Name: {player.Name}" +
                             $"\nXP:{player.XP}" +
                             $"\nLevel :{player.Level}" +
                             $"\nHealth :{player.Health}/{player.MaxHealth}" + $"\tGold :{player.Gold}" +
-                            $"\n Playtime : {player.PlayTime}" +
+                            $"\nPlaytime : {player.PlayTime}" +
+                            //$"\n Total Defence :?? "+
                             "\n" +
                             "\n========================================================================================================================" +
-                            $"\n" +
-                            "\n--Equipment--" + "" +
-                            "\nArmor :{player.EquippedArmor}" + "\n" +
-                            $"\nWeapon :{player.PrimaryWeapon.Name}" + "\n" +
-                            $"\n Weapon DMG : {player.PrimaryWeapon.Damage}" + "\n" +
-                            $"\n Weapon Attack Speed : {player.PrimaryWeapon.AttackTime}" + "\n" +
-                            $"\n Weapon Material : {player.PrimaryWeapon.Material}" + "\n" +
-                            $"\n{player.PrimaryWeapon.DisplayText}" + "\n" +
-                            $"\n"
+                            "\n" +
+                            "\n--Equipment--";
+                    // Equipped Armor Name
+                        string helmetName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Head)?.Name ?? "None";
+                    string chestName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.Name ?? "None";
+                    string legName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.Name ?? "None";
+                    string backName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.Name ?? "None";
+                    // Equipped Armor Mats
+                    string helmetMat = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Head)?.Material.ToString() ?? "None";
+                    string chestMat = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.Material.ToString() ?? "None";
+                    string legMat = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.Material.ToString() ?? "None";
+                    string backMat = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.Material.ToString() ?? "None";
+                    //Equipped Armor Type
+                    string helmetType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Head)?.Type.ToString() ?? "None";
+                    string chestType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.Type.ToString() ?? "None";
+                    string legType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.Type.ToString() ?? "None";
+                    string backType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.Type.ToString() ?? "None";
+                    output +=
+                            $"\nHelmet: {helmetName}" +
+                            $"\n\tHelmet Armor Type : {helmetType}" +
+                            $"\n\tHelmet Material : {helmetMat}" +
+                            "\n"+
+                            $"\nChestplate: {chestName}" +
+                            $"\n\tChestplate Armor Type : {chestType}" +
+                            $"\n\tChestplate Material : {chestMat}" +
+                            "\n" +
+                            $"\nLeggings: {legName}" +
+                            $"\n\tLeggings Armor Type : {legType}" +
+                            $"\n\tLeggings Material : {legMat}" +
+                            "\n" +
+                            $"\nBack Piece: {backName}" +
+                            $"\n\tBack Piece Armor Type : {backType}" +
+                            $"\n\tBack Piece Material : {backMat}" +
+                            "\n" +
+                            $"\nWeapon :{player.PrimaryWeapon.Name}" +
+                            $"\n\tWeapon DMG : {player.PrimaryWeapon.Damage}" +
+                            $"\n\tWeapon Material : {player.PrimaryWeapon.Material}" +                            
+                            $"\n{player.PrimaryWeapon.DisplayText}" +                             
+                            $"\n========================================================================================================================";
+
+                        player.WriteLine(output);
+                    
+                   
 
 
+                    player.CurrentWorkflow = null;
 
-                            );
-
-                        player.CurrentWorkflow = null;
-
-                   }
+               //    }
                     break;
             } 
             

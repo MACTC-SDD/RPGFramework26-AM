@@ -31,7 +31,7 @@ namespace RPGFramework
         Head,
         Chest,
         Legs,
-        back
+        Back
     }
     internal enum ArmorType
     {
