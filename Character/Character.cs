@@ -16,11 +16,13 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character : IDescribable
     {
-        enum CharacterState { 
-            Idle, 
-            Moving, 
-            Attacking, 
-            Dead 
+
+        enum CharacterState
+        {
+            Idle,
+            Moving,
+            Attacking,
+            Dead
         }
 
         #region --- Properties ---
@@ -58,8 +60,8 @@ namespace RPGFramework
         public Character()
         {
             Health = MaxHealth;
-            Weapon w = new Weapon() 
-              { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
+            Weapon w = new Weapon()
+            { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
             PrimaryWeapon = w;
         }
 
@@ -162,11 +164,11 @@ namespace RPGFramework
         //Add tags to character
         public bool AddTag(string tag)
         {
-           if(ValidTags.Contains(tag) && !Tags.Contains(tag))
-           {
+            if (ValidTags.Contains(tag) && !Tags.Contains(tag))
+            {
                 Tags.Add(tag);
                 return true;
-           }
+            }
             else
             {
                 return false;
@@ -225,3 +227,11 @@ namespace RPGFramework
     }
 }
         
+
+
+
+
+        }
+    } 
+
+
