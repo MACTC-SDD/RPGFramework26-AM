@@ -24,7 +24,9 @@ namespace RPGFramework
         public WeaponType Type { get; set; }
 
         public WeaponMaterial Material { get; set; }
+
         
+
         // TODO
         // Add attack properties (damage, speed, etc.)
         // Implement attack methods

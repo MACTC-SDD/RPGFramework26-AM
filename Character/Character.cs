@@ -1,6 +1,7 @@
-﻿
 using RPGFramework.Geography;
+using RPGFramework.Items;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 
 namespace RPGFramework
 {
@@ -15,14 +16,17 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character : IDescribable
     {
-        enum CharacterState { 
-            Idle, 
-            Moving, 
-            Attacking, 
-            Dead 
+
+        enum CharacterState
+        {
+            Idle,
+            Moving,
+            Attacking,
+            Dead
         }
 
         #region --- Properties ---
+        public static Random random = new Random();
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
         public string Description { get; set; } = "";
@@ -33,9 +37,9 @@ namespace RPGFramework
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
         protected List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        public List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Mob", "Hostile", "Greedy", "Healer", "Wimpy"];
+        public List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Mob", "Hostile", "Greedy", "Healer", "Wimpy", "Talkative"];
         //Might need to move later, but for now I need a place to keep them -Shelton
-        public Character? Target { get; set; } = null; // (for combat or interaction)
+        [JsonIgnore] public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = [];
@@ -56,8 +60,8 @@ namespace RPGFramework
         public Character()
         {
             Health = MaxHealth;
-            Weapon w = new Weapon() 
-              { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
+            Weapon w = new Weapon()
+            { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
             PrimaryWeapon = w;
         }
 
@@ -68,6 +72,11 @@ namespace RPGFramework
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
+        }
+
+        public Area GetArea()
+        {
+            return GameState.Instance.Areas[AreaId];
         }
 
         // get exits in current room
@@ -85,6 +94,11 @@ namespace RPGFramework
         public void SetRoom(int id)
         {
             LocationId = id;
+        }
+
+        public void SetArea(int id)
+        {
+            AreaId = id;
         }
 
         // Set Health to a specific value
@@ -142,14 +156,19 @@ namespace RPGFramework
             throw new NotImplementedException();
         }
 
+        internal void WriteLine(object description)
+        {
+            throw new NotImplementedException();
+        }
+
         //Add tags to character
         public bool AddTag(string tag)
         {
-           if(ValidTags.Contains(tag) && !Tags.Contains(tag))
-           {
+            if (ValidTags.Contains(tag) && !Tags.Contains(tag))
+            {
                 Tags.Add(tag);
                 return true;
-           }
+            }
             else
             {
                 return false;
@@ -168,6 +187,45 @@ namespace RPGFramework
                 return false;
             }
         }
+        //Attack Resolution
+        public bool WillHit()
+        {
+
+
+
+            int HitChance = 50 + (Dexterity) * 5; /* Add - Enemy.Dexterity*/
+            HitChance = Math.Clamp(HitChance, 5, 95);
+            int roll = Random.Shared.Next(1, 101);
+            bool hit = roll <= HitChance;
+            return hit;
+
+        }
+
+    
+        public void WeaponStrengthDamage(int strength)
+        {
+            RPGFramework.Weapon test = new RPGFramework.Weapon();
+     
+            Double Damage = Strength + test.Damage;
+        }
+
+        public bool WillDodge()
+        {
+            int DodgeChance = Dexterity;
+
+
+
+            int Dodge = Random.Shared.Next(1, 101);
+            bool dodgedroll = Dodge <= DodgeChance;
+            return dodgedroll;
+        }
+        //End Attack Resolution
+        public List<string> GetTags()
+        {
+            return Tags;
+        }
     }
 }
         
+
+      

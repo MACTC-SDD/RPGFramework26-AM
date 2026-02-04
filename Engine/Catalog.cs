@@ -150,7 +150,7 @@ namespace RPGFramework
         {
             value = default;
 
-            if (_items.Keys.First().GetType() != typeof(string))
+            if (_items.Keys.Count > 0 && _items.Keys.First().GetType() != typeof(string))
             {
                 return false;
             }

@@ -1,6 +1,7 @@
 ﻿
 using RPGFramework.Geography;
-using static RPGFramework.Commands.TimeCommand;
+using RPGFramework.Display;
+using Spectre.Console;
 
 namespace RPGFramework.Commands
 {
@@ -72,12 +73,23 @@ namespace RPGFramework.Commands
             if (character is Player player)
             {
                 // For now, we'll ignore the command and just show the room description
+
                 player.WriteLine($"{player.GetRoom().Description}");
-                player.WriteLine("Exits:");
+
+
+                string content = "[red]Exits[/]\n";
+                string title = " ";
+
                 foreach (var exit in player.GetRoom().GetExits())
                 {
-                    player.WriteLine($"{exit.Description} to the {exit.ExitDirection}");
+                    content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
                 }
+
+                Panel panel = RPGPanel.GetPanel(content, title);
+
+                panel.Border = BoxBorder.Ascii;
+                panel.BorderColor(Color.Maroon);
+                player.Write(panel);
                 return true;
             }
             return false;
