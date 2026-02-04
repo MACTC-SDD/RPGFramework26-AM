@@ -54,7 +54,7 @@ namespace RPGFramework.Commands
         {
             if (character is Player player)
             {
-                player.WriteLine($"Your IP address is {player.GetIPAddress()}");
+                player.WriteLine($"Your IP address is [Fuchsia]{player.GetIPAddress()}[/]\n");
                 return true;
             }
             return false;
