@@ -1,34 +1,59 @@
-﻿namespace RPGFramework
+﻿using RPGFramework.Enums;
+
+namespace RPGFramework
 {
-    public class DialogGroup
+    internal class DialogGroup
     {
-        public string GroupName { get; set; } = "DefaultGroup";
-        public List<string> DialogLines { get; set; } = new List<string>();
-        private List<string> keywords = new List<string>();
+        public DialogGroupCategory Category { get; set; } = DialogGroupCategory.Idle;
+        public List<string> DialogLines { get; set; } = [];
+        public List<string> Keywords = [];
 
         public DialogGroup() { }
 
+        #region Methods
+
+        public void SetCategory(DialogGroupCategory category)
+        {
+            Category = category;
+        }
         public void AddKeyword(string keyword)
         {
-            if (!keywords.Contains(keyword, StringComparer.OrdinalIgnoreCase))
+            if (!Keywords.Contains(keyword, StringComparer.OrdinalIgnoreCase))
             {
-                keywords.Add(keyword);
+                Keywords.Add(keyword);
             }
         }
 
         public void RemoveKeyword(string keyword)
         {
-            keywords.RemoveAll(k => string.Equals(k, keyword, StringComparison.OrdinalIgnoreCase));
+            Keywords.RemoveAll(k => string.Equals(k, keyword, StringComparison.OrdinalIgnoreCase));
         }
 
         public bool HasKeyword(string keyword)
         {
-            return keywords.Any(k => string.Equals(k, keyword, StringComparison.OrdinalIgnoreCase));
+            return Keywords.Any(k => string.Equals(k, keyword, StringComparison.OrdinalIgnoreCase));
         }
 
         public List<string> GetKeywords()
         {
-            return new List<string>(keywords);
+            return new List<string>(Keywords);
+        }
+
+        public void ClearKeywords()
+        {
+            Keywords.Clear();
+        }
+
+        public bool CheckKeywordsInText(string text)
+        {
+            foreach (var keyword in Keywords)
+            {
+                if (text.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void AddDialogLine(string line)
@@ -77,5 +102,6 @@
             }
             return DialogLines[index];
         }
+        #endregion
     }
 }

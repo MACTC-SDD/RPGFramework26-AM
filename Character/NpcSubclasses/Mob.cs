@@ -14,20 +14,6 @@ namespace RPGFramework
             NpcType = NonPlayerType.Mob;
             Tags.Add("Mob");
         }
-
-        //not sure if its neccesary, but it doesn't hurt to have it.
-        public Mob(int maxhealth, int health, string name, string desc, int level, Dictionary<string, string[]> dialogOptions, int maxRoomsToChase)
-        {
-            MaxHealth = maxhealth;
-            Health = health;
-            Name = name;
-            Description = desc;
-            Level = level;
-            MaxRoomsToChase = maxRoomsToChase;
-        }
-
-        
-
         public bool CanChase()
         {
             return ChaseDistance < MaxRoomsToChase;
