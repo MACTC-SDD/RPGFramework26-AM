@@ -52,7 +52,7 @@ namespace RPGFramework.Commands
             }
 
             // Find the original room in all areas
-            Room originalRoom = GameState.Instance.Areas.Values
+            Room? originalRoom = GameState.Instance.Areas.Values
                                         .SelectMany(a => a.Rooms.Values)
                                         .FirstOrDefault(r => r.Id == roomId);
 
@@ -215,11 +215,14 @@ namespace RPGFramework.Commands
             ValidateRoom(player, roomId);  /*Made changes here*/
         }
 
-        private static void ValidateRoom(Player player, int roomId)  /*Made changes here*/
+        private static void ValidateRoom(Player player, int roomId)
+        /*Okay so using ChatGPT, I added HashSet<Direction> directionsUsed to detect duplicate directions because It was recommended and to avoid rooms connected to the same room and creating erriors,
+         * I also found a check for one-way exits could be helpful when we begin to world build-Landon*/
         {
             Room? room = null;
             Area? area = null;
 
+            // Find the room in all areas
             foreach (var a in GameState.Instance.Areas.Values)
             {
                 if (a.Rooms.TryGetValue(roomId, out room))
@@ -237,6 +240,9 @@ namespace RPGFramework.Commands
 
             player.WriteLine($"Validating room {roomId}...");
             bool hasErrors = false;
+
+            /*Track used exit directions to detect duplicates, I don't quite know everything it does I just know using it allows us to track*/
+            HashSet<Direction> directionsUsed = new();
 
             foreach (int exitId in room.ExitIds)
             {
@@ -256,16 +262,41 @@ namespace RPGFramework.Commands
 
                 if (!area.Rooms.ContainsKey(exit.DestinationRoomId))
                 {
-                    player.WriteLine(
-                        $"Exit {exit.Id} points to invalid room id {exit.DestinationRoomId}."
-                    );
+                    player.WriteLine($"Exit {exit.Id} points to invalid room id {exit.DestinationRoomId}.");
                     hasErrors = true;
+                }
+
+                // Check for duplicate directions
+                if (directionsUsed.Contains(exit.ExitDirection))
+                {
+                    player.WriteLine($"Duplicate exit direction detected: {exit.ExitDirection}.");
+                    hasErrors = true;
+                }
+                else
+                {
+                    directionsUsed.Add(exit.ExitDirection);
+                }
+
+                // Check for one-way exits
+                if (area.Rooms.TryGetValue(exit.DestinationRoomId, out Room? destRoom))
+                {
+                    bool hasReturn = destRoom.GetExits()
+                        .Any(e => e.DestinationRoomId == room.Id);
+                    if (!hasReturn)
+                    {
+                        player.WriteLine($"One-way exit detected: Room {room.Id} -> Room {destRoom.Id} ({exit.ExitDirection})");
+                        hasErrors = true;
+                    }
                 }
             }
 
             if (!hasErrors)
             {
                 player.WriteLine("Room validation passed. No issues found.");
+            }
+            else
+            {
+                player.WriteLine("Room validation completed with errors.");
             }
         }
         private static void WriteDeleteUsage(Player player)
@@ -721,6 +752,10 @@ namespace RPGFramework.Commands
                     AreaDelete(player, parameters);
                     break;
 
+                case "validate":
+                    AreaValidate(player, parameters);
+                    break;
+
                 default:
                     WriteAreaUsage(player);
                     break;
@@ -734,7 +769,83 @@ namespace RPGFramework.Commands
             player.WriteLine("/area create '<name>' '<description>'");
             player.WriteLine("/area show");
             player.WriteLine("/area delete <areaId> confirm");
+            player.WriteLine("/area validate <areaId>");
         }
+
+        private static void AreaValidate(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+
+            if (parameters.Count < 3)
+            {
+                WriteAreaUsage(player);
+                return;
+            }
+
+            if (!int.TryParse(parameters[2], out int areaId))
+            {
+                player.WriteLine("Invalid area id.");
+                return;
+            }
+
+            if (!GameState.Instance.Areas.TryGetValue(areaId, out Area? area))
+            {
+                player.WriteLine($"Area {areaId} does not exist.");
+                return;
+            }
+
+            ValidateArea(player, area);
+        }
+
+        private static void ValidateArea(Player player, Area area)
+        {
+            player.WriteLine($"Validating area {area.Id}...");
+            bool hasErrors = false;
+
+            foreach (Room room in area.Rooms.Values)
+            {
+                player.WriteLine($" Checking room {room.Id} ({room.Name})");
+
+                foreach (int exitId in room.ExitIds)
+                {
+                    if (!area.Exits.TryGetValue(exitId, out Exit? exit))
+                    {
+                        player.WriteLine($"   Exit ID {exitId} does not exist in this area.");
+                        hasErrors = true;
+                        continue;
+                    }
+
+                    if (exit.DestinationRoomId <= 0)
+                    {
+                        player.WriteLine($"   Exit {exit.Id} has no destination.");
+                        hasErrors = true;
+                        continue;
+                    }
+
+                    if (!area.Rooms.ContainsKey(exit.DestinationRoomId))
+                    {
+                        player.WriteLine(
+                            $"   Exit {exit.Id} points to invalid room id {exit.DestinationRoomId}."
+                        );
+                        hasErrors = true;
+                    }
+                }
+            }
+
+            if (!hasErrors)
+            {
+                player.WriteLine(" Area validation passed. No issues found.");
+            }
+            else
+            {
+                player.WriteLine(" Area validation completed with errors.");
+            }
+        }
+
 
         private static void AreaDelete(Player player, List<string> parameters)
         {
