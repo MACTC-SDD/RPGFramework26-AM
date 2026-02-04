@@ -14,6 +14,7 @@ namespace RPGFramework.Commands
                 new AnnounceCommand(),
                 new ReloadSeedDataCommand(),
                 new ShutdownCommand(),
+                new GoToCommand(),
                 // Add more builder commands here as needed
             ];
         }
@@ -75,18 +76,19 @@ namespace RPGFramework.Commands
     {
         public string Name => "GoTo";
         public IEnumerable<string> Aliases => new List<string>() { };
-
+        public string Help => "Teleports an admin to a specific room using areaId and roomId.";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is not Player player)
                 return false;
-
+            // permissions check
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
                 return true;
             }
 
+            //usage
             if (parameters.Count < 3)
             {
                 player.WriteLine("Usage:");
@@ -94,6 +96,7 @@ namespace RPGFramework.Commands
                 return true;
             }
 
+            // input for <Id> was not a number
             if (!int.TryParse(parameters[1], out int areaID) ||
                 !int.TryParse(parameters[2], out int roomId))
             {
@@ -101,12 +104,14 @@ namespace RPGFramework.Commands
                 return true;
             }
 
+            // specified area doesnt exist
             if (!GameState.Instance.Areas.TryGetValue(areaID, out var area))
             {
                 player.WriteLine($"Area{areaID} does not exist");
                 return true;
             }
 
+            // if the specified room Id doesnt exist in the specified area
             if (!area.Rooms.TryGetValue(roomId, out var room))
             {
                 player.WriteLine($"Room{roomId} does not exist in Area {areaID}");
@@ -115,7 +120,7 @@ namespace RPGFramework.Commands
 
             player.AreaId = areaID;
             player.LocationId = roomId;
-
+            //success :)
             player.WriteLine($"you teleport to room {roomId} in {area.Name}");
 
             return true;
