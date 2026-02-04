@@ -520,6 +520,10 @@ namespace RPGFramework.Geography
             }
                 return;
         }
+
+        public NonPlayer GetNpcByName(string name) {
+            return Npcs.Find(npc => npc.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
         #endregion
     }
 }

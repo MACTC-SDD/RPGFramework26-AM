@@ -179,7 +179,7 @@ namespace RPGFramework
             }
             if (number >= 15)
             {
-                NpcSpeakRandomly("idle");
+                NpcSpeakRandomly("Idle");
             }
             return;
         }

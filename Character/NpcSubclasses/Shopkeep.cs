@@ -52,7 +52,6 @@ namespace RPGFramework
                 ShopInventory.Remove(index);
             }
         }
-        //Use these for a list command
         public Dictionary<string, int> GetShopInventory()
         {
             return ShopInventory;
@@ -65,7 +64,6 @@ namespace RPGFramework
         {
             return ShopInventory.ContainsKey(index);
         }
-        //end of list command
         public void IncrementItemQuantity(string index)
         {
             ShopInventory[index]++;

@@ -268,7 +268,7 @@ namespace RPGFramework.Commands
     internal class PlayerShopCommand : BaseNpcCommand, ICommand
     {
 
-        public string Name => "/shopkeep";
+        public string Name => "shop";
 
         public IEnumerable<string> Aliases => [];
         public string Help => "";
@@ -276,7 +276,7 @@ namespace RPGFramework.Commands
         public bool Execute(Character character, List<string> parameters)
         {
             _catalog = GameState.Instance.ShopCatalog;
-            _entityName = "shopkeep";
+            _entityName = "shop";
             _entityType = typeof(Shopkeep);
 
             if (character is not Player player)
@@ -286,20 +286,126 @@ namespace RPGFramework.Commands
 
             if (parameters.Count < 2)
             {
-                WriteUsage(player);
+                WriteUsageShop(player);
                 return false;
             }
 
             //Switches between the second parameter to determine command.
             switch (parameters[1].ToLower())
             {
+                case "list":
+                    // List all shopkeeps or a specific shopkeep's inventory
+                    if (parameters.Count == 2)
+                    {
+                        ListShopKeeps(player);
+                    }
+                    else if (parameters.Count == 3)
+                    {
+                        ListShopInventory(player, parameters[2]);
+                    }
+                    break;
+                case "buy":
+                    SellItemToPlayer(player, parameters);
+                    break;
                 default:
-                    WriteUsage(player);
+                    WriteUsageShop(player);
                     break;
             }
+
             return false;
         }
-        
+
+        protected static void WriteUsageShop(Player player)
+        {
+            player.WriteLine("Usage: ");
+            player.WriteLine($"{_entityName} list");
+            player.WriteLine($"{_entityName} list '<shopkeep>'");
+            player.WriteLine($"{_entityName} buy '<shopkeep>' '<ItemName>' '<amount>'");
+        }
+
+        protected static void ListShopKeeps(Player player)
+        {
+            player.WriteLine("Available Shopkeeps:");
+            Room room = player.GetRoom();
+            foreach (var shop in room.Npcs)
+            {
+                player.WriteLine($"Name: {shop.Name} Description: {shop.Description}");
+            }
+        }
+
+        protected static void ListShopInventory(Player player, string shopkeepName)
+        {
+            Room room = player.GetRoom();
+            NonPlayer? npc = room.GetNpcByName(shopkeepName);
+            if (npc == null || npc is not Shopkeep shopkeep)
+            {
+                player.WriteLine($"Shopkeep '{shopkeepName}' not found in this room.");
+                return;
+            }
+            player.WriteLine($"Inventory for Shopkeep '{shopkeep.Name}':");
+            foreach (var itemEntry in shopkeep.ShopInventory)
+            {
+                string itemId = itemEntry.Key;
+                int quantity = itemEntry.Value;
+                if (GameState.Instance.ItemCatalog.ContainsKey(itemId))
+                {
+                    Item item = GameState.Instance.ItemCatalog[itemId];
+                    player.WriteLine($"Item: {item.Name}, Description: {item.Description}, Quantity: {quantity}, Price: {item.Value} gold each");
+                }
+                else
+                {
+                    player.WriteLine($"Item ID: {itemId} (details not found), Quantity: {quantity}");
+                }
+            }
+        }
+
+        protected static void SellItemToPlayer(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine("Usage: shop buy '<shopkeep>' '<ItemName>' '<amount>'");
+                return;
+            }
+            string shopkeepName = parameters[2];
+            string itemName = parameters[3];
+            int amount;
+            if (!int.TryParse(parameters[4], out amount) || amount <= 0)
+            {
+                player.WriteLine("Invalid amount specified.");
+                return;
+            }
+            Room room = player.GetRoom();
+            NonPlayer? npc = room.GetNpcByName(shopkeepName);
+            if (npc == null || npc is not Shopkeep shopkeep)
+            {
+                player.WriteLine($"Shopkeep '{shopkeepName}' not found in this room.");
+                return;
+            }
+            // Find the item by name in the shopkeep's inventory
+            string? itemIdToBuy = null;
+            foreach (var itemEntry in shopkeep.ShopInventory)
+            {
+                string itemId = itemEntry.Key;
+                if (GameState.Instance.ItemCatalog.ContainsKey(itemId))
+                {
+                    Item item = GameState.Instance.ItemCatalog[itemId];
+                    if (item.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        itemIdToBuy = itemId;
+                        break;
+                    }
+                }
+            }
+            if (itemIdToBuy == null)
+            {
+                player.WriteLine($"Item '{itemName}' not found in shopkeep '{shopkeepName}' inventory.");
+                return;
+            }
+            shopkeep.SellItem(itemIdToBuy, amount);
+            //add to player inventory logic would go here.
+            //Adding this for extra emphasis since this is a key part of the buy process.
+            player.WriteLine($"You have purchased {amount} of '{itemName}' from '{shopkeepName}'.");
+        }
     }
     #endregion
 
