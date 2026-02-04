@@ -60,15 +60,15 @@ namespace RPGFramework.Commands
         // What will happen when the command is executed
         public bool Execute(Character character, List<string> parameters)
         {
-            // A lot of times we want to make sure it's a Player issuing the command, but not always
-            if (character is Player player)
-            {
-                player.WriteLine("This is an example command.");
+            if (character is not Player player)
+                return false;
 
-                Mob m = new Mob() {  Name="Test Mob", Description = "A mob for testing" };
-                Battle b = new Battle(player, m, player.GetArea(), player.GetRoom());
-                GameState.Instance.Battles.Add(b);
-            }
+            player.WriteLine("This is an example command.");
+
+            Mob m = new Mob() { Name = "Test Mob", Description = "A mob for testing" };
+            Battle b = new Battle(player, m, player.GetArea(), player.GetRoom());
+            GameState.Instance.Battles.Add(b);
+
 
             // If the command failed to run for some reason, return false
             return true;
