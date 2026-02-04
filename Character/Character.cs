@@ -2,6 +2,7 @@ using RPGFramework.Geography;
 using RPGFramework.Items;
 using System.Security.Cryptography.X509Certificates;
 using RPGFramework.Enums;
+using System.Text.Json.Serialization;
 
 namespace RPGFramework
 {
@@ -16,11 +17,13 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character : IDescribable
     {
-        enum CharacterState { 
-            Idle, 
-            Moving, 
-            Attacking, 
-            Dead 
+
+        enum CharacterState
+        {
+            Idle,
+            Moving,
+            Attacking,
+            Dead
         }
 
         #region --- Properties ---
@@ -35,7 +38,7 @@ namespace RPGFramework
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
         protected List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        public Character? Target { get; set; } = null; // (for combat or interaction)
+        [JsonIgnore] public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = [];
@@ -56,8 +59,8 @@ namespace RPGFramework
         public Character()
         {
             Health = MaxHealth;
-            Weapon w = new Weapon() 
-              { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
+            Weapon w = new Weapon()
+            { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
             PrimaryWeapon = w;
         }
 
@@ -221,3 +224,5 @@ namespace RPGFramework
     }
 }
         
+
+      

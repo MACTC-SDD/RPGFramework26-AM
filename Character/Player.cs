@@ -1,6 +1,7 @@
 ﻿using RPGFramework.Enums;
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using System;
 using System.Numerics;
 using System.Text.Json.Serialization;
 
@@ -15,8 +16,10 @@ namespace RPGFramework
 
         [JsonIgnore]
         public bool IsOnline { get; set; }
-        
+
         // Properties
+        
+       
         public DateTime LastLogin { get; set; }
         public int MapRadius { get; set; } = 2; // How far the player can see on the map
         public string Password { get; private set; } = "SomeGarbage";
@@ -163,9 +166,12 @@ namespace RPGFramework
                 Console?.Write("\r\n");
             }
         }
-
-
+       
+       
         
+        
+
+
 
     }
 
