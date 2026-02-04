@@ -13,6 +13,7 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new RoomBuilderCommand(),
+                new SetExitTypeCommand(),
                 // Add more builder commands here as needed
             };
         }
@@ -338,13 +339,13 @@ namespace RPGFramework.Commands
             {
                 player.WriteLine($"[red]WARNING:[/]");
                 player.WriteLine($"You are about to permanently delete:");
-                player.WriteLine($"Room {roomToDelete.Id}: {roomToDelete.Name}");
+                player.WriteLine($"Room {((Room)null).Id}: {((Room)null).Name}");
                 player.WriteLine($"Type:");
                 player.WriteLine($"/room delete {(parameters[2])} confirm");
                 return;
             }
 
-            int areaId = roomToDelete.AreaId;
+            int areaId = ((Room)null).AreaId;
 
             // Safety checks
 
@@ -358,9 +359,9 @@ namespace RPGFramework.Commands
             // Move players out of the room
  
             int fallbackRoomId = GameState.Instance.Areas[areaId].Rooms.Keys
-                .First(id => id != roomToDelete.Id);
+                .First(id => id != ((Room)null).Id);
 
-            foreach (Player p in Room.GetPlayersInRoom(roomToDelete))
+            foreach (Player p in Room.GetPlayersInRoom(null))
             {
                 p.WriteLine("The room dissolves around you!");
                 p.LocationId = fallbackRoomId;
@@ -368,9 +369,9 @@ namespace RPGFramework.Commands
 
             // Delete room + exits
 
-            Room.DeleteRoom(roomToDelete);
+            Room.DeleteRoom(null);
 
-            player.WriteLine($"Room {roomToDelete.Id} deleted.");
+            player.WriteLine($"Room {((Room)null).Id} deleted.");
         }
 
         
