@@ -22,7 +22,7 @@ namespace RPGFramework
         {
             ShopInventory[index] = 1;
         }
-        
+
         //Need to create selling methods later - Shelton
     }
 }

@@ -580,15 +580,22 @@ namespace RPGFramework.Commands
                 return false;
             }
             string name = parameters[4];
-            string category = parameters[4].ToLower();
+            string category = parameters[3];
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return false;
             if (!npc.HasDialogGroup(category))
             {
                 DialogGroup dialogCategory = new DialogGroup();
-                dialogCategory.GroupName = category;
+                DialogGroupCategory categoryName;
+                Enum.TryParse<DialogGroupCategory>(category, true, out categoryName);
+                dialogCategory.SetCategory(categoryName);
                 npc.DialogGroups.Add(dialogCategory);
+            }
+            else
+            {
+                player.WriteLine($"Dialog category '{category}' already exists for {_entityName} '{name}'.");
+                return false;
             }
             player.WriteLine($"Dialog category '{category}' added to {_entityName} '{name}'.");
             return true;
@@ -655,7 +662,7 @@ namespace RPGFramework.Commands
         {
             NonPlayer character = new NonPlayer();
             player.WriteLine("Valid Tags:");
-            foreach (string tag in character.ValidTags)
+            foreach (ValidTags tag in ValidTags.GetValues(typeof(ValidTags)))
             {
                 player.WriteLine(tag);
             }

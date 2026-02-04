@@ -1,5 +1,4 @@
-﻿
-using RPGFramework.Commands;
+﻿using RPGFramework.Commands;
 using RPGFramework.Enums;
 using RPGFramework.Geography;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ namespace RPGFramework
     internal class NonPlayer : Character
     {
         //additional variables from NPCs
-        public List<DialogGroup> DialogGroups { get; protected set; } = new List<DialogGroup>();
+        public List<DialogGroup> DialogGroups { get; protected set; } = [];
         public int CurrentAggressionLevel { get; protected set; } = 0;
         public int MaxAggressionLevel { get; protected set; } = 10;
         public int MinAgressionLevel { get; protected set; } = 0;
@@ -69,7 +68,7 @@ namespace RPGFramework
             {
                 if(group.CheckKeywordsInText(playerDialogue))
                 {
-                    if(group.GroupName.Equals("aggresive", StringComparison.OrdinalIgnoreCase))
+                    if(group.Category == DialogGroupCategory.Aggressive)
                     {
                         if (Tags.Contains("Hostile"))
                         {
@@ -84,10 +83,23 @@ namespace RPGFramework
                         }
                     }
                     string response = group.GetRandomDialogLine();
-                    Comm.SendToRoom(GetRoom(), $"{Name} says: \"{response}\"");
+                    Comm.SendToRoomExcept(GetRoom(), $"{Name} says: \"{response}\"", this);
                     return;
                 }
             }
+        }
+
+        public void CheckAggressionTags()
+        {
+            if (Tags.Contains("Hostile"))
+            {
+                IncrementAgressionLevel(2);
+            }
+            else if (Tags.Contains("Peaceful"))
+            {
+                IncrementAgressionLevel(1);
+            }
+
         }
         protected void CheckAggressionLevel()
         {
@@ -199,11 +211,29 @@ namespace RPGFramework
         }
         public bool HasDialogGroup(string groupName)
         {
-            return DialogGroups.Any(g => string.Equals(g.GroupName, groupName, StringComparison.OrdinalIgnoreCase));
+            DialogGroupCategory category;
+            Enum.TryParse<DialogGroupCategory>(groupName, true, out category);
+            foreach(var group in DialogGroups)
+            {
+                if(group.Category == category)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         public DialogGroup GetDialogGroup(string groupName)
         {
-            return DialogGroups.FirstOrDefault(g => string.Equals(g.GroupName, groupName, StringComparison.OrdinalIgnoreCase));
+            DialogGroupCategory category;
+            Enum.TryParse<DialogGroupCategory>(groupName, true, out category);
+            foreach (var group in DialogGroups)
+            {
+                if (group.Category == category)
+                {
+                    return group;
+                }
+            }
+            return null;
         }
         #endregion
     }
