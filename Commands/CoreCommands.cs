@@ -1,4 +1,7 @@
 ﻿
+using RPGFramework.Geography;
+using static RPGFramework.Commands.TimeCommand;
+
 namespace RPGFramework.Commands
 {
     /// <summary>
@@ -18,6 +21,7 @@ namespace RPGFramework.Commands
                 new QuitCommand(),
                 new SayCommand(),
                 new TimeCommand(),
+                new AreaShowCommand(),
                 // Add other core commands here as they are implemented
             };
         }
@@ -129,6 +133,41 @@ namespace RPGFramework.Commands
             }
             return false;
         }
+
+
+        internal class AreaShowCommand : ICommand
+        {
+            public string Name => "areashow";
+            public IEnumerable<string> Aliases => new[] { "arshow", "areainfo", "arinfo" };
+            public string Help => "Shows information about the current area.";
+
+            public bool Execute(Character character, List<string> parameters)
+            {
+                var player = character as Player;
+                if (player == null)
+                    return false;
+
+                if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
+                {
+                    player.WriteLine("Area not found.");
+                    return false;
+                }
+
+                player.WriteLine($"Area name: {area.Id}");
+                player.WriteLine($"Area description: {area.Description}");
+                player.WriteLine($"Area Id: {area.Id}");
+                player.WriteLine($"Rooms ({area.Rooms.Count})");
+
+                foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
+                {
+                    player.WriteLine($"Room {room.Id}: {room.Name}");
+                }
+
+                return true;
+            }
+        }
+
+
     }
 
 
