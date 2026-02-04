@@ -228,7 +228,7 @@ namespace RPGFramework.Commands
         {
             if (parameters.Count < 5)
             {
-                player.WriteLine("Usage: /shopkeep inventory add '<character'> '<itemID>'");
+                player.WriteLine("Usage: /shopkeep inventory add '<character'> '<itemID>' '<amount>'");
                 return false;
             }
 
@@ -247,7 +247,9 @@ namespace RPGFramework.Commands
                     }
                     else
                     {
-                        shop.AddItemToInventory(itemID);
+                        int itemAmount;
+                        int.TryParse(parameters[5], out itemAmount);
+                        shop.AddItemToInventory(itemID, itemAmount);
                         player.WriteLine("Item added to inventory!");
                     }
                     return true;
@@ -260,6 +262,44 @@ namespace RPGFramework.Commands
             }
             return false;
         }
+    }
+    #endregion
+    #region PlayerShopCommand Class
+    internal class PlayerShopCommand : BaseNpcCommand, ICommand
+    {
+
+        public string Name => "/shopkeep";
+
+        public IEnumerable<string> Aliases => [];
+        public string Help => "";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            _catalog = GameState.Instance.ShopCatalog;
+            _entityName = "shopkeep";
+            _entityType = typeof(Shopkeep);
+
+            if (character is not Player player)
+            {
+                return false;
+            }
+
+            if (parameters.Count < 2)
+            {
+                WriteUsage(player);
+                return false;
+            }
+
+            //Switches between the second parameter to determine command.
+            switch (parameters[1].ToLower())
+            {
+                default:
+                    WriteUsage(player);
+                    break;
+            }
+            return false;
+        }
+        
     }
     #endregion
 
