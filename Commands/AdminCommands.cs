@@ -14,6 +14,7 @@ namespace RPGFramework.Commands
                 new AnnounceCommand(),
                 new ReloadSeedDataCommand(),
                 new ShutdownCommand(),
+                new GoToCommand(),
                 // Add more builder commands here as needed
             ];
         }
@@ -22,11 +23,11 @@ namespace RPGFramework.Commands
     internal class AnnounceCommand : ICommand
     {
         public string Name => "announce";
-        public IEnumerable<string> Aliases => [ "ann" ];
+        public IEnumerable<string> Aliases => ["ann"];
         public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
-            Comm.Broadcast($"{DisplaySettings.AnnouncementColor}[[Announcement]]: [/][white]" + 
+            Comm.Broadcast($"{DisplaySettings.AnnouncementColor}[[Announcement]]: [/][white]" +
                 $"{string.Join(' ', parameters.Skip(1))}[/]");
             return true;
         }
@@ -68,6 +69,62 @@ namespace RPGFramework.Commands
 
             using var _ = GameState.Instance.Stop();
             return true;
+        }
+    }
+
+    internal class GoToCommand : ICommand
+    {
+        public string Name => "GoTo";
+        public IEnumerable<string> Aliases => new List<string>() { };
+        public string Help => "Teleports an admin to a specific room using areaId and roomId.";
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+                return false;
+            // permissions check
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return true;
+            }
+
+            //usage
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("Usage:");
+                player.WriteLine("goto <areaId> <roomId>");
+                return true;
+            }
+
+            // input for <Id> was not a number
+            if (!int.TryParse(parameters[1], out int areaID) ||
+                !int.TryParse(parameters[2], out int roomId))
+            {
+                player.WriteLine("AreaID and RoomID must be numbers");
+                return true;
+            }
+
+            // specified area doesnt exist
+            if (!GameState.Instance.Areas.TryGetValue(areaID, out var area))
+            {
+                player.WriteLine($"Area{areaID} does not exist");
+                return true;
+            }
+
+            // if the specified room Id doesnt exist in the specified area
+            if (!area.Rooms.TryGetValue(roomId, out var room))
+            {
+                player.WriteLine($"Room{roomId} does not exist in Area {areaID}");
+                return true;
+            }
+
+            player.AreaId = areaID;
+            player.LocationId = roomId;
+            //success :)
+            player.WriteLine($"you teleport to room {roomId} in {area.Name}");
+
+            return true;
+
         }
     }
 }

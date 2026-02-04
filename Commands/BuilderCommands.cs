@@ -744,10 +744,6 @@ namespace RPGFramework.Commands
                     CreateArea(player, parameters);
                     break;
 
-                case "show":
-                    AreaShow(player);
-                    break;
-
                 case "delete":
                     AreaDelete(player, parameters);
                     break;
@@ -759,6 +755,15 @@ namespace RPGFramework.Commands
                 default:
                     WriteAreaUsage(player);
                     break;
+
+                case "name":
+                    AreaSetName(player, parameters);
+                    break;
+
+                case "desc":
+                case "description":
+                    AreaSetDescription(player, parameters);
+                    break;
             }
             return true;
         }
@@ -769,7 +774,11 @@ namespace RPGFramework.Commands
             player.WriteLine("/area create '<name>' '<description>'");
             player.WriteLine("/area show");
             player.WriteLine("/area delete <areaId> confirm");
-            player.WriteLine("/area validate <areaId>");
+            player.WriteLine("");
+            player.WriteLine("Usage:");
+            player.WriteLine("/area name <new area name>");
+            player.WriteLine("/area desc <new area description>");
+            player.WriteLine("");
         }
 
         private static void AreaValidate(Player player, List<string> parameters)
@@ -917,20 +926,9 @@ namespace RPGFramework.Commands
             player.WriteLine($"Area {areaId} deleted.");
         }
 
-        private static void AreaShow(Player player)
-        {
-            Area area = GameState.Instance.Areas[player.AreaId];
-
-            player.WriteLine($"Area name: {area.Id}");
-            player.WriteLine($"Area description: {area.Description}");
-            player.WriteLine($"Area Id: {area.Id}");
-            player.WriteLine($"Rooms ({area.Rooms.Count})");
-
-            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
-            {
-                player.WriteLine($"Room {room.Id}: {room.Name}");
-            }
-        }
+//      ---------------------------------------------------------------------------------
+        
+// ---------------------------------------------------------------------------------------
 
         private static void CreateArea(Player player, List<string> parameters)
         {
@@ -977,54 +975,6 @@ namespace RPGFramework.Commands
         {
             if (string.IsNullOrEmpty(text)) return "";
             return text.Replace("[", "[[").Replace("]", "]]"); // Escape square brackets
-        }
-    }
-
-    // CODE REVIEW: BUILD TEAM (Landon, Jibril)
-    // There appear to be two AreaBuilderCommand classes in this file.
-    // I'm not sure which one is intended to be used, or maybe pieces of both.
-    // These merged really strangely and I tried to correct it, but please review and adjust as needed.
-    // I renamed the second one to AreaBuilderCommand2 to avoid conflicts.
-    /// <summary>
-    /// /area command for building and editing areas.
-    /// </summary>
-    internal class AreaBuilderCommand2 : ICommand
-    {
-        public string Name => "/area";
-        public IEnumerable<string> Aliases => Array.Empty<string>();
-        public string Help => "";
-
-        public bool Execute(Character character, List<string> parameters)
-        {
-            if (character is not Player player) return false;
-            if (parameters.Count < 2) { WriteUsage(player); return false; }
-
-            switch (parameters[1].ToLower())
-            {
-                case "name":
-                    AreaSetName(player, parameters);
-                    break;
-
-                case "desc":
-                case "description":
-                    AreaSetDescription(player, parameters);
-                    break;
-
-                default:
-                    WriteUsage(player);
-                    break;
-            }
-
-            return true;
-        }
-
-        private static void WriteUsage(Player player)
-        {
-            player.WriteLine("");
-            player.WriteLine("Usage:");
-            player.WriteLine("/area name <new area name>");
-            player.WriteLine("/area desc <new area description>");
-            player.WriteLine("");
         }
 
         private static void AreaSetName(Player player, List<string> parameters)
@@ -1076,8 +1026,106 @@ namespace RPGFramework.Commands
                 player.WriteLine("Area description set.");
             }
         }
-
     }
+
+    // CODE REVIEW: BUILD TEAM (Landon, Jibril)
+    // There appear to be two AreaBuilderCommand classes in this file.
+    // I'm not sure which one is intended to be used, or maybe pieces of both.
+    // These merged really strangely and I tried to correct it, but please review and adjust as needed.
+    // I renamed the second one to AreaBuilderCommand2 to avoid conflicts.
+    /// <summary>
+    /// /area command for building and editing areas.
+    /// </summary>
+ //   internal class AreaBuilderCommand2 : ICommand
+  //  {
+//        public string Name => "/area";
+//        public IEnumerable<string> Aliases => Array.Empty<string>();
+ //       public string Help => "";
+
+   //     public bool Execute(Character character, List<string> parameters)
+    //    {
+  //          if (character is not Player player) return false;
+   //         if (parameters.Count < 2) { WriteUsage(player); return false; }
+
+  //          switch (parameters[1].ToLower())
+  //          {
+  //              case "name":
+  //                  AreaSetName(player, parameters);
+  //                  break;
+
+  //              case "desc":
+  //            case "description":
+  //                  AreaSetDescription(player, parameters);
+  //                  break;
+
+  //              default:
+  //                  WriteUsage(player);
+  //                  break;
+  //          }
+
+  //          return true;
+  //      }
+
+  //      private static void WriteUsage(Player player)
+   //     {
+  //          player.WriteLine("");
+  //          player.WriteLine("Usage:");
+   //         player.WriteLine("/area name <new area name>");
+  //          player.WriteLine("/area desc <new area description>");
+   //         player.WriteLine("");
+  //      }
+
+   //     private static void AreaSetName(Player player, List<string> parameters)
+     //   {
+   //         if (!Utility.CheckPermission(player, PlayerRole.Admin))
+        //    {
+   //             player.WriteLine("You do not have permission to do that.");
+      //          return;
+       //     }
+
+            // Get the area the player is currently in
+   //         Area area = GameState.Instance.Areas[player.AreaId];
+
+     //       if (parameters.Count < 3)
+       //     {
+     //           player.WriteLine("");
+       //         player.WriteLine(area.Name);
+    //        }
+      //      else
+        //    {
+        //        // Multi-word support
+          //      area.Name = string.Join(" ", parameters.Skip(2));
+          //      player.WriteLine("");
+ //               player.WriteLine("Area name set.");
+         //   }
+   //     }
+
+      //  private static void AreaSetDescription(Player player, List<string> parameters)
+      //  {
+     //       if (!Utility.CheckPermission(player, PlayerRole.Admin))
+         //   {
+      //          player.WriteLine("You do not have permission to do that.");
+        //        return;
+         //   }
+
+            // Get the area the player is currently in
+         //   Area area = GameState.Instance.Areas[player.AreaId];
+
+      //      if (parameters.Count < 3)
+         //   {
+         //       player.WriteLine("");
+         //       player.WriteLine(area.Description);
+         //   }
+        //    else
+       //     {
+                /*Multi-word support*/
+           //     area.Description = string.Join(" ", parameters.Skip(2));
+          //      player.WriteLine("");
+           //     player.WriteLine("Area description set.");
+         //   }
+       // }
+
+   // }
     #endregion
 }
 
