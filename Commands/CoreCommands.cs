@@ -147,7 +147,7 @@ namespace RPGFramework.Commands
         }
 
     }
-    // CODE REVIEW: Ashton PR #48 - You needed that extra using at the top because this was nested under
+    // CODE REVIEW: Jibril PR #48 - You needed that extra using at the top because this was nested under
     // the TimeCommand. It just needed to be moved outside of it.
     internal class AreaShowCommand : ICommand
     {
