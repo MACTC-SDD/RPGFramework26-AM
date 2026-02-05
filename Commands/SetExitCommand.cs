@@ -7,7 +7,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "/exit";
         public IEnumerable<string> Aliases => Array.Empty<string>();
-
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is not Player player)

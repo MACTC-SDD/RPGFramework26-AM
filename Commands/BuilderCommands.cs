@@ -19,6 +19,7 @@ namespace RPGFramework.Commands
                 new RoomBuilderCommand(),
                 new AreaBuilderCommand(),
                 new RoomCopyCommand(),
+                new SetExitTypeCommand(),
             ];
         }
     }
