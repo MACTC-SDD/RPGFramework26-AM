@@ -19,6 +19,7 @@ namespace RPGFramework.Commands
                 new MobBuilderCommand(),
                 new NpcBuilderCommand(),
                 new ShopKeepBuilderCommand(),
+                new PlayerShopCommand(),
                 // Add more commands here as needed
             ];
         }
