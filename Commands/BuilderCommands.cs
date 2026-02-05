@@ -168,6 +168,9 @@ namespace RPGFramework.Commands
                 case "validate":
                     RoomValidate(player, parameters);
                     break;
+                case "path":
+                    RoomPath(player, parameters);
+                    break;
             }
 
             return true;
@@ -190,8 +193,102 @@ namespace RPGFramework.Commands
             player.WriteLine("/room triggerspawn '<areaid>' '<roomid>'");
             player.WriteLine("/room triggerdeletion '<areaid>' '<roomid>'");
             player.WriteLine("/room kill '<areaid>' '<roomid>' '<mob/npc> ' <name>'");
+            player.WriteLine("/room path <roomId>");
         }
+        /*Okay, I used ChatGPT to create the path command, I had to alter it slightly as it produced funny text, 
+         * but I was successful, only thing I could think of changing is making it so you can have a path from one area to another, 
+         * but I'm not sure if it would be needed*/
+        private static void RoomPath(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 3)
+            {
+                player.WriteLine("Usage: /room path <roomId>");
+                return;
+            }
 
+            if (!int.TryParse(parameters[2], out int targetRoomId))
+            {
+                player.WriteLine("Invalid room id.");
+                return;
+            }
+
+            Room startRoom = player.GetRoom();
+            Area area = GameState.Instance.Areas[player.AreaId];
+
+            if (!area.Rooms.ContainsKey(targetRoomId))
+            {
+                player.WriteLine($"Room {targetRoomId} not found in this area.");
+                return;
+            }
+
+            // BFS setup
+            Queue<int> queue = new();
+            HashSet<int> visited = new();
+            Dictionary<int, (int fromRoom, Direction dir)> cameFrom = new();
+
+            queue.Enqueue(startRoom.Id);
+            visited.Add(startRoom.Id);
+
+            while (queue.Count > 0)
+            {
+                int currentRoomId = queue.Dequeue();
+
+                if (currentRoomId == targetRoomId)
+                    break;
+
+                Room currentRoom = area.Rooms[currentRoomId];
+
+                foreach (int exitId in currentRoom.ExitIds)
+                {
+                    if (!area.Exits.TryGetValue(exitId, out Exit? exit))
+                        continue;
+
+                    int nextRoomId = exit.DestinationRoomId;
+
+                    if (visited.Contains(nextRoomId))
+                        continue;
+
+                    visited.Add(nextRoomId);
+                    queue.Enqueue(nextRoomId);
+
+                    cameFrom[nextRoomId] = (currentRoomId, exit.ExitDirection);
+                }
+            }
+
+            // No path
+            if (!cameFrom.ContainsKey(targetRoomId))
+            {
+                player.WriteLine("No path found.");
+                return;
+            }
+
+            // Rebuild path
+            List<Direction> directions = new();
+            int currentId = targetRoomId;
+
+            while (currentId != startRoom.Id)
+            {
+                var info = cameFrom[currentId];
+                directions.Add(info.dir);
+                currentId = info.fromRoom;
+            }
+
+            directions.Reverse();
+
+            if (directions.Count == 0)
+            {
+                player.WriteLine("You are already there.");
+                return;
+            }
+
+            // Print directions cleanly
+            foreach (Direction dir in directions)
+            {
+                player.WriteLine(dir.ToString());
+            }
+
+            player.WriteLine("Room Path completed");
+        }
         private static void RoomValidate(Player player, List<string> parameters)  /*Made changes here*/
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
