@@ -120,6 +120,6 @@ namespace RPGFramework.Persistence
         /// If true, copies files from the data seed folder to the runtime data folder during initialization.
         /// WARNING: This will overwrite existing files in the runtime data folder.
         /// </summary>
-        public bool CopyFilesFromDataSeedToRuntimeData { get; set; } = false;
+        public bool OverwriteFromDataSeedToRuntimeData { get; set; } = false;
     }
 }
