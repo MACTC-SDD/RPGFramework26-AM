@@ -3,6 +3,7 @@ using Spectre.Console;
 using Spectre.Console.Rendering;
 using System;
 using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
 
 namespace RPGFramework
@@ -166,12 +167,70 @@ namespace RPGFramework
                 Console?.Write("\r\n");
             }
         }
-       
-       
-        
-        
 
+        #region Leveling Methods
 
+        public void AddXP(int xp)
+        {
+            XP += xp;
+            // Check for level up
+            int xpForNextLevel = Level * 100; // Example: 100 XP per level
+            while (XP >= xpForNextLevel)
+            {
+                XP -= xpForNextLevel;
+                LevelUp();
+                xpForNextLevel = Level * 100;
+            }
+        }
+        private void LevelUp()
+        {
+            Level += 1;
+            // Increase Max Health by 10% per level
+            int healthIncrease = (int)(MaxHealth * 0.1);
+            SetMaxHealth(MaxHealth + healthIncrease);
+            // Restore health to full on level up
+            SetHealth(MaxHealth);
+            this.WriteLine($"[green]Congratulations! You've reached level {Level}![/]");
+            this.WriteLine($"[green]Your Max Health has increased by {healthIncrease} to {MaxHealth}.[/]");
+            bool condition = true;
+            while (condition)
+            {
+                this.WriteLine($"Please select a stat to level up!: ");
+                string input = Network!.TelnetConnection!.ReadLine();
+                switch (input.ToLower())
+                {
+                    case "strength":
+                        SetStrength(Strength + 1);
+                        this.WriteLine($"[green]Your Strength has increased to {Strength}.[/]");
+                        break;
+                    case "dexterity":
+                        SetDexterity(Dexterity + 1);
+                        this.WriteLine($"[green]Your Dexterity has increased to {Dexterity}.[/]");
+                        break;
+                    case "constitution":
+                        SetConstitution(Constitution + 1);
+                        this.WriteLine($"[green]Your Constitution has increased to {Constitution}.[/]");
+                        break;
+                    case "intelligence":
+                        SetIntelligence(Intelligence + 1);
+                        this.WriteLine($"[green]Your Intelligence has increased to {Intelligence}.[/]");
+                        break;
+                    case "wisdom":
+                        SetWisdom(Wisdom + 1);
+                        this.WriteLine($"[green]Your Wisdom has increased to {Wisdom}.[/]");
+                        break;
+                    case "charisma":
+                        SetCharisma(Charisma + 1);
+                        this.WriteLine($"[green]Your Charisma has increased to {Charisma}.[/]");
+                        break;
+                    default:
+                        this.WriteLine("[red]Invalid stat choice. Try Again[/]");
+                        break;
+                }
+            }
+        }
+
+        #endregion
 
     }
 

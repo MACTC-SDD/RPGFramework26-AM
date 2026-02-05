@@ -68,6 +68,37 @@ namespace RPGFramework
         /// Get Room object of current location.
         /// </summary>
         /// <returns></returns>
+        /// 
+
+        protected void SetStrength(int value)
+        {
+            Strength = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetDexterity(int value)
+        {
+            Dexterity = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetConstitution(int value)
+        {
+            Constitution = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetIntelligence(int value)
+        {
+            Intelligence = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetWisdom(int value)
+        {
+            Wisdom = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetCharisma(int value)
+        {
+            Charisma = Math.Clamp(value, 0, 20);
+        }
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
@@ -135,7 +166,6 @@ namespace RPGFramework
 
             Health = MaxHealth;
         }
-
 
         // Remove some amount from health
         public void TakeDamage(int damage)

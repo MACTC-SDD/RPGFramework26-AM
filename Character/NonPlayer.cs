@@ -70,23 +70,14 @@ namespace RPGFramework
                 {
                     if(group.Category == DialogGroupCategory.Aggressive)
                     {
-                        if (Tags.Contains("Hostile"))
-                        {
-                            IncrementAgressionLevel(4);
-                        }
-                        else if(Tags.Contains("Peaceful"))
-                        {
-                            IncrementAgressionLevel(1);
-                        }
-                        else {
-                            IncrementAgressionLevel(2);
-                        }
+                        CheckAggressionTags();
                     }
                     string response = group.GetRandomDialogLine();
                     Comm.SendToRoomExcept(GetRoom(), $"{Name} says: \"{response}\"", this);
                     return;
                 }
             }
+            CheckAggressionLevel();
         }
 
         public void CheckAggressionTags()
