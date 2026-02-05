@@ -1,4 +1,6 @@
 ﻿
+using RPGFramework.Geography;
+
 namespace RPGFramework.Commands
 {
     /// <summary>
@@ -65,18 +67,24 @@ namespace RPGFramework.Commands
         public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
-            if (character is Player player)
+            if (character is not Player player) return false;
+            Room room = player.GetRoom();
+
+            player.WriteLine($"[bold white]{room.Name}[/]");
+            player.WriteLine(room.Description);
+
+            if (room.Items.Count > 0)
             {
-                // For now, we'll ignore the command and just show the room description
-                player.WriteLine($"{player.GetRoom().Description}");
-                player.WriteLine("Exits:");
-                foreach (var exit in player.GetRoom().GetExits())
+                foreach (var item in room.Items)
                 {
-                    player.WriteLine($"{exit.Description} to the {exit.ExitDirection}");
+                    if (!string.IsNullOrWhiteSpace(item.Name))
+                    {
+                        player.WriteLine($"[yellow]{item.DisplayText}[/]");
+                    }
                 }
-                return true;
             }
-            return false;
+
+            return true;
         }
     }
 

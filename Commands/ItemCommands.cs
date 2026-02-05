@@ -50,6 +50,50 @@ namespace RPGFramework.Commands
     }
     internal class ItemBuildCommand : ICommand
     {
+        private static Item CreateItemFromTemplate(Item template)
+        {
+            Item newItem;
+            int newId = Utility.GetNextGlobalId();
+
+            if (template is Armor a)
+            {
+                newItem = new Armor
+                {
+                    Id = newId,
+                    Name = a.Name,
+                    Description = a.Description,
+                    Slot = a.Slot,
+                    Material = a.Material,
+                    Type = a.Type,
+                    DamageReduction = a.DamageReduction,
+                    MaxDurability = a.MaxDurability,
+                    Durability = a.MaxDurability
+                };
+            }
+            else if (template is Weapon w)
+            {
+                newItem = new Weapon
+                {
+                    Id = newId,
+                    Name = w.Name,
+                    Description = w.Description,
+                    Damage = w.Damage,
+                    AttackTime = w.AttackTime,
+                    Range = w.Range,
+                    Type = w.Type,
+                    Material = w.Material
+                };
+            }
+            else
+            {
+                newItem = new Item { Id = newId, Name = template.Name, Description = template.Description };
+            }
+
+            newItem.DisplayText = template.DisplayText;
+            newItem.IsGettable = template.IsGettable;
+            newItem.IsDroppable = template.IsDroppable;
+            return newItem;
+        }
         public string Name => "/item";
 
         public IEnumerable<string> Aliases => Array.Empty<string>();
@@ -88,6 +132,43 @@ namespace RPGFramework.Commands
                 default:
                     WriteUsage(player);
                     break;
+                case "clear":
+                    player.GetRoom().Items.Clear();
+                    player.WriteLine("[green]Room cleared of all items.[/]");
+                    return true;
+                case "spawn":
+                    if (parameters.Count < 3)
+                    {
+                        player.WriteLine("Usage: /item spawn <item_name>");
+                        return true;
+                    }
+
+                    string templateName = string.Join(" ", parameters.Skip(2)).Trim();
+
+                    Item? template = null;
+                    if (GameState.Instance.ItemCatalog.TryGetValue(templateName, out var foundItem))
+                        template = foundItem;
+                    else if (GameState.Instance.WeaponCatalog.TryGetValue(templateName, out var foundWeapon))
+                        template = foundWeapon;
+                    else if (GameState.Instance.ArmorCatalog.TryGetValue(templateName, out var foundArmor))
+                        template = foundArmor;
+
+                    if (template == null)
+                    {
+                        player.WriteLine($"Could not find '{templateName}' in any catalog.");
+                        return true;
+                    }
+
+                    Item newItem = CreateItemFromTemplate(template);
+
+                    // Ensure the name is copied to the new instance
+                    newItem.Name = template.Name;
+                    if (string.IsNullOrEmpty(newItem.DisplayText))
+                        newItem.DisplayText = $"A {newItem.Name} is passed out here on the cold cobblestone ground.";
+
+                    player.GetRoom().Items.Add(newItem);
+                    player.WriteLine($"You spawned a [yellow]{newItem.Name}[/].");
+                    return true;
             }
 
             return true;
@@ -101,6 +182,7 @@ namespace RPGFramework.Commands
             player.WriteLine("/item create '<name>' '<description>''");
             player.WriteLine("/item delete '<name>'");
             player.WriteLine("/item list");
+            player.WriteLine("/item spawn <name>");
         }
 
         private static void ItemCreate(Player player, List<string> parameters)
@@ -133,7 +215,7 @@ namespace RPGFramework.Commands
             }
             else
             {
-                GameState.Instance.ItemCatalog.Add(newItem.Name, new Item());
+                GameState.Instance.ItemCatalog.Add(newItem.Name, newItem);
             }
                 // Here you would typically add the item to a database or game world
                 player.WriteLine($"Item '{newItem.Name}' created successfully with description: {newItem.Description}");
