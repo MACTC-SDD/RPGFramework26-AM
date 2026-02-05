@@ -40,6 +40,16 @@ namespace RPGFramework.Items
             return InventorySlots.Remove(itemToRemove);
         }
 
+        public void SellItem(string item, Player player)
+        {
+            Item itemToSell = InventorySlots.Find(i => i.Name == item);
+            if (itemToSell != null)
+            {
+                InventorySlots.Remove(itemToSell);
+                player.Gold += ((int) itemToSell.Value / 2);
+            }
+        }
+
         public bool HasItem(string item)
         {
             Item check = InventorySlots.Find(i => i.Name == item);

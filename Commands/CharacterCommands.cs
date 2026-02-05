@@ -322,6 +322,7 @@ namespace RPGFramework.Commands
             player.WriteLine($"{_entityName} list");
             player.WriteLine($"{_entityName} list '<shopkeep>'");
             player.WriteLine($"{_entityName} buy '<shopkeep>' '<ItemName>' '<amount>'");
+            player.WriteLine($"{_entityName} sell '<shopkeep>' '<ItemName>' '<amount>'");
         }
 
         protected static void ListShopKeeps(Player player)
@@ -410,6 +411,37 @@ namespace RPGFramework.Commands
                 player.Inventory.AddItem(itemIdToBuy);
             }
             player.WriteLine($"You have purchased {amount} of '{itemName}' from '{shopkeepName}'.");
+        }
+
+        protected static void BuyItemFromPlayer(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine("Usage: shop buy '<shopkeep>' '<ItemName>' '<amount>'");
+                return;
+            }
+            string shopkeepName = parameters[2];
+            string itemName = parameters[3];
+            int amount;
+            if (!int.TryParse(parameters[4], out amount) || amount <= 0)
+            {
+                player.WriteLine("Invalid amount specified.");
+                return;
+            }
+            Room room = player.GetRoom();
+            NonPlayer? npc = room.GetNpcByName(shopkeepName);
+            if (npc == null || npc is not Shopkeep shopkeep)
+            {
+                player.WriteLine($"Shopkeep '{shopkeepName}' not found in this room.");
+                return;
+            }
+            for (int i = 0; i < amount; i++)
+            {
+                // Logic to remove item from player inventory and add to shopkeep inventory would go here.
+                player.Inventory.SellItem(itemName, player);
+                shopkeep.AddItemToInventory(itemName, 1);
+            }
+
         }
     }
     #endregion
