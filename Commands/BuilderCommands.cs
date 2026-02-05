@@ -13,7 +13,6 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new RoomBuilderCommand(),
-                new SetExitTypeCommand(),
                 // Add more builder commands here as needed
             };
         }
@@ -163,20 +162,19 @@ namespace RPGFramework.Commands
                 player.WriteLine("Room name set.");
             }
         }
-        
+
         private static void RoomShow(Player player, List<string> parameters)
         {
             Room r = player.GetRoom();
             player.Write($"Room name: {r.Name}  Room description: {r.Description}  Room Id: {r.Id} Tags:");
-            
+
             if (r.Tags.Count == 0)
             {
                 player.WriteLine("  None");
             }
             else
             {
-                object tags = r.Tags;
-                foreach (var tag in tags)
+                foreach (var tag in r.Tags)
                 {
                     player.WriteLine($"  {tag}");
                 }
@@ -186,7 +184,7 @@ namespace RPGFramework.Commands
             Room room = player.GetRoom();
             Area area = GameState.Instance.Areas[player.AreaId];
 
-            
+
             var exits = room.GetExits();
 
             /* CODE-REVIEW: This works, but we should let the Room method handle it with .GetExits()
@@ -210,7 +208,7 @@ namespace RPGFramework.Commands
             //end
         }
 
-        private static void RoomTag(Player player, List<string>parameters)
+        private static void RoomTag(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
@@ -232,7 +230,7 @@ namespace RPGFramework.Commands
             switch (action)
             {
                 case "add":
-                     if (parameters.Count < 4)
+                    if (parameters.Count < 4)
                     {
                         player.WriteLine("Use: /room tag add <tag>");
                         return;
@@ -240,14 +238,14 @@ namespace RPGFramework.Commands
 
                     string tagToAdd = parameters[3].ToLower();
 
-                    
+
 
                     if (room.Tags.Contains(tagToAdd))
                     {
                         player.WriteLine($"Room already has tag '{tagToAdd}'.");
                         return;
                     }
-                     
+
                     room.Tags.Add(tagToAdd);
                     player.WriteLine($"Tag '{tagToAdd}' added to room.");
                     break;
@@ -289,12 +287,12 @@ namespace RPGFramework.Commands
                     player.WriteLine("Invalid tag");
                     break;
             }
-        
-    }
 
-        
+        }
 
-        private static void DeleteRoom(Player player, List<string> parameters, Room roomToDelete)
+
+
+        private static void DeleteRoom(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
@@ -331,7 +329,7 @@ namespace RPGFramework.Commands
             }
 
             //  confirm
-            
+
             bool confirmed = parameters.Count >= 4 &&
                              parameters[3].Equals("confirm", StringComparison.OrdinalIgnoreCase);
 
@@ -357,7 +355,7 @@ namespace RPGFramework.Commands
 
 
             // Move players out of the room
- 
+
             int fallbackRoomId = GameState.Instance.Areas[areaId].Rooms.Keys
                 .First(id => id != roomToDelete.Id);
 
@@ -374,18 +372,18 @@ namespace RPGFramework.Commands
             player.WriteLine($"Room {roomToDelete.Id} deleted.");
         }
 
-        
+
 
         private static void RoomSetColor(Player player, List<string> parameters)
         {
             if (parameters.Count < 3)
             {
-                player.WriteLine(player.GetRoom().MapColor.Replace("[","").Replace("]",""));
+                player.WriteLine(player.GetRoom().MapColor.Replace("[", "").Replace("]", ""));
             }
             else
             {
                 player.GetRoom().MapColor = parameters[2];
-                player.WriteLine("Room color set.");                
+                player.WriteLine("Room color set.");
             }
         }
 
@@ -408,6 +406,6 @@ namespace RPGFramework.Commands
                 player.WriteLine("Room description set.");
             }
         }
-/*permission check to color? Needed??*/
+        /*permission check to color? Needed??*/
     }
 }
