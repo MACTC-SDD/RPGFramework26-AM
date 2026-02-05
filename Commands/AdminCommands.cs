@@ -15,6 +15,8 @@ namespace RPGFramework.Commands
                 new ReloadSeedDataCommand(),
                 new ShutdownCommand(),
                 new GoToCommand(),
+                new FindRoomCommand(),
+                new FindAreaCommand(),
                 // Add more builder commands here as needed
             ];
         }
@@ -125,6 +127,91 @@ namespace RPGFramework.Commands
 
             return true;
 
+        }
+    }
+
+    internal class FindRoomCommand : ICommand
+    {
+        public string Name => "/findroom";
+        public IEnumerable<string> Aliases => new[] { "/findrm" };
+        public string Help => "Shows information about the specified room.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            var player = character as Player;
+            if (player == null)
+                return false;
+
+            // Get area
+            if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
+            {
+                player.WriteLine("Area not found.");
+                return false;
+            }
+
+            // Get room
+            if (!area.Rooms.TryGetValue(player.RoomId, out var room))
+            {
+                player.WriteLine("Room not found.");
+                return false;
+            }
+            player.WriteLine($"Area Id: {area.Id}");
+            player.WriteLine($"Room Id: {room.Id}");
+            player.WriteLine($"Room name: {room.Name}");
+            player.WriteLine($"Room description: {room.Description}");
+
+
+            // Exits (CORRECT MODEL ACCESS)
+            var exits = room.GetExits();
+
+            if (exits != null && exits.Any())
+            {
+                player.WriteLine($"Exits ({exits.Count()}):");
+
+                foreach (var exit in exits)
+                {
+                    player.WriteLine(
+                        $" - {exit.ExitDirection} -> Room {exit.DestinationRoomId}"
+                    );
+                }
+            }
+            else
+            {
+                player.WriteLine("Exits: None");
+            }
+
+            return true;
+        }
+    }
+
+    internal class FindAreaCommand : ICommand
+    {
+        public string Name => "findarea";
+        public IEnumerable<string> Aliases => new[] { "findar" };
+        public string Help => "Shows information about the specified area.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            var player = character as Player;
+            if (player == null)
+                return false;
+
+            if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
+            {
+                player.WriteLine("Area not found.");
+                return false;
+            }
+            player.WriteLine($"Area Id: {area.Id}");
+            player.WriteLine($"Area name: {area.Id}");
+            player.WriteLine($"Area description: {area.Description}");
+            player.WriteLine($"Rooms ({area.Rooms.Count})");
+
+            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
+            {
+                player.WriteLine($"Room {room.Id}: {room.Name}");
+            }
+
+            return true;
         }
     }
 }

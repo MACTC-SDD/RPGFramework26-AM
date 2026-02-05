@@ -22,6 +22,7 @@ namespace RPGFramework.Commands
                 new SayCommand(),
                 new TimeCommand(),
                 new AreaShowCommand(),
+                new RoomShowCommand(),
                 // Add other core commands here as they are implemented
             };
         }
@@ -161,6 +162,65 @@ namespace RPGFramework.Commands
                 foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
                 {
                     player.WriteLine($"Room {room.Id}: {room.Name}");
+                }
+
+                return true;
+            }
+        }
+
+        internal class RoomShowCommand : ICommand
+        {
+            public string Name => "roomshow";
+            public IEnumerable<string> Aliases => new[] { "rmshow", "roominfo", "rminfo" };
+            public string Help => "Shows info for the current room and its available exits.";
+
+            public bool Execute(Character character, List<string> parameters)
+            {
+                var player = character as Player;
+                if (player == null)
+                    return false;
+
+                // Get area
+                if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
+                {
+                    player.WriteLine("Area not found.");
+                    return false;
+                }
+
+                // Get room
+                if (!area.Rooms.TryGetValue(player.RoomId, out var room))
+                {
+                    player.WriteLine("Room not found.");
+                    return false;
+                }
+
+                // Room info
+                player.WriteLine($"Room: {room.Name}");
+                player.WriteLine($"{room.Description}");
+
+                // Exits (using real model)
+                var exits = room.GetExits();
+
+                if (exits != null && exits.Any())
+                {
+                    player.WriteLine("Exits:");
+
+                    foreach (var exit in exits)
+                    {
+                        // Direction + exit description
+                        if (!string.IsNullOrWhiteSpace(exit.Description))
+                        {
+                            player.WriteLine($" - {exit.ExitDirection}: {exit.Description}");
+                        }
+                        else
+                        {
+                            player.WriteLine($" - {exit.ExitDirection}");
+                        }
+                    }
+                }
+                else
+                {
+                    player.WriteLine("Exits: None");
                 }
 
                 return true;

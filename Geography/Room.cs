@@ -26,6 +26,7 @@ namespace RPGFramework.Geography
 
         // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
+        public object Exits { get; internal set; }
         #endregion --- Properties ---
 
         #region --- Methods ---

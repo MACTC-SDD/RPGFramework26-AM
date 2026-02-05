@@ -116,9 +116,6 @@ namespace RPGFramework.Commands
                 case "create":
                     RoomCreate(player, parameters);
                     break;
-                case "show":
-                    RoomShow(player, parameters);
-                    break;
                 case "icon":
                     RoomSetIcon(player, parameters);
                     break;
@@ -140,7 +137,6 @@ namespace RPGFramework.Commands
             player.WriteLine("/room description '<set room desc to this>'");
             player.WriteLine("/room name '<set room name to this>'");
             player.WriteLine("/room create '<name>' '<description>' <exit direction> '<exit description>'");
-            player.WriteLine("/room show 'Details about the room you are in'");
             player.WriteLine("/room Tag '<add or remove room tags>'");
         }
 
@@ -247,45 +243,6 @@ namespace RPGFramework.Commands
             }
         }
         
-        private static void RoomShow(Player player, List<string> parameters)
-        {
-            Room r = player.GetRoom();
-            player.WriteLine("");
-            /*player.WriteLine($"Room name: {r.Name}  Room description: {r.Description}  Room Id: {r.Id} Tags:");*/
-            player.WriteLine(
-            $"Room name: {r.Name}\n" +
-            $"Room description: {r.Description}\n" +
-            $"Room Id: {r.Id}\n" +
-            "Tags:");
-            /*broke up the room show line, because it was crowded*/
-            if (r.Tags.Count == 0)
-            {
-                player.WriteLine("  None");
-            }
-            else
-            {
-                foreach (var tag in r.Tags)
-                {
-                    player.WriteLine($"  {tag}");
-                }
-            }
-
-            Room room = player.GetRoom();
-     
-            var exits = room.GetExits();
-
-            if (exits.Count == 0)
-            {
-                player.WriteLine("There are no exits, forces beyond this realm are at play...");
-                return;
-            }
-
-            foreach (var exit in exits)
-            {
-                player.WriteLine($" Room Exit(s): Id: {exit.Id} {exit.ExitDirection}  -> Room {exit.DestinationRoomId} ({exit.Description})");
-            }         
-        }
-
         private static void RoomTag(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
