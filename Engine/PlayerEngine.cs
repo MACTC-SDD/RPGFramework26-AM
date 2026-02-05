@@ -73,17 +73,12 @@ namespace RPGFramework
             return ((System.Net.IPEndPoint)Network.Client.Client.RemoteEndPoint).Address.ToString();
         }
 
+        internal bool HasItem(string requiredKeyId)
+        {
+            throw new NotImplementedException();
+        }
+
         internal bool HasItem(object requiredKeyId)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void WriteLine(object name)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void WriteLine(object value)
         {
             throw new NotImplementedException();
         }
