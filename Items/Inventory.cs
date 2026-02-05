@@ -8,9 +8,9 @@ namespace RPGFramework.Items
 {
     internal class Inventory
     {
-        public List<string> InventorySlots { get; set; } = new List<string>();
+        public List<Item> InventorySlots { get; set; } = new List<Item>();
         //Constants can't be changed, so we define max slots here. -Shelton
-        private const int MaxSlots = 20;
+        private const int MaxSlots = 16;
 
         //Modified because InventorySlots is a list, which doesnt have a max designed by default. -Shelton
         public void SetSlotValue(int index, string value)
@@ -18,7 +18,8 @@ namespace RPGFramework.Items
             if (index < 0 || index >= MaxSlots)
                 throw new IndexOutOfRangeException("Inventory Is Full");
 
-            InventorySlots[index] = value;
+            Item item = GameState.Instance.ItemCatalog[value];
+            InventorySlots[index] = item;
         }
         public Inventory() { }
 
@@ -27,17 +28,24 @@ namespace RPGFramework.Items
         {
             if (InventorySlots.Count >= MaxSlots)
                 return false;
-            InventorySlots.Add(item);
+            Item itemNew = GameState.Instance.ItemCatalog[item];
+            InventorySlots.Add(itemNew);
             return true;
         }
         public bool RemoveItem(string item)
         {
-            return InventorySlots.Remove(item);
+            Item itemToRemove = InventorySlots.Find(i => i.Name == item);
+            if (itemToRemove == null)
+                return false;
+            return InventorySlots.Remove(itemToRemove);
         }
 
         public bool HasItem(string item)
         {
-            return InventorySlots.Contains(item);
+            Item check = InventorySlots.Find(i => i.Name == item);
+            if(check == null)
+                return false;
+            return true;
         }
         //End of added NPC team methods
     }

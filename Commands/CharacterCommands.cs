@@ -405,6 +405,10 @@ namespace RPGFramework.Commands
             shopkeep.SellItem(itemIdToBuy, amount);
             //add to player inventory logic would go here.
             //Adding this for extra emphasis since this is a key part of the buy process.
+            for (int i = 0; i < amount; i++)
+            {
+                player.Inventory.AddItem(itemIdToBuy);
+            }
             player.WriteLine($"You have purchased {amount} of '{itemName}' from '{shopkeepName}'.");
         }
     }
