@@ -13,6 +13,7 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new RoomBuilderCommand(),
+                new SetExitTypeCommand(),
                 // Add more builder commands here as needed
             };
         }

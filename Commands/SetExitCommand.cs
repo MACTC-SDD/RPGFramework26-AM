@@ -5,7 +5,7 @@ namespace RPGFramework.Commands
 {
     internal class SetExitTypeCommand : ICommand
     {
-        public string Name => "/set";
+        public string Name => "/exit";
         public IEnumerable<string> Aliases => Array.Empty<string>();
 
         public bool Execute(Character character, List<string> parameters)
@@ -13,18 +13,18 @@ namespace RPGFramework.Commands
             if (character is not Player player)
                 return false;
 
-            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+         /*   if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to build.");
                 return true;
             }
-
-            // Expect: /set exit type <direction> <type>
+         */
+            // Expect: /exit set type <direction> <type>
             if (parameters.Count < 5 ||
                 parameters[1].ToLower() != "exit" ||
                 parameters[2].ToLower() != "type")
             {
-                player.WriteLine("Usage: /set exit type <direction> <open|door|lockeddoor|impassable>");
+                player.WriteLine("Usage: /exit set type '<direction>' '<open|door|lockeddoor|impassable>'");
                 return true;
             }
 
@@ -46,7 +46,6 @@ namespace RPGFramework.Commands
                 return true;
             }
 
-            // Parse exit type
             if (!Enum.TryParse(parameters[4], true, out ExitType type))
             {
                 player.WriteLine("Invalid exit type.");
