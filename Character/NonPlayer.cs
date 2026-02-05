@@ -191,7 +191,7 @@ namespace RPGFramework
                 return;
             }
 
-            DialogGroup typeGroup = GetDialogGroup(type);
+            DialogGroup? typeGroup = GetDialogGroup(type);
 
             if(typeGroup == null || typeGroup.DialogLines.Count == 0)
             {
@@ -222,7 +222,7 @@ namespace RPGFramework
             }
             return false;
         }
-        public DialogGroup GetDialogGroup(string groupName)
+        public DialogGroup? GetDialogGroup(string groupName)
         {
             DialogGroupCategory category;
             Enum.TryParse<DialogGroupCategory>(groupName, true, out category);

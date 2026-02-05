@@ -650,7 +650,9 @@ namespace RPGFramework.Commands
             if (npc == null)
                 return false;
 
+#pragma warning disable CS8604 // Possible null reference argument.
             return npc.DialogGroups.Remove(npc.GetDialogGroup(category));
+#pragma warning restore CS8604 // Possible null reference argument.
         }
         #endregion
 
