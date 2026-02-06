@@ -2,6 +2,7 @@
 using RPGFramework.Geography;
 using RPGFramework.Enums;
 using RPGFramework.Interfaces;
+using System.Dynamic;
 
 namespace RPGFramework.Combat
 {
