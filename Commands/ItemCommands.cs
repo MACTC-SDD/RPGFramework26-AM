@@ -707,12 +707,13 @@ namespace RPGFramework.Commands
 
             if (parameters.Count < 2)
             {
-                player.WriteLine(GameState.Instance.WeaponCatalog[parameters[2]]);
+                player.WriteLine("You must specify a weapon name.");
+                return;
             }
             else
             {
                 // = GameState.Instance.WeaponCatalog[parameters[2]];
-                player.WriteLine("Weapon name set.");
+                player.WriteLine("Weapon name set (but not really yet).");
             }
         }
         private static void WeaponSetDescription(Player player, List<string> parameters)

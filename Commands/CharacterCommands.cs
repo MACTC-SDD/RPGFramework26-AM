@@ -810,7 +810,7 @@ namespace RPGFramework.Commands
             player.WriteLine("Valid Tags:");
             foreach (ValidTags tag in ValidTags.GetValues(typeof(ValidTags)))
             {
-                player.WriteLine(tag);
+                player.WriteLine(tag.ToString());
             }
         }
         #endregion
