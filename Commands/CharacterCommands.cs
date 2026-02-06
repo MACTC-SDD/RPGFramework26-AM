@@ -407,7 +407,7 @@ namespace RPGFramework.Commands
             //Adding this for extra emphasis since this is a key part of the buy process.
             for (int i = 0; i < amount; i++)
             {
-                player.Inventory.AddItem(itemIdToBuy);
+                player.PlayerInventory.AddItem(itemIdToBuy);
             }
             player.WriteLine($"You have purchased {amount} of '{itemName}' from '{shopkeepName}'.");
         }
@@ -437,7 +437,7 @@ namespace RPGFramework.Commands
             for (int i = 0; i < amount; i++)
             {
                 // Logic to remove item from player inventory and add to shopkeep inventory would go here.
-                player.Inventory.SellItem(itemName, player);
+                player.PlayerInventory.SellItem(itemName, player);
                 shopkeep.AddItemToInventory(itemName, 1);
             }
 

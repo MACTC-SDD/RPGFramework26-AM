@@ -6,8 +6,6 @@ namespace RPGFramework.Items
     internal class Inventory
     {
         public List<Item> InventorySlots { get; set; } = new List<Item>();
-        //Constants can't be changed, so we define max slots here. -Shelton
-        private const int MaxSlots = 16;
         [JsonInclude] public List<Item> Items { get; internal set; } = [];
         [JsonInclude] public int MaxSlots { get; private set; } = 16;
       
