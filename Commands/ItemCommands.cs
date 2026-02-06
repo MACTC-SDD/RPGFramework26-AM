@@ -625,7 +625,7 @@ namespace RPGFramework.Commands
 
             if (parameters.Count < 2)
             {
-                player.WriteLine(GameState.Instance.WeaponCatalog[parameters[2]]);
+                player.WriteLine("not enough vals");
             }
             else
             {
