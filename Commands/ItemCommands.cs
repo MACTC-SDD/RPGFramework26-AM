@@ -13,7 +13,6 @@ namespace RPGFramework.Commands
         {
             return new List<ICommand>
             {
-                new ListInventoryCommand(),
                 new ItemBuildCommand(),
                 new ArmorBuildCommand(),
                 new WeaponBuildCommand(),
@@ -22,29 +21,6 @@ namespace RPGFramework.Commands
         }
     }
 
-    internal class ListInventoryCommand : ICommand
-    {
-        public string Name => "inventory";
-        public IEnumerable<string> Aliases => new List<string>() { "inv" };
-        public bool Execute(Character character, List<string> parameters)
-        {
-            if (character is not Player player)
-            {
-                return false;
-            }
-            player.WriteLine("Inventory:");
-            for (int i = 1; i < 17; i++)
-            {
-                player.WriteLine($"Slot {i}: ");
-            }
-            return true;
-        }
-
-        public bool Execute(Character character, List<int> parameters)
-        {
-            throw new NotImplementedException();
-        }
-    }
     internal class ItemBuildCommand : ICommand
     {
         public string Name => "/item";
