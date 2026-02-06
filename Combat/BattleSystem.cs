@@ -22,6 +22,7 @@ namespace RPGFramework.Combat
         Flee,
     }
 
+
     public class CombatCommand
     {
         public int PlayerId { get; }
