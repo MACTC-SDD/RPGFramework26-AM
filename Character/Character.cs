@@ -69,7 +69,7 @@ namespace RPGFramework
         /// </summary>
         /// <returns></returns>
         /// 
-
+        #region --- Skill Attribute Methods ---
         protected void SetStrength(int value)
         {
             Strength = Math.Clamp(value, 0, 20);
@@ -99,6 +99,63 @@ namespace RPGFramework
         {
             Charisma = Math.Clamp(value, 0, 20);
         }
+
+        public int GetStrength()
+        {
+            return Strength;
+        }
+        public int GetDexterity()
+        {
+            return Dexterity;
+        }
+        public int GetConstitution()
+        {
+            return Constitution;
+        }
+        public int GetIntelligence()
+        {
+            return Intelligence;
+        }
+        public int GetWisdom()
+        {
+            return Wisdom;
+        }
+        public int GetCharisma()
+        {
+            return Charisma;
+        }
+
+        public void IncrimentStrength(int value)
+        {
+            SetStrength(Strength + value);
+        }
+
+        public void IncrimentDexterity(int value)
+        {
+            SetDexterity(Dexterity + value);
+        }
+
+        public void IncrimentConstitution(int value)
+        {
+            SetConstitution(Constitution + value);
+        }
+
+        public void IncrimentIntelligence(int value)
+        {
+            SetIntelligence(Intelligence + value);
+        }
+
+        public void IncrimentWisdom(int value)
+        {
+            SetWisdom(Wisdom + value);
+        }
+
+        public void IncrimentCharisma(int value)
+        {
+            SetCharisma(Charisma + value);
+        }
+        #endregion
+
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];

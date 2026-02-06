@@ -157,7 +157,6 @@ namespace RPGFramework.Commands
         }
     }
     #endregion
-
     #region ShopKeepBuilderCommand Class
     internal class ShopKeepBuilderCommand : BaseNpcCommand, ICommand
     {
@@ -845,9 +844,8 @@ namespace RPGFramework.Commands
         #region ListValidTags Method
         protected static void ListValidTags(Player player)
         {
-            NonPlayer character = new NonPlayer();
             player.WriteLine("Valid Tags:");
-            foreach (ValidTags tag in ValidTags.GetValues(typeof(ValidTags)))
+            foreach (ValidTags tag in Enum.GetValues<ValidTags>())
             {
                 player.WriteLine(tag);
             }

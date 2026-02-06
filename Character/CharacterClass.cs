@@ -10,37 +10,24 @@ namespace RPGFramework
     /// </summary>
     internal class CharacterClass
     {
-        public static string Knight { get; private set; }
-        public int Health { get; set; } = 150;
-        public int Strength { get; set; } = 50;
-        public int ProtectionLevel { get; set; } = 5;
-        public int Magic { get; set; } = 0;
-    }
+        public Enums.Classes ClassType { get; set; } = Enums.Classes.Knight;
 
+        public CharacterClass()
+        {
+        }
+        
+        public void SetClass(Character player, Enums.Classes classType)
+        {
+            if(classType < Enums.Classes.Knight || classType > Enums.Classes.Healer)
+            {
+                throw new ArgumentOutOfRangeException(nameof(classType), "Invalid class type specified.");
+            }
+            ClassType = classType;
+            if(ClassType == Enums.Classes.Mage)
+            {
+                player.
+                Intelligence += 2;
+            }
 
-{ 
-public static string Mage { get; private set; }
-    public int Health { get; set; } = 80;
-    public int Strength { get; set; } = 10;
-    public int ProtectionLevel { get; set; } = 1;
-    public int Magic { get; set; } = 100;
-
-{
-    public static string Thief { get; private set; }
-    public int Health { get; set; } = 100;
-    public int Strength { get; set; } = 30;
-    public int ProtectionLevel { get; set; } = 3;
-    public int Magic { get; set; } = 20;
-}
-    { 
-    
-    public static string Brute { get; private set; }
-public int health { get; set; } = 200;
-public int strength { get; set; } = 100;
-public int protection_level { get; set; } = 10;
-public int magic { get; set; } = 0;
-
-
-
-    }
+        }
 }
