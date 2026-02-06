@@ -8,14 +8,13 @@ namespace RPGFramework.Items
 {
     internal class Inventory
     {
-        public List<string> InventorySlots { get; set; } = new List<string>();
-
-        public void SetSlotValue(int index, string value)
+        public List<Item> Items { get; internal set; } = [];
+        public int MaxSlots { get; private set; } = 16;
+        public bool AddItem(Item item)
         {
-            if (index < 0 || index >= InventorySlots.Count)
-                throw new IndexOutOfRangeException("Inventory Is Full");
-
-            InventorySlots[index] = value;
+            if (Items.Count >= MaxSlots) return false;
+            Items.Add(item);
+            return true;
         }
     }
 

@@ -61,7 +61,6 @@ internal class TelnetServer
                 pn.Writer.WriteLine("Username: ");
                 playerName = pn.TelnetConnection.ReadLine();
             }
-
             GameState.Log(DebugLevel.Debug, $"Player '{playerName}' is connecting...");
 
             // If existing player

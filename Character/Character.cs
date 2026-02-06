@@ -1,9 +1,13 @@
 using RPGFramework.Geography;
 using RPGFramework.Items;
+<<<<<<< Item-member-3
+using System.Text.Json.Serialization;
+=======
 using System.Security.Cryptography.X509Certificates;
 using RPGFramework.Enums;
 using System.Text.Json.Serialization;
 
+>>>>>>> master
 namespace RPGFramework
 {
     /// <summary>
@@ -43,7 +47,11 @@ namespace RPGFramework
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = [];
         public Weapon PrimaryWeapon { get; set; }
+<<<<<<< Item-member-3
+        [JsonInclude] public Inventory PlayerInventory { get; set; } = new Inventory(); 
+=======
         //public Inventory PlayerInventory { get; set; } = new Inventory(); 
+>>>>>>> master
         #endregion
 
         #region --- Skill Attributes --- (0-20)

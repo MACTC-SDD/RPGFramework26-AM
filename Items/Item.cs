@@ -10,7 +10,6 @@ namespace RPGFramework
         public bool IsDroppable { get; set; } // Can the item be dropped
         public bool IsGettable { get; set; } // Can the item be picked up
         public bool IsStackable { get; set; } = false;
-
         public int Level { get; set; } = 0;
         public string Name { get; set; } = "";
         public List<string> Tags { get; set; } = new List<string>();
@@ -18,6 +17,16 @@ namespace RPGFramework
         public double Value { get; set; } = 0;
         public double Weight { get; set; } = 0;
 
+        public virtual Item Clone()
+        {
+            // 1. Create a shallow copy of the object (copies numbers, names, bools)
+            Item newItem = (Item)this.MemberwiseClone();
+
+            // 2. Create a NEW list for tags so the clone doesn't share tags with the original
+            newItem.Tags = new List<string>(this.Tags);
+
+            return newItem;
+        }
         internal static Item ItemCreation(int areaId, int v1, int v2)
         {
             throw new NotImplementedException();
