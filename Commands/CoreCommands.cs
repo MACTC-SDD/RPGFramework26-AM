@@ -1,4 +1,8 @@
 ﻿
+using RPGFramework.Geography;
+using RPGFramework.Display;
+using Spectre.Console;
+
 namespace RPGFramework.Commands
 {
     /// <summary>
@@ -18,6 +22,7 @@ namespace RPGFramework.Commands
                 new QuitCommand(),
                 new SayCommand(),
                 new TimeCommand(),
+                new AreaShowCommand(),
                 // Add other core commands here as they are implemented
             };
         }
@@ -29,6 +34,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "afk";
         public IEnumerable<string> Aliases => new List<string> { };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is Player player)
@@ -45,6 +51,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "ip";
         public IEnumerable<string> Aliases => new List<string> { };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is Player player)
@@ -60,20 +67,46 @@ namespace RPGFramework.Commands
     {
         public string Name => "look";
         public IEnumerable<string> Aliases => new List<string> { "l" };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
-            if (character is Player player)
+            if (character is not Player player) return false;
+            Room room = player.GetRoom();
+
+            player.WriteLine($"[bold white]{room.Name}[/]");
+            player.WriteLine(room.Description);
+
+            if (room.Items.Count > 0)
             {
+                foreach (var item in room.Items)
+                {
+                    if (!string.IsNullOrWhiteSpace(item.Name))
+                    {
+                        player.WriteLine($"[yellow]{item.DisplayText}[/]");
+                    }
+                }
                 // For now, we'll ignore the command and just show the room description
+
                 player.WriteLine($"{player.GetRoom().Description}");
-                player.WriteLine("Exits:");
+
+
+                string content = "[red]Exits[/]\n";
+                string title = " ";
+
                 foreach (var exit in player.GetRoom().GetExits())
                 {
-                    player.WriteLine($"{exit.Description} to the {exit.ExitDirection}");
+                    content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
                 }
+
+                Panel panel = RPGPanel.GetPanel(content, title);
+
+                panel.Border = BoxBorder.Ascii;
+                panel.BorderColor(Color.Maroon);
+                player.Write(panel);
                 return true;
             }
-            return false;
+
+            return true;
         }
     }
 
@@ -81,6 +114,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "quit";
         public IEnumerable<string> Aliases => new List<string> { "exit" };
+        public string Help => "";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -96,7 +130,8 @@ namespace RPGFramework.Commands
     internal class SayCommand : ICommand
     {
         public string Name => "say";
-        public IEnumerable<string> Aliases => new List<string> { "\"".Normalize(), "'".Normalize() };
+        public IEnumerable<string> Aliases => new List<string> { "\"", "'" };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             // If no message and it's a player, tell them to say something
@@ -114,6 +149,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "time";
         public IEnumerable<string> Aliases => new List<string> { };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is Player player)
@@ -123,7 +159,39 @@ namespace RPGFramework.Commands
             }
             return false;
         }
+
     }
+    // CODE REVIEW: Jibril PR #48 - You needed that extra using at the top because this was nested under
+    // the TimeCommand. It just needed to be moved outside of it.
+    internal class AreaShowCommand : ICommand
+    {
+        public string Name => "areashow";
+        public IEnumerable<string> Aliases => new[] { "arshow", "areainfo", "arinfo" };
+        public string Help => "Shows information about the current area.";
 
+        public bool Execute(Character character, List<string> parameters)
+        {
+            var player = character as Player;
+            if (player == null)
+                return false;
 
+            if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
+            {
+                player.WriteLine("Area not found.");
+                return false;
+            }
+
+            player.WriteLine($"Area name: {area.Id}");
+            player.WriteLine($"Area description: {area.Description}");
+            player.WriteLine($"Area Id: {area.Id}");
+            player.WriteLine($"Rooms ({area.Rooms.Count})");
+
+            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
+            {
+                player.WriteLine($"Room {room.Id}: {room.Name}");
+            }
+
+            return true;
+        }
+    }    
 }

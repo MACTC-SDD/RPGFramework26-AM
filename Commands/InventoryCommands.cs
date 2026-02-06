@@ -8,15 +8,13 @@ namespace RPGFramework.Commands
     {
         public static List<ICommand> GetAllCommands()
         {
-            return new List<ICommand>
-            {
+            return
+            [
                 new InventoryCommand(),
                 new AdminGetCommand(),
                 // Add other communication commands here as they are implemented
-            };
+            ];
         }
-
-
     }
 
 

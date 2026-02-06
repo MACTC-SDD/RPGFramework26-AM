@@ -1,7 +1,13 @@
-﻿
 using RPGFramework.Geography;
 using RPGFramework.Items;
+<<<<<<< Item-member-3
 using System.Text.Json.Serialization;
+=======
+using System.Security.Cryptography.X509Certificates;
+using RPGFramework.Enums;
+using System.Text.Json.Serialization;
+
+>>>>>>> master
 namespace RPGFramework
 {
     /// <summary>
@@ -15,7 +21,17 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character : IDescribable
     {
+
+        enum CharacterState
+        {
+            Idle,
+            Moving,
+            Attacking,
+            Dead
+        }
+
         #region --- Properties ---
+        public static Random random = new Random();
         public bool Alive { get; set; } = true;
         public int AreaId { get; set; } = 0;
         public string Description { get; set; } = "";
@@ -25,13 +41,17 @@ namespace RPGFramework
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
-        public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        public Character? Target { get; set; } = null; // (for combat or interaction)
+        protected List<string> Tags { get; set; } = []; // (for scripting or special behavior)
+        [JsonIgnore] public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = [];
         public Weapon PrimaryWeapon { get; set; }
+<<<<<<< Item-member-3
         [JsonInclude] public Inventory PlayerInventory { get; set; } = new Inventory(); 
+=======
+        //public Inventory PlayerInventory { get; set; } = new Inventory(); 
+>>>>>>> master
         #endregion
 
         #region --- Skill Attributes --- (0-20)
@@ -47,8 +67,8 @@ namespace RPGFramework
         public Character()
         {
             Health = MaxHealth;
-            Weapon w = new() 
-              { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
+            Weapon w = new Weapon()
+            { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
             PrimaryWeapon = w;
         }
 
@@ -61,9 +81,31 @@ namespace RPGFramework
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
         }
 
+        public Area GetArea()
+        {
+            return GameState.Instance.Areas[AreaId];
+        }
+
+        // get exits in current room
+        public List<Exit> GetExits()
+        {
+            Room currentRoom = GetRoom();
+            List<Exit> exits = new List<Exit>();
+            foreach (int exitId in currentRoom.ExitIds)
+            {
+                exits.Add(GameState.Instance.Areas[AreaId].Exits[exitId]);
+            }
+            return exits;
+        }
+
         public void SetRoom(int id)
         {
             LocationId = id;
+        }
+
+        public void SetArea(int id)
+        {
+            AreaId = id;
         }
 
         // Set Health to a specific value
@@ -72,11 +114,11 @@ namespace RPGFramework
             // Doesn't make sense if player is dead
             if (Alive == false)
                 return;
-            
+
 
             // Can't have health < 0
             if (health < 0)
-                health = 0;           
+                health = 0;
 
             // Can't have health > MaxHealth
             if (health > MaxHealth)
@@ -113,16 +155,78 @@ namespace RPGFramework
         public void Heal(int heal)
         {
             SetHealth(Health + heal);
-        }
 
-        // CODE REVIEW: Shelton - PR #18
-        // There is really no reason to be a method, you can just set the property directly.
-        // I commented it out and you can just delete this comment once you've reviewed.
-        //public void SetDescription(string Desc) { Description = Desc; }
+        }
 
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
         {
             throw new NotImplementedException();
         }
+
+
+        //Add tags to character
+        public bool AddTag(string tag)
+        {
+            // Accept enum names (case-insensitive) and avoid duplicates
+            if (Enum.TryParse<ValidTags>(tag, true, out _) && !Tags.Contains(tag))
+            {
+                Tags.Add(tag);
+                return true;
+            }
+                return false;
+        }
+        //removes tags from character
+        public bool RemoveTag(string tag)
+        {
+            if (Tags.Contains(tag))
+            {
+                Tags.Remove(tag);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        //Attack Resolution
+        public bool WillHit()
+        {
+
+
+
+            int HitChance = 50 + (Dexterity) * 5; /* Add - Enemy.Dexterity*/
+            HitChance = Math.Clamp(HitChance, 5, 95);
+            int roll = Random.Shared.Next(1, 101);
+            bool hit = roll <= HitChance;
+            return hit;
+
+        }
+
+    
+        public void WeaponStrengthDamage(int strength)
+        {
+            RPGFramework.Weapon test = new RPGFramework.Weapon();
+     
+            Double Damage = Strength + test.Damage;
+        }
+
+        public bool WillDodge()
+        {
+            int DodgeChance = Dexterity;
+
+
+
+            int Dodge = Random.Shared.Next(1, 101);
+            bool dodgedroll = Dodge <= DodgeChance;
+            return dodgedroll;
+        }
+        //End Attack Resolution
+        public List<string> GetTags()
+        {
+            return Tags;
+        }
     }
 }
+        
+
+      

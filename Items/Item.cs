@@ -1,5 +1,4 @@
-﻿
-using RPGFramework;
+﻿using RPGFramework;
 
 namespace RPGFramework
 {

@@ -61,24 +61,12 @@ internal class TelnetServer
                 pn.Writer.WriteLine("Username: ");
                 playerName = pn.TelnetConnection.ReadLine();
             }
-
             GameState.Log(DebugLevel.Debug, $"Player '{playerName}' is connecting...");
-            foreach (Item i in GameState.Instance.Players[playerName].PlayerInventory.Items)
-            {
-                Console.WriteLine("Before player pulled from catalog");
-            }
+
             // If existing player
             if (GameState.Instance.Players.TryGetValue(playerName, out Player? player))
             {
                 GameState.Log(DebugLevel.Debug, $"Existing player '{playerName}' found, loading data...");
-                foreach (Item i in GameState.Instance.Players[playerName].PlayerInventory.Items)
-                {
-                    Console.WriteLine("After player pulled from catalog (GS)");
-                }
-                foreach (Item i in player.PlayerInventory.Items)
-                {
-                    Console.WriteLine("Before player pulled from catalog");
-                }
             }
             else
             {
@@ -96,7 +84,13 @@ internal class TelnetServer
             player.Login();
 
             // MOTD Should Be Settable in Game Settings
-            player.Write(RPGPanel.GetPanel("Welcome to the game!", "Welcome!"));
+            player.Write(
+        $"\n                          Welcome {playerName}                         " +         
+        "\n========================================================================" +
+        "\n                              RPG WORLD                                 " +
+        "\n                             TYPE : START                               " +
+        "\n========================================================================" +
+        "\r\n");
             MapRenderer.RenderLocalMap(player);
 
             GameState.Log(DebugLevel.Alert, $"Player '{playerName}' has connected successfully.");
