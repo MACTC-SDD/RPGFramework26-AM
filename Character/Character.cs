@@ -155,10 +155,6 @@ namespace RPGFramework
             throw new NotImplementedException();
         }
 
-        internal void WriteLine(object description)
-        {
-            throw new NotImplementedException();
-        }
 
         //Add tags to character
         public bool AddTag(string tag)
