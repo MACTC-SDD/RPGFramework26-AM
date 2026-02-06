@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿using System.Text.Json.Serialization;
 
 
 namespace RPGFramework.Items
 {
     internal class Inventory
     {
-        public List<Item> Items { get; internal set; } = [];
-        public int MaxSlots { get; private set; } = 16;
+        [JsonInclude] public List<Item> Items { get; internal set; } = [];
+        [JsonInclude] public int MaxSlots { get; private set; } = 16;
         public bool AddItem(Item item)
         {
             if (Items.Count >= MaxSlots) return false;
