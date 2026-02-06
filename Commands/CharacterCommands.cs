@@ -19,6 +19,7 @@ namespace RPGFramework.Commands
                 new MobBuilderCommand(),
                 new NpcBuilderCommand(),
                 new ShopKeepBuilderCommand(),
+                new PlayerShopCommand(),
                 // Add more commands here as needed
             ];
         }
@@ -156,7 +157,6 @@ namespace RPGFramework.Commands
         }
     }
     #endregion
-
     #region ShopKeepBuilderCommand Class
     internal class ShopKeepBuilderCommand : BaseNpcCommand, ICommand
     {
@@ -321,6 +321,7 @@ namespace RPGFramework.Commands
             player.WriteLine($"{_entityName} list");
             player.WriteLine($"{_entityName} list '<shopkeep>'");
             player.WriteLine($"{_entityName} buy '<shopkeep>' '<ItemName>' '<amount>'");
+            player.WriteLine($"{_entityName} sell '<shopkeep>' '<ItemName>' '<amount>'");
         }
 
         protected static void ListShopKeeps(Player player)
@@ -404,7 +405,42 @@ namespace RPGFramework.Commands
             shopkeep.SellItem(itemIdToBuy, amount);
             //add to player inventory logic would go here.
             //Adding this for extra emphasis since this is a key part of the buy process.
+            for (int i = 0; i < amount; i++)
+            {
+                player.Inventory.AddItem(itemIdToBuy);
+            }
             player.WriteLine($"You have purchased {amount} of '{itemName}' from '{shopkeepName}'.");
+        }
+
+        protected static void BuyItemFromPlayer(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine("Usage: shop buy '<shopkeep>' '<ItemName>' '<amount>'");
+                return;
+            }
+            string shopkeepName = parameters[2];
+            string itemName = parameters[3];
+            int amount;
+            if (!int.TryParse(parameters[4], out amount) || amount <= 0)
+            {
+                player.WriteLine("Invalid amount specified.");
+                return;
+            }
+            Room room = player.GetRoom();
+            NonPlayer? npc = room.GetNpcByName(shopkeepName);
+            if (npc == null || npc is not Shopkeep shopkeep)
+            {
+                player.WriteLine($"Shopkeep '{shopkeepName}' not found in this room.");
+                return;
+            }
+            for (int i = 0; i < amount; i++)
+            {
+                // Logic to remove item from player inventory and add to shopkeep inventory would go here.
+                player.Inventory.SellItem(itemName, player);
+                shopkeep.AddItemToInventory(itemName, 1);
+            }
+
         }
     }
     #endregion
@@ -613,7 +649,9 @@ namespace RPGFramework.Commands
             if (npc == null)
                 return false;
 
+#pragma warning disable CS8604 // Possible null reference argument.
             return npc.DialogGroups.Remove(npc.GetDialogGroup(category));
+#pragma warning restore CS8604 // Possible null reference argument.
         }
         #endregion
 
@@ -629,8 +667,12 @@ namespace RPGFramework.Commands
             int index = 0;
             foreach (DialogGroup dialog in npc.DialogGroups)
             {
-               player.WriteLine(dialog.GetDialogLine(index));
-                index++;
+                foreach (string dialogLine in dialog.DialogLines)
+                {
+                    player.WriteLine(dialog.GetDialogLine(index));
+                    index++;
+                }
+                index = 0;
             }
             return true;
         }
@@ -646,7 +688,7 @@ namespace RPGFramework.Commands
             }
 
             string name = parameters[3];
-            string category = parameters[4].ToLower();
+            string category = parameters[4];
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
@@ -697,7 +739,7 @@ namespace RPGFramework.Commands
             }
 
             string name = parameters[3];
-            string category = parameters[4].ToLower();
+            string category = parameters[4];
             string dialogLine = parameters[5];
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
@@ -726,7 +768,7 @@ namespace RPGFramework.Commands
                 return false;
             }
             string name = parameters[4];
-            string category = parameters[3];
+            string category = parameters[5];
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return false;
@@ -756,8 +798,8 @@ namespace RPGFramework.Commands
                 player.WriteLine($"Usage: /{_entityName} tag add '<name>' '<tag>'");
                 return;
             }
-            string name = parameters[2];
-            string tag = parameters[3];
+            string name = parameters[3];
+            string tag = parameters[4];
             Character? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
             {
@@ -806,11 +848,11 @@ namespace RPGFramework.Commands
         #region ListValidTags Method
         protected static void ListValidTags(Player player)
         {
-            NonPlayer character = new NonPlayer();
             player.WriteLine("Valid Tags:");
-            foreach (ValidTags tag in ValidTags.GetValues(typeof(ValidTags)))
+            foreach (ValidTags tag in Enum.GetValues<ValidTags>())
             {
-                player.WriteLine(tag.ToString());
+                string tagName = tag.ToString();
+                player.WriteLine(tagName);
             }
         }
         #endregion
@@ -870,12 +912,12 @@ namespace RPGFramework.Commands
                 NpcAddDialog(player, parameters);
                 return;
             }
-            else if (parameters[2].Equals("list") && parameters.Count == 5)
+            else if (parameters[2].Equals("list") && parameters.Count == 4)
             {
                 NpcListDialog(player, parameters);
                 return;
             }
-            else if (parameters[2].Equals("list") && parameters.Count == 6)
+            else if (parameters[2].Equals("list") && parameters.Count == 5)
             {
                 NpcListCategoryDialog(player, parameters);
             }

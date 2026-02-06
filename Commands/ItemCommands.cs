@@ -682,8 +682,7 @@ namespace RPGFramework.Commands
 
             if (parameters.Count < 2)
             {
-                player.WriteLine("You must specify a weapon name.");
-                return;
+                player.WriteLine("not enough vals");
             }
             else
             {

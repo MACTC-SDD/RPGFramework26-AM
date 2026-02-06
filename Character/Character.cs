@@ -43,7 +43,7 @@ namespace RPGFramework
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = [];
         public Weapon PrimaryWeapon { get; set; }
-        [JsonInclude] public Inventory PlayerInventory { get; set; } = new Inventory(); 
+        public Inventory PlayerInventory { get; set; } = new Inventory(); 
 
         #endregion
 
@@ -69,6 +69,94 @@ namespace RPGFramework
         /// Get Room object of current location.
         /// </summary>
         /// <returns></returns>
+        /// 
+        #region --- Skill Attribute Methods ---
+        protected void SetStrength(int value)
+        {
+            Strength = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetDexterity(int value)
+        {
+            Dexterity = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetConstitution(int value)
+        {
+            Constitution = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetIntelligence(int value)
+        {
+            Intelligence = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetWisdom(int value)
+        {
+            Wisdom = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetCharisma(int value)
+        {
+            Charisma = Math.Clamp(value, 0, 20);
+        }
+
+        public int GetStrength()
+        {
+            return Strength;
+        }
+        public int GetDexterity()
+        {
+            return Dexterity;
+        }
+        public int GetConstitution()
+        {
+            return Constitution;
+        }
+        public int GetIntelligence()
+        {
+            return Intelligence;
+        }
+        public int GetWisdom()
+        {
+            return Wisdom;
+        }
+        public int GetCharisma()
+        {
+            return Charisma;
+        }
+
+        public void IncrimentStrength(int value)
+        {
+            SetStrength(Strength + value);
+        }
+
+        public void IncrimentDexterity(int value)
+        {
+            SetDexterity(Dexterity + value);
+        }
+
+        public void IncrimentConstitution(int value)
+        {
+            SetConstitution(Constitution + value);
+        }
+
+        public void IncrimentIntelligence(int value)
+        {
+            SetIntelligence(Intelligence + value);
+        }
+
+        public void IncrimentWisdom(int value)
+        {
+            SetWisdom(Wisdom + value);
+        }
+
+        public void IncrimentCharisma(int value)
+        {
+            SetCharisma(Charisma + value);
+        }
+        #endregion
+
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
@@ -137,7 +225,6 @@ namespace RPGFramework
             Health = MaxHealth;
         }
 
-
         // Remove some amount from health
         public void TakeDamage(int damage)
         {
@@ -155,7 +242,6 @@ namespace RPGFramework
         {
             throw new NotImplementedException();
         }
-
 
         //Add tags to character
         public bool AddTag(string tag)

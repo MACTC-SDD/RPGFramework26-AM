@@ -26,7 +26,6 @@ namespace RPGFramework
                 if (ShopInventory[itemID] >= quantity)
                 {
                     ShopInventory[itemID] -= quantity;
-                    Gold += GetItemSellPrice(itemID) * quantity;
                     if (ShopInventory[itemID] == 0)
                     {
                         ShopInventory.Remove(itemID);

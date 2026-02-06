@@ -1,4 +1,8 @@
 ﻿
+using System.Net.Security;
+using System.Reflection.PortableExecutable;
+using System.Xml.Linq;
+
 namespace RPGFramework
 {
     /// <summary>
@@ -6,6 +10,25 @@ namespace RPGFramework
     /// </summary>
     internal class CharacterClass
     {
+        public Enums.Classes ClassType { get; set; } = Enums.Classes.Knight;
 
+        public CharacterClass()
+        {
+        }
+
+        public void SetClass(Character player, Enums.Classes classType)
+        {
+            if (classType < Enums.Classes.Knight || classType > Enums.Classes.Healer)
+            {
+                throw new ArgumentOutOfRangeException(nameof(classType), "Invalid class type specified.");
+            }
+            ClassType = classType;
+            if (ClassType == Enums.Classes.Mage)
+            {
+                player.IncrimentIntelligence(3);
+                player.IncrimentWisdom(2);
+            }
+
+        }
     }
 }
