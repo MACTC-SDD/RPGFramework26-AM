@@ -847,7 +847,8 @@ namespace RPGFramework.Commands
             player.WriteLine("Valid Tags:");
             foreach (ValidTags tag in Enum.GetValues<ValidTags>())
             {
-                player.WriteLine(tag);
+                string tagName = tag.ToString();
+                player.WriteLine(tagName);
             }
         }
         #endregion
