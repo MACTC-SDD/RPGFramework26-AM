@@ -164,7 +164,7 @@ namespace RPGFramework.Commands
                     // Ensure the name is copied to the new instance
                     newItem.Name = template.Name;
                     if (string.IsNullOrEmpty(newItem.DisplayText))
-                        newItem.DisplayText = $"A {newItem.Name} is passed out here on the cold cobblestone ground.";
+                        newItem.DisplayText = $"{newItem.DisplayText}";
 
                     player.GetRoom().Items.Add(newItem);
                     player.WriteLine($"You spawned a [yellow]{newItem.Name}[/].");
