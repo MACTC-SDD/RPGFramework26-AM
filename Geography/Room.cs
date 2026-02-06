@@ -31,6 +31,8 @@ namespace RPGFramework.Geography
         public List<Player> Players { get; set; } = [];
         // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
+        // A list of items currently on the floor in this room.
+        public List<Item> Items { get; set; } = new List<Item>();
         #endregion --- Properties ---
 
         #region --- Methods ---
