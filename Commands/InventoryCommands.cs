@@ -22,6 +22,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "inventory"; // Change from "equip" to "inventory"
         public IEnumerable<string> Aliases => new List<string> { "inv" };
+        public string Help => "Usage: inventory (or inv)\nDisplays the contents of your inventory, showing each slot and its item if occupied.";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -56,6 +57,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "/Admin get";
         public IEnumerable<string> Aliases => new List<string> { "Ag" };
+        public string Help => "Usage: Ag [Item Name]\nAdds the specified item to your inventory. The item name is case-insensitive and can be found in the Item, Weapon, or Armor Catalogs.";
 
         public bool Execute(Character character, List<string> parameters)
         {
