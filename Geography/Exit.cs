@@ -34,6 +34,14 @@ namespace RPGFramework.Geography
             return GameState.Instance.Areas[areaId].Exits.Keys.Max() + 1;
             // Return one higher
         }
+
+        internal ExitResult TryUse(Player player)
+        {
+            throw new NotImplementedException();
+        }
     }
 
+    internal class ExitResult
+    {
+    }
 }

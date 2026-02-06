@@ -20,13 +20,14 @@ namespace RPGFramework.Commands
                }
             */
             // Expect: /exit set type <direction> <type>
-            if (parameters.Count < 5 ||
+            /*if (parameters.Count < 3 ||
                 parameters[1].ToLower() != "exit" ||
-                parameters[2].ToLower() != "type")
+                parameters[2].ToLower() != "set" ||
+                parameters[3].ToLower() != "type")
             {
                 player.WriteLine("Usage: /exit set type '<direction>' '<open|door|lockeddoor|impassable>'");
                 return true;
-            }
+            }*/
 
             // Parse direction
             if (!Enum.TryParse(parameters[3], true, out Direction direction))
