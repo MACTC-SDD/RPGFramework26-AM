@@ -667,8 +667,12 @@ namespace RPGFramework.Commands
             int index = 0;
             foreach (DialogGroup dialog in npc.DialogGroups)
             {
-               player.WriteLine(dialog.GetDialogLine(index));
-                index++;
+                foreach (string dialogLine in dialog.DialogLines)
+                {
+                    player.WriteLine(dialog.GetDialogLine(index));
+                    index++;
+                }
+                index = 0;
             }
             return true;
         }
@@ -684,7 +688,7 @@ namespace RPGFramework.Commands
             }
 
             string name = parameters[3];
-            string category = parameters[4].ToLower();
+            string category = parameters[4];
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
@@ -735,7 +739,7 @@ namespace RPGFramework.Commands
             }
 
             string name = parameters[3];
-            string category = parameters[4].ToLower();
+            string category = parameters[4];
             string dialogLine = parameters[5];
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
@@ -764,7 +768,7 @@ namespace RPGFramework.Commands
                 return false;
             }
             string name = parameters[4];
-            string category = parameters[3];
+            string category = parameters[5];
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return false;
@@ -794,8 +798,8 @@ namespace RPGFramework.Commands
                 player.WriteLine($"Usage: /{_entityName} tag add '<name>' '<tag>'");
                 return;
             }
-            string name = parameters[2];
-            string tag = parameters[3];
+            string name = parameters[3];
+            string tag = parameters[4];
             Character? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
             {
@@ -908,12 +912,12 @@ namespace RPGFramework.Commands
                 NpcAddDialog(player, parameters);
                 return;
             }
-            else if (parameters[2].Equals("list") && parameters.Count == 5)
+            else if (parameters[2].Equals("list") && parameters.Count == 4)
             {
                 NpcListDialog(player, parameters);
                 return;
             }
-            else if (parameters[2].Equals("list") && parameters.Count == 6)
+            else if (parameters[2].Equals("list") && parameters.Count == 5)
             {
                 NpcListCategoryDialog(player, parameters);
             }
