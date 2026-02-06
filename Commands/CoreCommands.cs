@@ -70,8 +70,21 @@ namespace RPGFramework.Commands
         public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
-            if (character is Player player)
+            if (character is not Player player) return false;
+            Room room = player.GetRoom();
+
+            player.WriteLine($"[bold white]{room.Name}[/]");
+            player.WriteLine(room.Description);
+
+            if (room.Items.Count > 0)
             {
+                foreach (var item in room.Items)
+                {
+                    if (!string.IsNullOrWhiteSpace(item.Name))
+                    {
+                        player.WriteLine($"[yellow]{item.DisplayText}[/]");
+                    }
+                }
                 // For now, we'll ignore the command and just show the room description
 
                 player.WriteLine($"{player.GetRoom().Description}");
@@ -92,7 +105,8 @@ namespace RPGFramework.Commands
                 player.Write(panel);
                 return true;
             }
-            return false;
+
+            return true;
         }
     }
 

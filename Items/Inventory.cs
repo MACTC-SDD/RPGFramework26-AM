@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿using System.Text.Json.Serialization;
 
 
 namespace RPGFramework.Items
@@ -11,7 +8,9 @@ namespace RPGFramework.Items
         public List<Item> InventorySlots { get; set; } = new List<Item>();
         //Constants can't be changed, so we define max slots here. -Shelton
         private const int MaxSlots = 16;
-
+        [JsonInclude] public List<Item> Items { get; internal set; } = [];
+        [JsonInclude] public int MaxSlots { get; private set; } = 16;
+      
         //Modified because InventorySlots is a list, which doesnt have a max designed by default. -Shelton
         public void SetSlotValue(int index, string value)
         {
@@ -21,8 +20,18 @@ namespace RPGFramework.Items
             Item item = GameState.Instance.ItemCatalog[value];
             InventorySlots[index] = item;
         }
-        public Inventory() { }
 
+        public bool AddItem(Item item)
+        {
+            if (Items.Count >= MaxSlots) return false;
+            Items.Add(item);
+            return true;
+        }
+
+        // CODE REVIEW: Shelton - we might want to discuss. In this case we are giving
+        // the player the actual copy from the catalog, meaning if it got degraded or modified
+        // it's modifying the catalog version, which isn't the intent. 
+        // Check out Utility.Clone which will take an object and give you a copy of it (not just a reference to the same thing)
         //Added for the sake of sell commands (remove if you hate) -Shelton
         public bool AddItem(string item)
         {

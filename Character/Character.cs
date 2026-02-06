@@ -1,8 +1,8 @@
 using RPGFramework.Geography;
 using RPGFramework.Items;
-using System.Security.Cryptography.X509Certificates;
 using RPGFramework.Enums;
 using System.Text.Json.Serialization;
+
 
 namespace RPGFramework
 {
@@ -43,7 +43,8 @@ namespace RPGFramework
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = [];
         public Weapon PrimaryWeapon { get; set; }
-        public Inventory Inventory { get; set; } = new Inventory(); 
+        public Inventory PlayerInventory { get; set; } = new Inventory(); 
+
         #endregion
 
         #region --- Skill Attributes --- (0-20)

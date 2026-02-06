@@ -65,7 +65,7 @@ namespace RPGFramework.Commands
             // Clone the room
             Room clonedRoom = originalRoom.CloneWithoutExits(newName);
             clonedRoom.Id = Room.GetNextId(clonedRoom.AreaId);
-
+             
             // Add the cloned room to the area
             GameState.Instance.Areas[clonedRoom.AreaId].Rooms.Add(clonedRoom.Id, clonedRoom);
 
@@ -104,18 +104,15 @@ namespace RPGFramework.Commands
                 return false;
             }
 
-           // switch (parameters[1].ToLower())
-         //   {
-         //       case "description":
-         //           ExitSetDescription(player, parameters);
-          //          break;
-               // case "create":
-                 //   ExitCreate(player, parameters);
-                   // break;
-               // default:
-                 //   WriteUsage(player);
-                   // break;
-            //}
+            switch (parameters[1].ToLower())
+            {
+                case "description":
+                    ExitDescription(player, parameters);
+                    break;
+                default:
+                    WriteUsage(player);
+                    break;
+            }
 
             return true;
         }
@@ -167,6 +164,9 @@ namespace RPGFramework.Commands
                     break;
                 case "validate":
                     RoomValidate(player, parameters);
+                    break;
+                case "exitdescription":
+                    ExitDescription(player, parameters);
                     break;
             }
 
@@ -351,6 +351,50 @@ namespace RPGFramework.Commands
 
                 player.WriteLine(message: ex.StackTrace ?? "");
             }
+        }
+
+
+        private bool ExitDescription(Player player, List<string> parameters)
+        {
+
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /exit setdesc <direction> <description>");
+                return false;
+            }
+
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return false;
+            }
+
+            Room room = player.GetRoom();
+
+            string direction = parameters[2].ToLower();
+
+            if (!Enum.TryParse(direction, out Direction targetD))
+            {
+                player.WriteLine("what direction?");
+                return false;
+            }
+            
+            Exit? exit = room.GetExits()
+              .Find(e => e.ExitDirection == targetD);
+
+            if (exit == null)
+            {
+                player.WriteLine($"There is no exit to the {direction}.");
+                return false;
+            }
+
+            // Everything after the direction is the description, at least I think, I can't directly test it due to permission restrictions that I can't simply comment out
+            string description = parameters[3];
+            
+            exit.Description = description;
+
+            player.WriteLine($"Exit '{direction}' description updated.");
+            return true;
         }
 
         private static void RoomSetColor(Player player, List<string> parameters)

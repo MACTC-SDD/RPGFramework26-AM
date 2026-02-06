@@ -262,7 +262,7 @@ namespace RPGFramework
             // Initialize game data if it doesn't exist            
             await Persistence.EnsureInitializedAsync(new GamePersistenceInitializationOptions()
             {
-                CopyFilesFromDataSeedToRuntimeData = _OVERWRITE_DATA
+                OverwriteFromDataSeedToRuntimeData = _OVERWRITE_DATA
             });
 
             await LoadAllAreas();

@@ -14,6 +14,8 @@ namespace RPGFramework.Geography
 
         // Description of the room
         public string Description { get; set; } = "";
+        //Items in the room
+        public List<Item> Items { get; set; } = [];
 
         // Icon to display on map
         public string MapIcon { get; set; } = DisplaySettings.RoomMapIcon;
@@ -31,6 +33,7 @@ namespace RPGFramework.Geography
         public List<Player> Players { get; set; } = [];
         // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
+        // A list of items currently on the floor in this room.
         #endregion --- Properties ---
 
         #region --- Methods ---
@@ -153,6 +156,10 @@ namespace RPGFramework.Geography
         public static void DeleteRoom(Room room)
         {
             DeleteRoom(room.AreaId, room.Id);
+        }
+         public Item? FindItem(string itemName)
+        {
+            return Items.Find(x => x.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase));
         }
 
         public static Mob? FindMob(string name, Room room)
