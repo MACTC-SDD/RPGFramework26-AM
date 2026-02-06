@@ -14,7 +14,7 @@ namespace RPGFramework
         public int MaxDurability { get; set; }
         public float DodgeChance { get; set; }
         public float HealthBonus { get; set; }
-
+        
 
 
         //armor based damage reduction
@@ -72,7 +72,7 @@ namespace RPGFramework
         Head,
         Chest,
         Legs,
-        back
+        Back
     }
     internal enum ArmorType
     {

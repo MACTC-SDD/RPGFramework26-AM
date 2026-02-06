@@ -330,7 +330,7 @@ namespace RPGFramework.Geography
 
         public void AddToSpawnable(string npcName, int spawnChance, Player player, string type)
         {
-            if (type.ToLower() == "mob")
+            if (type.ToLower().Equals("mob"))
             {
                 if (!SpawnableMobs.ContainsKey(npcName))
                 {
@@ -342,7 +342,7 @@ namespace RPGFramework.Geography
                     player.WriteLine($"{npcName} is already in the spawnable mobs list.");
                 }
             }
-            else if (type.ToLower() == "npc")
+            else if (type.ToLower().Equals("npc"))
             {
                 if (!SpawnableNpcs.ContainsKey(npcName))
                 {
@@ -359,7 +359,7 @@ namespace RPGFramework.Geography
 
         public void RemoveFromSpawnable(string npcName, Player player, string type)
         {
-            if (type.ToLower() == "mob")
+            if (type.ToLower().Equals("mob"))
             {
                 if (SpawnableMobs.ContainsKey(npcName))
                 {
@@ -371,7 +371,7 @@ namespace RPGFramework.Geography
                     player.WriteLine($"{npcName} is not in the spawnable mobs list.");
                 }
             }
-            else if (type.ToLower() == "npc")
+            else if (type.ToLower().Equals("npc"))
             {
                 if (SpawnableNpcs.ContainsKey(npcName))
                 {
@@ -387,7 +387,7 @@ namespace RPGFramework.Geography
         }
         public void ModifyChance(string npcName, Player player, string type, int chance)
         {
-            if (type.ToLower() == "mob")
+            if (type.ToLower().Equals("mob"))
             {
                 if (SpawnableMobs.ContainsKey(npcName))
                 {
@@ -399,7 +399,7 @@ namespace RPGFramework.Geography
                     player.WriteLine($"{npcName} is not in the spawnable mobs list.");
                 }
             }
-            else if( type.ToLower() == "npc")
+            else if( type.ToLower().Equals("npc"))
             {
                 if (SpawnableNpcs.ContainsKey(npcName))
                 {
@@ -415,7 +415,7 @@ namespace RPGFramework.Geography
 
         public void ListSpawnables(Player player, string type)
         {
-            if (type.ToLower() == "mob")
+            if (type.ToLower().Equals("mob"))
             {
                 player.WriteLine("Spawnable Mobs:");
                 foreach (var kvp in SpawnableMobs)
@@ -423,7 +423,7 @@ namespace RPGFramework.Geography
                     player.WriteLine($"- {kvp.Key}: Spawn Chance {kvp.Value}");
                 }
             }
-            else if (type.ToLower() == "npc")
+            else if (type.ToLower().Equals("npc"))
             {
                 player.WriteLine("Spawnable NPCs:");
                 foreach (var kvp in SpawnableNpcs)
@@ -505,7 +505,7 @@ namespace RPGFramework.Geography
         }
         public void DespawnEntity(string mobName, string type)
         {
-            if (type.ToLower() == "mob")
+            if (type.ToLower().Equals("mob"))
             {
                 Mob? mobToRemove = Mobs.Find(m => m.Name.Equals(mobName, StringComparison.OrdinalIgnoreCase));
                 if (mobToRemove != null)
@@ -515,7 +515,7 @@ namespace RPGFramework.Geography
                     Comm.SendToRoom(this, $"{mobName} has been despawned from the room.");
                 }
             }
-            else if(type.ToLower() == "npc")
+            else if(type.ToLower().Equals("npc"))
             {
                 NonPlayer? npcToRemove = Npcs.Find(m => m.Name.Equals(mobName, StringComparison.OrdinalIgnoreCase));
                 if (npcToRemove != null)
@@ -526,6 +526,10 @@ namespace RPGFramework.Geography
                 }
             }
                 return;
+        }
+
+        public NonPlayer GetNpcByName(string name) {
+            return Npcs.Find(npc => npc.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
         #endregion
     }

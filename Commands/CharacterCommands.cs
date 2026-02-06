@@ -228,7 +228,7 @@ namespace RPGFramework.Commands
         {
             if (parameters.Count < 5)
             {
-                player.WriteLine("Usage: /shopkeep inventory add '<character'> '<itemID>'");
+                player.WriteLine("Usage: /shopkeep inventory add '<character'> '<itemID>' '<amount>'");
                 return false;
             }
 
@@ -247,7 +247,9 @@ namespace RPGFramework.Commands
                     }
                     else
                     {
-                        shop.AddItemToInventory(itemID);
+                        int itemAmount;
+                        int.TryParse(parameters[5], out itemAmount);
+                        shop.AddItemToInventory(itemID, itemAmount);
                         player.WriteLine("Item added to inventory!");
                     }
                     return true;
@@ -259,6 +261,150 @@ namespace RPGFramework.Commands
                 }
             }
             return false;
+        }
+    }
+    #endregion
+    #region PlayerShopCommand Class
+    internal class PlayerShopCommand : BaseNpcCommand, ICommand
+    {
+
+        public string Name => "shop";
+
+        public IEnumerable<string> Aliases => [];
+        public string Help => "";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            _catalog = GameState.Instance.ShopCatalog;
+            _entityName = "shop";
+            _entityType = typeof(Shopkeep);
+
+            if (character is not Player player)
+            {
+                return false;
+            }
+
+            if (parameters.Count < 2)
+            {
+                WriteUsageShop(player);
+                return false;
+            }
+
+            //Switches between the second parameter to determine command.
+            switch (parameters[1].ToLower())
+            {
+                case "list":
+                    // List all shopkeeps or a specific shopkeep's inventory
+                    if (parameters.Count == 2)
+                    {
+                        ListShopKeeps(player);
+                    }
+                    else if (parameters.Count == 3)
+                    {
+                        ListShopInventory(player, parameters[2]);
+                    }
+                    break;
+                case "buy":
+                    SellItemToPlayer(player, parameters);
+                    break;
+                default:
+                    WriteUsageShop(player);
+                    break;
+            }
+
+            return false;
+        }
+
+        protected static void WriteUsageShop(Player player)
+        {
+            player.WriteLine("Usage: ");
+            player.WriteLine($"{_entityName} list");
+            player.WriteLine($"{_entityName} list '<shopkeep>'");
+            player.WriteLine($"{_entityName} buy '<shopkeep>' '<ItemName>' '<amount>'");
+        }
+
+        protected static void ListShopKeeps(Player player)
+        {
+            player.WriteLine("Available Shopkeeps:");
+            Room room = player.GetRoom();
+            foreach (var shop in room.Npcs)
+            {
+                player.WriteLine($"Name: {shop.Name} Description: {shop.Description}");
+            }
+        }
+
+        protected static void ListShopInventory(Player player, string shopkeepName)
+        {
+            Room room = player.GetRoom();
+            NonPlayer? npc = room.GetNpcByName(shopkeepName);
+            if (npc == null || npc is not Shopkeep shopkeep)
+            {
+                player.WriteLine($"Shopkeep '{shopkeepName}' not found in this room.");
+                return;
+            }
+            player.WriteLine($"Inventory for Shopkeep '{shopkeep.Name}':");
+            foreach (var itemEntry in shopkeep.ShopInventory)
+            {
+                string itemId = itemEntry.Key;
+                int quantity = itemEntry.Value;
+                if (GameState.Instance.ItemCatalog.ContainsKey(itemId))
+                {
+                    Item item = GameState.Instance.ItemCatalog[itemId];
+                    player.WriteLine($"Item: {item.Name}, Description: {item.Description}, Quantity: {quantity}, Price: {item.Value} gold each");
+                }
+                else
+                {
+                    player.WriteLine($"Item ID: {itemId} (details not found), Quantity: {quantity}");
+                }
+            }
+        }
+
+        protected static void SellItemToPlayer(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine("Usage: shop buy '<shopkeep>' '<ItemName>' '<amount>'");
+                return;
+            }
+            string shopkeepName = parameters[2];
+            string itemName = parameters[3];
+            int amount;
+            if (!int.TryParse(parameters[4], out amount) || amount <= 0)
+            {
+                player.WriteLine("Invalid amount specified.");
+                return;
+            }
+            Room room = player.GetRoom();
+            NonPlayer? npc = room.GetNpcByName(shopkeepName);
+            if (npc == null || npc is not Shopkeep shopkeep)
+            {
+                player.WriteLine($"Shopkeep '{shopkeepName}' not found in this room.");
+                return;
+            }
+            // Find the item by name in the shopkeep's inventory
+            string? itemIdToBuy = null;
+            foreach (var itemEntry in shopkeep.ShopInventory)
+            {
+                string itemId = itemEntry.Key;
+                if (GameState.Instance.ItemCatalog.ContainsKey(itemId))
+                {
+                    Item item = GameState.Instance.ItemCatalog[itemId];
+                    if (item.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        itemIdToBuy = itemId;
+                        break;
+                    }
+                }
+            }
+            if (itemIdToBuy == null)
+            {
+                player.WriteLine($"Item '{itemName}' not found in shopkeep '{shopkeepName}' inventory.");
+                return;
+            }
+            shopkeep.SellItem(itemIdToBuy, amount);
+            //add to player inventory logic would go here.
+            //Adding this for extra emphasis since this is a key part of the buy process.
+            player.WriteLine($"You have purchased {amount} of '{itemName}' from '{shopkeepName}'.");
         }
     }
     #endregion
@@ -580,15 +726,22 @@ namespace RPGFramework.Commands
                 return false;
             }
             string name = parameters[4];
-            string category = parameters[4].ToLower();
+            string category = parameters[3];
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return false;
             if (!npc.HasDialogGroup(category))
             {
                 DialogGroup dialogCategory = new DialogGroup();
-                dialogCategory.GroupName = category;
+                DialogGroupCategory categoryName;
+                Enum.TryParse<DialogGroupCategory>(category, true, out categoryName);
+                dialogCategory.SetCategory(categoryName);
                 npc.DialogGroups.Add(dialogCategory);
+            }
+            else
+            {
+                player.WriteLine($"Dialog category '{category}' already exists for {_entityName} '{name}'.");
+                return false;
             }
             player.WriteLine($"Dialog category '{category}' added to {_entityName} '{name}'.");
             return true;
@@ -607,7 +760,10 @@ namespace RPGFramework.Commands
             string tag = parameters[3];
             Character? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
+            {
+                player.WriteLine($"Npc '{name}' not found.");
                 return;
+            }
             bool completed = npc.AddTag(tag);
             if (!completed)
             {
@@ -652,7 +808,7 @@ namespace RPGFramework.Commands
         {
             NonPlayer character = new NonPlayer();
             player.WriteLine("Valid Tags:");
-            foreach (string tag in character.ValidTags)
+            foreach (ValidTags tag in ValidTags.GetValues(typeof(ValidTags)))
             {
                 player.WriteLine(tag);
             }
