@@ -244,7 +244,17 @@ namespace RPGFramework
 
         internal void WriteLine(object description)
         {
-            throw new NotImplementedException();
+            // Safely write output for Players (so they get the ANSI console / telnet output),
+            // and fall back to the host console for non-player characters.
+            if (this is Player p)
+            {
+                // Player.WriteLine expects a string; convert description to string safely.
+                p.WriteLine(description?.ToString() ?? string.Empty);
+                return;
+            }
+
+            // For non-Player characters, write to the system console.
+            Console.WriteLine(description?.ToString() ?? string.Empty);
         }
 
         //Add tags to character

@@ -15,19 +15,20 @@ namespace RPGFramework
         public CharacterClass()
         {
         }
-        
+
         public void SetClass(Character player, Enums.Classes classType)
         {
-            if(classType < Enums.Classes.Knight || classType > Enums.Classes.Healer)
+            if (classType < Enums.Classes.Knight || classType > Enums.Classes.Healer)
             {
                 throw new ArgumentOutOfRangeException(nameof(classType), "Invalid class type specified.");
             }
             ClassType = classType;
-            if(ClassType == Enums.Classes.Mage)
+            if (ClassType == Enums.Classes.Mage)
             {
-                player.
-                Intelligence += 2;
+                player.IncrimentIntelligence(3);
+                player.IncrimentWisdom(2);
             }
 
         }
+    }
 }
