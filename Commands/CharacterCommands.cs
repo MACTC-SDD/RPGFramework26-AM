@@ -238,7 +238,7 @@ namespace RPGFramework.Commands
                 //Adds one to quantity if it exists already
                 if (GameState.Instance.ShopkeepCatalog.ContainsKey(parameters[3]))
                 {
-                    Shopkeep? shop = CheckForCatalogAndObject(player, parameters[3]));
+                    Shopkeep? shop = (Shopkeep?)CheckForCatalogAndObject(player, parameters[3]);
                     if (shop == null)
                         return false;
 
