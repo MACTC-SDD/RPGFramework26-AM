@@ -241,8 +241,13 @@ namespace RPGFramework.Commands
                     Shopkeep? shop = (Shopkeep?)CheckForCatalogAndObject(player, parameters[3]);
                     if (shop == null)
                         return false;
-
+                    
                     string itemID = parameters[4];
+                    if(GameState.Instance.ItemCatalog.ContainsKey(itemID) == false)
+                    {
+                        player.WriteLine($"Item with ID '{itemID}' does not exist in the item catalog.");
+                        return false;
+                    }
                     if (shop.ShopInventory.ContainsKey(itemID))
                     {
                         int amount;
