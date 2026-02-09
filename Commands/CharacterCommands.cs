@@ -66,7 +66,7 @@ namespace RPGFramework.Commands
                     NpcTag(player, parameters);
                     break;
                 case "list":
-                    ListMobs();
+                    ListMobs(player);
                     break;
                 case "set":
                     return SetNpcProperty(player, parameters);
@@ -85,11 +85,11 @@ namespace RPGFramework.Commands
         /// Displays a list of available mob-related commands and their usage to the specified player.
         /// </summary>
 
-        private static void ListMobs()
+        private static void ListMobs(Player player)
         {
             foreach (var mob in GameState.Instance.MobCatalog)
             {
-                Console.WriteLine($"Mob Name: {mob.Value.Name} Description: {mob.Value.Description}");
+                player.WriteLine($"Mob Name: {mob.Value.Name} Description: {mob.Value.Description}");
             }
             return;
         }
@@ -131,7 +131,7 @@ namespace RPGFramework.Commands
                     NpcDelete(player, parameters);
                     break;
                 case "list":
-                    ListNpcs();
+                    ListNpcs(player);
                     break;
                 case "tag":
                     NpcTag(player, parameters);
@@ -147,11 +147,11 @@ namespace RPGFramework.Commands
             }
             return false;
         }
-        private static void ListNpcs()
+        private static void ListNpcs(Player player)
         {
             foreach (var npc in GameState.Instance.NPCCatalog)
             {
-                Console.WriteLine($"Npc Name: {npc.Value.Name} Description: {npc.Value.Description}");
+                player.WriteLine($"Npc Name: {npc.Value.Name} Description: {npc.Value.Description}");
             }
             return;
         }
@@ -192,7 +192,7 @@ namespace RPGFramework.Commands
                 case "delete":
                     return NpcDelete(player, parameters);
                 case "list":
-                    ListShopKeeps();
+                    ListShopKeeps(player);
                     break;
                 case "set":
                     return SetNpcProperty(player, parameters);
@@ -216,11 +216,11 @@ namespace RPGFramework.Commands
 
             return false;
         }
-        private static void ListShopKeeps()
+        private static void ListShopKeeps(Player player)
         {
             foreach (var shop in GameState.Instance.ShopCatalog)
             {
-                Console.WriteLine($"Shop Name: {shop.Value.Name} Description: {shop.Value.Description}");
+                player.WriteLine($"Shop Name: {shop.Value.Name} Description: {shop.Value.Description}");
             }
             return;
         }
