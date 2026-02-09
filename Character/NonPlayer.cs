@@ -1,12 +1,7 @@
 ﻿using RPGFramework.Commands;
 using RPGFramework.Enums;
 using RPGFramework.Geography;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.InteropServices.Swift;
-using System.Transactions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Text.Json.Serialization;
 
 namespace RPGFramework
 {
@@ -18,10 +13,10 @@ namespace RPGFramework
     internal class NonPlayer : Character
     {
         //additional variables from NPCs
-        public List<DialogGroup> DialogGroups { get; protected set; } = [];
+        [JsonInclude] public List<DialogGroup> DialogGroups { get; protected set; } = [];
         public int CurrentAggressionLevel { get; protected set; } = 0;
-        public int MaxAggressionLevel { get; protected set; } = 10;
-        public int MinAgressionLevel { get; protected set; } = 0;
+        [JsonInclude] public int MaxAggressionLevel { get; protected set; } = 10;
+        [JsonInclude] public int MinAgressionLevel { get; protected set; } = 0;
         public bool Spawned { get; set; } = false;
         public NonPlayerType NpcType { get; protected set; } = NonPlayerType.Default;
         public CharacterState CurrentState { get; protected set; } = CharacterState.Idle;

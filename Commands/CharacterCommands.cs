@@ -750,12 +750,7 @@ namespace RPGFramework.Commands
             }
             else
             {
-                NpcAddDialogCategory(player, parameters);
-                DialogGroup dialogCategory = npc.GetDialogGroup(category);
-                if (!dialogCategory.HasDialogLine(dialogLine))
-                {
-                    dialogCategory.AddDialogLine(dialogLine);
-                }
+                player.WriteLine($"Category does not exist");
             }
                 player.WriteLine($"Dialog line added to category '{category}' for {_entityName} '{name}'.");
             return true;
@@ -912,12 +907,12 @@ namespace RPGFramework.Commands
         #region NpcDialogCommands Method
         protected static void NpcDialogCommands(Player player, List<string> parameters)
         {
-            if (parameters[2].Equals("add"))
+            if (parameters[2].Equals("add") && parameters.Count == 5)
             {
                 NpcAddDialogCategory(player, parameters);
                 return;
             }
-            if (parameters[2].Equals("add") && parameters[4].Equals("category"))
+            else if (parameters[2].Equals("add") && parameters.Count == 6)
             {
                 NpcAddDialog(player, parameters);
                 return;
