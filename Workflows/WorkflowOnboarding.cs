@@ -57,7 +57,7 @@ namespace RPGFramework.Workflows
                         player.WriteLine($"{player.Name} : Welcome to the game! Let's start by choosing your character class.");
                         player.WriteLine(
                              "============================================================================"
-                           + "\n Warrior \tMage \tRogue" +
+                           + "\n Knight \tMage \tTheif \tArcher \tHealer" +
                              "\n============================================================================");
 
                         CurrentStep++;
@@ -67,13 +67,22 @@ namespace RPGFramework.Workflows
                 case 2:
                     // Step 2: Gather player class and validate
                     string chosenClass = parameters.Count > 0 ? parameters[0].ToLower() : string.Empty;
-                    if (chosenClass == "warrior" || chosenClass == "mage" || chosenClass == "rogue")
+                    if (chosenClass == "knight" || chosenClass == "mage" || chosenClass == "theif" || chosenClass == "healer" || chosenClass == "archer")
                     {
                         WorkflowData["ChosenClass"] = chosenClass;
                         player.WriteLine($"You have chosen the {chosenClass} class. Now Press Enter TWICE ONLYYYY!!! until text comes up :D");
                         // If class is valid, proceed, otherwise print message and stay on this step
                         // Placeholder logic
                         CurrentStep++;
+                        player.Class.SetClass(player, chosenClass switch
+                        {
+                            "knight" => Enums.Classes.Knight,
+                            "mage" => Enums.Classes.Mage,
+                            "theif" => Enums.Classes.Thief,
+                            "archer" => Enums.Classes.Archer,
+                            "healer" => Enums.Classes.Healer,
+                            _ => throw new InvalidOperationException("Invalid class") // This should never happen due to the if check above
+                        });
                         Chosenclass = $"{chosenClass}";
                     }
                     else

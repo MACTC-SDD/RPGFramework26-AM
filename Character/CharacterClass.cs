@@ -50,5 +50,9 @@ namespace RPGFramework
             }
 
         }
+        public override string ToString()
+        {
+            return ClassType.ToString();
+        }
     }
 }
