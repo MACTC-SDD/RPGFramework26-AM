@@ -93,6 +93,7 @@ namespace RPGFramework.Commands
             player.WriteLine("/item description '<set item desc to this>'");
             player.WriteLine("/item name '<set item name to this>'");
             player.WriteLine("/item create '<name>' '<description>''");
+            player.WriteLine("Usage: /item create '<name>' '<description>' '<isdroppable>' '<isgettable>' '<isstackable>' '<level>' '<value>' '<weight>'");
         }
 
         private static bool ItemCreate(Player player, List<string> parameters)
@@ -114,14 +115,9 @@ namespace RPGFramework.Commands
             // 7: Level
             // 8: Value
             // 9: Weight
-            if (parameters.Count < 8)
+            if (parameters.Count < 5)
             {
-                player.WriteLine("Usage: /item create '<name>' '<description>' '<isdroppable>' '<isgettable>' '<isstackable>' '<level>'");
-                return false;
-            }
-            if (parameters.Count < 10)
-            {
-                player.WriteLine("Usage: /item create '<name>' '<description>' '<isdroppable>' '<isgettable>' '<isstackable>' '<level>' '<value>' '<weight>'");
+                player.WriteLine("Usage: /item create '<name>' '<description>'");
                 return false;
             }
             if (!bool.TryParse(parameters[4], out bool isdroppable))
@@ -167,15 +163,15 @@ namespace RPGFramework.Commands
             };
             if (GameState.Instance.ItemCatalog.ContainsKey(newItem.Name))
             {
-
+                player.WriteLine("A weapon with that name already exists.");
+                return false;
             }
             else
             {
-                GameState.Instance.ItemCatalog.Add(newItem.Name, new Item());
+                GameState.Instance.ItemCatalog.Add(newItem.Name, newItem);
+                player.WriteLine($"Weapon '{newItem.Name}' created successfully with description: {newItem.Description}");
+                return true;
             }
-            // Here you would typically add the item to a database or game world
-            player.WriteLine($"Item '{newItem.Name}' created successfully with description: {newItem.Description}");
-            return true;
         }
 
         private static void ItemSetDescription(Player player, List<string> parameters)
@@ -259,6 +255,27 @@ namespace RPGFramework.Commands
                 case "name":
                     ArmorSetName(player, parameters);
                     break;
+                case "material":
+                    ArmorSetMaterial(player, parameters);
+                    break;
+                case "slot":
+                    ArmorSetSlot(player, parameters);
+                    break;
+                case "type":
+                    ArmorSetType(player, parameters);
+                    break;
+                case "damage":
+                    ArmorSetDamageReduction(player, parameters);
+                    break;
+                case "durability":
+                    ArmorSetDurability(player, parameters);
+                    break;
+                case "dodge":
+                    ArmorSetDodgeChance(player, parameters);
+                    break;
+                case "health":
+                    ArmorSetHealthBonus(player, parameters);
+                    break;
                 case "create":
                     ArmorCreate(player, parameters);
                     break;
@@ -276,42 +293,122 @@ namespace RPGFramework.Commands
             player.WriteLine("/armor description '<set item desc to this>'");
             player.WriteLine("/armor name '<set item name to this>'");
             player.WriteLine("/armor create '<name>' '<description>''");
+            player.WriteLine("Usage: /armor material '<armor name>' '<new material>'");
+            player.WriteLine("Usage: /armor type '<armor name>' '<new type>'");
+            player.WriteLine("Usage: /armor damage '<armor name>' '<new damage reduction>'");
+            player.WriteLine("Usage: /armor durability '<armor name>' '<new durability>'");
+            player.WriteLine("Usage: /armor dodge '<armor name>' '<new dodge chance>'");
         }
 
-        private static void ArmorCreate(Player player, List<string> parameters)
+        private static bool ArmorCreate(Player player, List<string> parameters)
         {
+            // 1. Permission Check
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
                 player.WriteLine("You do not have permission to do that.");
-                player.WriteLine("Your Role is: " + player.Role.ToString());
-                return;
+                return false;
             }
 
-            // 0: /item
-            // 1: create
-            // 2: name
-            // 3: description
+            // 2. Check for the minimum required arguments (Name + Desc)
+            // 0: /armor, 1: create, 2: name, 3: description
             if (parameters.Count < 4)
             {
                 player.WriteLine("Usage: /armor create '<name>' '<description>'");
-                return;
+                player.WriteLine("Optional: ... '<material>' '<slot>' '<type>' '<dmg>' '<durability>' '<dodge>' '<health>'");
+                return false;
             }
+
+            // 3. Set up DEFAULT values
+            // These will be used if the user ONLY types the name and description.
+            ArmorMaterial material = ArmorMaterial.Cloth; // Default
+            ArmorSlot slot = ArmorSlot.Chest;             // Default
+            ArmorType type = ArmorType.Light;             // Default
+            int damagereduction = 0;
+            int durability = 100;
+            int maxdurability = durability;
+            float dodgechance = 0.0f;
+            float healthbonus = 0.0f;
+
+            // 4. ONLY parse the extra stats if the user provided them (11 arguments total)
+            if (parameters.Count >= 11)
+            {
+                if (!Enum.TryParse(parameters[4], true, out material))
+                {
+                    player.WriteLine($"Invalid armor material: {parameters[4]}");
+                    return false;
+                }
+                if (!Enum.TryParse(parameters[5], true, out slot))
+                {
+                    player.WriteLine($"Invalid armor slot: {parameters[5]}");
+                    return false;
+                }
+                if (!Enum.TryParse(parameters[6], true, out type))
+                {
+                    player.WriteLine($"Invalid armor type: {parameters[6]}");
+                    return false;
+                }
+                if (!Int32.TryParse(parameters[7], out damagereduction))
+                {
+                    player.WriteLine($"Invalid damage reduction: {parameters[7]}");
+                    return false;
+                }
+                if (!Int32.TryParse(parameters[8], out durability))
+                {
+                    player.WriteLine($"Invalid durability: {parameters[8]}");
+                    return false;
+                }
+                if (!float.TryParse(parameters[9], out dodgechance))
+                {
+                    player.WriteLine($"Invalid dodge chance: {parameters[9]}");
+                    return false;
+                }
+                if (!float.TryParse(parameters[10], out healthbonus))
+                {
+                    player.WriteLine($"Invalid health bonus: {parameters[10]}");
+                    return false;
+                }
+            }
+            // Safety check: If they typed more than just Name/Desc, but not enough for full stats
+            else if (parameters.Count > 4)
+            {
+                player.WriteLine("Error: You provided some stats but missed others.");
+                player.WriteLine("Usage: /armor create '<name>' '<description>' '<material>' '<slot>' '<type>' '<dmgreduction>' '<maxdurability>' '<dodge chance>' '<health bonus>'");
+                return false;
+            }
+
+            // 5. Create the Object
+            // It will use either the defaults we set at step 3, OR the parsed values from step 4
             Armor newArmor = new Armor
             {
                 Name = parameters[2],
-                Description = parameters[3]
+                Description = parameters[3],
+                Material = material,
+                Slot = slot,
+                Type = type,
+                DamageReduction = damagereduction,
+                MaxDurability = durability,
+                DodgeChance = dodgechance,
+                HealthBonus = healthbonus
             };
+
+            // 6. Save to Catalog
             if (GameState.Instance.ArmorCatalog.ContainsKey(newArmor.Name))
             {
-
+                player.WriteLine("An armor with that name already exists.");
+                return false;
             }
             else
             {
-                GameState.Instance.ArmorCatalog.Add(newArmor.Name, new Armor());
-            }
-            // Here you would typically add the item to a database or game world
-            player.WriteLine($"Armor '{newArmor.Name}' created successfully with description: {newArmor.Description}");
+                GameState.Instance.ArmorCatalog.Add(newArmor.Name, newArmor);
+                player.WriteLine($"Armor '{newArmor.Name}' created successfully!");
 
+                // Let the user know if defaults were used
+                if (parameters.Count == 4)
+                {
+                    player.WriteLine("(Created with default stats because none were provided)");
+                }
+                return true;
+            }
         }
 
         private static void ArmorSetDescription(Player player, List<string> parameters)
@@ -346,7 +443,257 @@ namespace RPGFramework.Commands
                 player.WriteLine("Item name set.");
             }
         }
+        private static void ArmorSetMaterial (Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /armor material '<armor name>' '<new material>'");
+                return;
+            }
+            string targetName = parameters[2];
+            string materialInput = parameters[3];
 
+            if (targetName == null)
+            {
+                player.WriteLine("No armor selected.");
+                return;
+            }
+
+            if (Enum.TryParse(materialInput, true, out ArmorMaterial newMaterial))
+            {
+                // 3. Update the existing item
+                GameState.Instance.ArmorCatalog[targetName].Material = newMaterial;
+
+                player.WriteLine($"Successfully changed '{targetName}' material to {newMaterial}.");
+            }
+            else
+            {
+                // Helpful error message listing valid options
+                string validOptions = string.Join(", ", Enum.GetNames(typeof(ArmorMaterial)));
+                player.WriteLine($"'{materialInput}' is not a valid material.");
+                player.WriteLine($"Valid options are: {validOptions}");
+            }
+        }
+        private static void ArmorSetType(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /armor type '<armor name>' '<new type>'");
+                return;
+            }
+            string targetName = parameters[2];
+            string armortype = parameters[3];
+
+            if (targetName == null)
+            {
+                player.WriteLine("No armor selected.");
+                return;
+            }
+
+            if (Enum.TryParse(armortype, true, out ArmorType newArmortype))
+            {
+                // 3. Update the existing item
+                GameState.Instance.ArmorCatalog[targetName].Type = newArmortype;
+
+                player.WriteLine($"Successfully changed '{targetName}' armor type to {newArmortype}.");
+            }
+            else
+            {
+                // Helpful error message listing valid options
+                string validOptions = string.Join(", ", Enum.GetNames(typeof(ArmorMaterial)));
+                player.WriteLine($"'{armortype}' is not a valid material.");
+                player.WriteLine($"Valid options are: {validOptions}");
+            }
+        }
+        private static void ArmorSetSlot(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /armor slot '<armor name>' '<new slot>'");
+                return;
+            }
+            string targetName = parameters[2];
+            string armorslot = parameters[3];
+
+            if (targetName == null)
+            {
+                player.WriteLine("No armor selected.");
+                return;
+            }
+
+            if (Enum.TryParse(armorslot, true, out ArmorSlot newArmorslot))
+            {
+                // 3. Update the existing item
+                GameState.Instance.ArmorCatalog[targetName].Slot = newArmorslot;
+
+                player.WriteLine($"Successfully changed '{targetName}' armor type to {newArmorslot}.");
+            }
+            else
+            {
+                // Helpful error message listing valid options
+                string validOptions = string.Join(", ", Enum.GetNames(typeof(ArmorMaterial)));
+                player.WriteLine($"'{armorslot}' is not a valid material.");
+                player.WriteLine($"Valid options are: {validOptions}");
+            }
+        }
+        private static void ArmorSetDamageReduction(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /armor damage '<armor name>' '<new damage reduction>'");
+                return;
+            }
+            string targetName = parameters[2];
+            string damagereduction = parameters[3];
+
+            if (targetName == null)
+            {
+                player.WriteLine("No armor selected.");
+                return;
+            }
+
+            if (int.TryParse(damagereduction, out int newDamageReduction))
+            {
+                // 3. Update the existing item
+                GameState.Instance.ArmorCatalog[targetName].DamageReduction = newDamageReduction;
+
+                player.WriteLine($"Successfully changed '{targetName}' damage reduction to {newDamageReduction}.");
+            }
+            else
+            {
+                // Helpful error message listing valid options
+                player.WriteLine($"'{damagereduction}' is not a valid damage reduction.");
+               
+            }
+        }
+        private static void ArmorSetDurability(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /armor durability '<armor name>' '<new durability>'");
+                return;
+            }
+            string targetName = parameters[2];
+            string durability = parameters[3];
+            string maxdurability = durability;
+
+            if (targetName == null)
+            {
+                player.WriteLine("No armor selected.");
+                return;
+            }
+
+            if (int.TryParse(durability, out int newDurability))
+            {
+                // 3. Update the existing item
+                GameState.Instance.ArmorCatalog[targetName].Durability = newDurability;
+                GameState.Instance.ArmorCatalog[targetName].MaxDurability = newDurability;
+
+                player.WriteLine($"Successfully changed '{targetName}' durability to {newDurability}.");
+                player.WriteLine($"Successfully changed '{targetName}' max durability to {newDurability}.");
+            }
+            else
+            {
+                // Helpful error message listing valid options
+                player.WriteLine($"'{durability}' is not a valid durability.");
+
+            }
+        }
+        private static void ArmorSetDodgeChance(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /armor dodge '<armor name>' '<new dodge chance>'");
+                return;
+            }
+            string targetName = parameters[2];
+            string dodgechance = parameters[3];
+
+            if (targetName == null)
+            {
+                player.WriteLine("No armor selected.");
+                return;
+            }
+
+            if (float.TryParse(dodgechance, out float newDodgeChance))
+            {
+                // 3. Update the existing item
+                GameState.Instance.ArmorCatalog[targetName].DodgeChance = newDodgeChance;
+
+                player.WriteLine($"Successfully changed '{targetName}' dodge chance to {newDodgeChance}.");
+            }
+            else
+            {
+                // Helpful error message listing valid options
+                player.WriteLine($"'{dodgechance}' is not a valid dodge chance.");
+
+            }
+        }
+        private static void ArmorSetHealthBonus(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /armor dodge '<armor name>' '<new dodge chance>'");
+                return;
+            }
+            string targetName = parameters[2];
+            string healthbonus = parameters[3];
+
+            if (targetName == null)
+            {
+                player.WriteLine("No armor selected.");
+                return;
+            }
+
+            if (float.TryParse(healthbonus, out float newHealthBonus))
+            {
+                // 3. Update the existing item
+                GameState.Instance.ArmorCatalog[targetName].HealthBonus = newHealthBonus;
+
+                player.WriteLine($"Successfully changed '{targetName}' health bonus to {newHealthBonus}.");
+            }
+            else
+            {
+                // Helpful error message listing valid options
+                player.WriteLine($"'{healthbonus}' is not a valid dodge chance.");
+
+            }
+        }
         public bool Execute(Character character, List<int> parameters)
         {
             throw new NotImplementedException();
@@ -380,17 +727,26 @@ namespace RPGFramework.Commands
                 case "name":
                     WeaponSetName(player, parameters);
                     break;
+                case "material":
+                    WeaponSetMaterial(player, parameters);
+                    break;
+                case "type":
+                    WeaponSetType(player, parameters);
+                    break;
+                case "durability":
+                    WeaponSetDurability(player, parameters);
+                    break;
+                case "isdroppable":
+                    WeaponIsDroppable(player, parameters);
+                    break;
                 case "create":
                     WeaponCreate(player, parameters);
-                    break;
-                case "damage":
-                    WeaponSetDamage(player, parameters);
                     break;
                 default:
                     WriteUsage(player);
                     break;
-                
             }
+
 
             return true;
         }
@@ -401,7 +757,11 @@ namespace RPGFramework.Commands
             player.WriteLine("/weapon description '<set item desc to this>'");
             player.WriteLine("/weapon name '<set item name to this>'");
             player.WriteLine("/weapon create '<name>' '<description>''");
-            player.WriteLine("/weapon '<name>' set damage '<set weapon damage to this>'");
+            player.WriteLine("Usage: /weapon material '<weapon name>' '<new material>'");
+            player.WriteLine("Usage: /weapon type '<weapon name>' '<new type>'");
+            player.WriteLine("Usage: /weapon durability '<weapon name>' '<new durability>'");
+            player.WriteLine("Usage: /weapon create '<name>' '<desc>' <dmg> <speed> <range> <type> <material>");
+            player.WriteLine("Usage: /weapon isdroppable '<weapon name>' '<new droppable>'");
         }
 
         private static bool WeaponCreate(Player player, List<string> parameters)
@@ -421,62 +781,134 @@ namespace RPGFramework.Commands
             // 6: range
             // 7: type
             // 8: material
-            if (parameters.Count < 9)
+            if (parameters.Count < 4)
             {
-                player.WriteLine("Usage: /weapon create '<name>' '<description>' ' <damage>' '<attack time>' '<range>' '<type>' '<material>'");
+                player.WriteLine("Usage: /weapon create '<name>' '<description>'");
+                player.WriteLine("Optional: ... '<isdroppable>' '<isgettable>' '<isstackable>' '<level>' '<value>' '<value>' '<weight>' '<damage>' '<attackspeed>' '<range>'");
                 return false;
             }
+            // 3. Set up DEFAULT values
+            // These will be used if the user ONLY types the name and description.
 
-            if (!Int32.TryParse(parameters[4], out int damage))
+
+
+            WeaponMaterial material = WeaponMaterial.Iron; // Default
+            WeaponType type = WeaponType.Sword;             // Default
+            bool isdroppable = false;
+            bool isgettable = true;
+            bool isstackable = false;
+            int level = 1;
+            int value = 10;
+            int weight = 5;
+            int damage = 1;
+            int attackspeed = 1;
+            int range = 1;
+
+            if (parameters.Count >= 15) { 
+            if (!bool.TryParse(parameters[4], out  isdroppable))
+            {
+                player.WriteLine("Invalid IsDroppable value.");
+                return false;
+            }
+            if (!bool.TryParse(parameters[5], out isgettable))
+            {
+                player.WriteLine("Invalid IsGettable value.");
+                return false;
+            }
+            if (!bool.TryParse(parameters[6], out isstackable))
+            {
+                player.WriteLine("Invalid IsStackable value.");
+                return false;
+            }
+            if (!Int32.TryParse(parameters[7], out  level))
+            {
+                player.WriteLine("Invalid level value.");
+                return false;
+            }
+            if (!Int32.TryParse(parameters[8], out  value))
+            {
+                player.WriteLine("Invalid value value.");
+                return false;
+            }
+            if (!Int32.TryParse(parameters[9], out  weight))
+            {
+                player.WriteLine("Invalid weight value.");
+                return false;
+            }
+            if (!Int32.TryParse(parameters[10], out  damage))
             {
                 player.WriteLine("Invalid damage value.");
                 return false;
             }
-            if (!Int32.TryParse(parameters[5], out int attackspeed))
+            if (!Int32.TryParse(parameters[11], out attackspeed))
             {
                 player.WriteLine("Invalid Attack Speed value.");
                 return false;
             }
-            if (!Int32.TryParse(parameters[6], out int range))
+            if (!Int32.TryParse(parameters[12], out range))
             {
                 player.WriteLine("Invalid range value.");
                 return false;
             }
-            if (!Enum.TryParse(parameters[7], true, out WeaponType type))
+            if (!Enum.TryParse(parameters[13], true, out  type))
             {
                 player.WriteLine("Invalid weapon type.");
                 return false;
             }
-            if (!Enum.TryParse(parameters[8], true, out WeaponMaterial material))
+            if (!Enum.TryParse(parameters[14], true, out material))
             {
                 player.WriteLine("Invalid weapon material.");
                 return false;
             }
+        }
+            else if (parameters.Count > 4)
+            {
+                player.WriteLine("Error: You provided some stats but missed others.");
+                player.WriteLine("Usage: /armor create '<name>' '<description>' '<isdroppable>' '<isgettable>' '<isstackable>' '<level>' '<value>' '<value>' '<weight>' '<damage>' '<attackspeed>' '<range>'");
+                return false;
+            }
+
+            
             Weapon newWeapon = new Weapon
             {
                 Name = parameters[2],
                 Description = parameters[3],
+                IsDroppable = isdroppable,
+                IsGettable = isgettable,
+                IsStackable = isstackable,
+                Level = level,
+
+                Value = value,
+                Weight = weight,
                 Damage = damage,
                 AttackTime = attackspeed,
                 Range = range,
                 Type = type,
                 Material = material,
             };
+
             if (GameState.Instance.WeaponCatalog.ContainsKey(newWeapon.Name))
             {
-                player.WriteLine("A weapon with that name already exists.");
+                player.WriteLine("An weapon with that name already exists.");
                 return false;
             }
             else
             {
                 GameState.Instance.WeaponCatalog.Add(newWeapon.Name, newWeapon);
-                player.WriteLine($"Weapon '{newWeapon.Name}' created successfully with description: {newWeapon.Description}");
+                player.WriteLine($"Weapon '{newWeapon.Name}' created successfully!");
+
+                // Let the user know if defaults were used
+                if (parameters.Count == 4)
+                {
+                    player.WriteLine("(Created with default stats because none were provided)");
+                }
                 return true;
             }
-        }
-            // Here you would typically add the item to a database or game world
 
-        
+        }
+        // Here you would typically add the item to a database or game world
+
+
 
         // 0: /weapon
         // 1: 'Weapon name'
@@ -527,7 +959,8 @@ namespace RPGFramework.Commands
                     player.WriteLine("Weapon description set.");
                 }
         }
-        private static void WeaponSetDamage(Player player, List<string> parameters)
+
+        private static void WeaponSetMaterial(Player player, List<string> parameters)
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
@@ -536,32 +969,136 @@ namespace RPGFramework.Commands
             }
             if (parameters.Count < 4)
             {
-                player.WriteLine("Not enough parameters");
+                player.WriteLine("Usage: /weapon material '<weapon name>' '<new material>'");
                 return;
             }
+            string targetName = parameters[2];
+            string materialInput = parameters[3];
 
-            var weapon = GameState.Instance.WeaponCatalog[parameters[2]];
-            if (weapon == null)
+            if (targetName == null)
             {
                 player.WriteLine("No weapon selected.");
                 return;
             }
 
-            if (parameters.Count < 5)
+            if (Enum.TryParse(materialInput, true, out WeaponMaterial newMaterial))
             {
-                player.WriteLine($"Weapon Damage:{weapon.Damage}");
-                return;
+                // 3. Update the existing item
+                GameState.Instance.WeaponCatalog[targetName].Material = newMaterial;
+
+                player.WriteLine($"Successfully changed '{targetName}' material to {newMaterial}.");
             }
             else
             {
-            
+                // Helpful error message listing valid options
+                string validOptions = string.Join(", ", Enum.GetNames(typeof(WeaponMaterial)));
+                player.WriteLine($"'{materialInput}' is not a valid material.");
+                player.WriteLine($"Valid options are: {validOptions}");
+            }
+        }
+        private static void WeaponSetType(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /weapon type '<weapon name>' '<new type>'");
+                return;
+            }
+            string targetName = parameters[2];
+            string weapontype = parameters[3];
+
+            if (targetName == null)
+            {
+                player.WriteLine("No weapon selected.");
+                return;
+            }
+
+            if (Enum.TryParse(weapontype, true, out WeaponType newWeapontype))
+            {
+                // 3. Update the existing item
+                GameState.Instance.WeaponCatalog[targetName].Type = newWeapontype;
+
+                player.WriteLine($"Successfully changed '{targetName}' weapon type to {newWeapontype}.");
+            }
+            else
+            {
+                // Helpful error message listing valid options
+                string validOptions = string.Join(", ", Enum.GetNames(typeof(WeaponMaterial)));
+                player.WriteLine($"'{weapontype}' is not a valid material.");
+                player.WriteLine($"Valid options are: {validOptions}");
+            }
+        }
+
+        private static void WeaponSetDurability(Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /weapon durability '<weapon name>' '<new durability>'");
+                return;
+            }
+            string targetName = parameters[2];
+            string durability = parameters[3];
+
+            if (string.IsNullOrEmpty(targetName))
+            {
+                player.WriteLine("No weapon selected.");
+                return;
+            }
+
+            if (int.TryParse(durability, out int newDurability))
+            {
+                if (GameState.Instance.WeaponCatalog.TryGetValue(targetName, out Weapon? weapon) && weapon != null)
+                {
+                    weapon.Durability = newDurability;
+                    weapon.MaxDurability = newDurability;
+
+                    player.WriteLine($"Successfully changed '{targetName}' durability to {newDurability}.");
+                    player.WriteLine($"Successfully changed '{targetName}' max durability to {newDurability}.");
+                }
+                else
+                {
+                    player.WriteLine($"Weapon '{targetName}' not found.");
+                }
+            }
+            else
+            {
+                player.WriteLine($"'{durability}' is not a valid damage reduction.");
+            }
+        }
+        private static void WeaponIsDroppable (Player player, List<string> parameters)
+        {
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                return;
+            }
+            if (parameters.Count < 4)
+            {
+                player.WriteLine("Usage: /weapon isdroppable '<weapon name>' '<new isdroppable>'");
+                return;
+            }
+            string targetName = parameters[2];
+            string isdroppable = parameters[3];
+
+            if (targetName == null)
+            {
+                player.WriteLine("No weapon selected.");
             }
         }
 
 
 
         public bool Execute(Character character, List<int> parameters)
-        {
+       {
             throw new NotImplementedException();
         }
     }
