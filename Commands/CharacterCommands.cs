@@ -664,15 +664,9 @@ namespace RPGFramework.Commands
             {
                 return false;
             }
-            int index = 0;
             foreach (DialogGroup dialog in npc.DialogGroups)
             {
-                foreach (string dialogLine in dialog.DialogLines)
-                {
-                    player.WriteLine(dialog.GetDialogLine(index));
-                    index++;
-                }
-                index = 0;
+                player.WriteLine($"Category: {dialog.Category}");
             }
             return true;
         }
@@ -754,7 +748,16 @@ namespace RPGFramework.Commands
                     dialogCategory.AddDialogLine(dialogLine);
                 }
             }
-            player.WriteLine($"Dialog line added to category '{category}' for {_entityName} '{name}'.");
+            else
+            {
+                NpcAddDialogCategory(player, parameters);
+                DialogGroup dialogCategory = npc.GetDialogGroup(category);
+                if (!dialogCategory.HasDialogLine(dialogLine))
+                {
+                    dialogCategory.AddDialogLine(dialogLine);
+                }
+            }
+                player.WriteLine($"Dialog line added to category '{category}' for {_entityName} '{name}'.");
             return true;
         }
         #endregion
@@ -764,11 +767,11 @@ namespace RPGFramework.Commands
         {
             if (parameters.Count < 5)
             {
-                player.WriteLine("Usage: /npc dialog add category '<character'> <category>'");
+                player.WriteLine("Usage: /npc dialog add '<character'> <category>'");
                 return false;
             }
-            string name = parameters[4];
-            string category = parameters[5];
+            string name = parameters[3];
+            string category = parameters[4];
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return false;
@@ -911,7 +914,7 @@ namespace RPGFramework.Commands
         {
             if (parameters[2].Equals("add"))
             {
-                NpcAddDialog(player, parameters);
+                NpcAddDialogCategory(player, parameters);
                 return;
             }
             if (parameters[2].Equals("add") && parameters[4].Equals("category"))

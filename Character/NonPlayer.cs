@@ -27,10 +27,6 @@ namespace RPGFramework
         public CharacterState CurrentState { get; protected set; } = CharacterState.Idle;
         public NonPlayer()
         {
-            DialogGroups.Add(new DialogGroup() { Category = DialogGroupCategory.Idle });
-            DialogGroups[0].DialogLines.Add("Hello there!");
-            //DialogGroups[0].GroupName
-            DialogGroups.Add(new DialogGroup() { Category = DialogGroupCategory.Aggressive });
         }
 
         public void IncrementAgressionLevel(int amount)
