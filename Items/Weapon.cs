@@ -7,6 +7,8 @@ namespace RPGFramework
     internal class Weapon : Item
     {
         public double Damage { get; set; } = 0;
+        public int Durability { get; set; } = 0;
+        public int MaxDurability { get; set; } = 0;
         public double OnehandDamage { get; set; } = 0;
 
         public double AttackTime { get; set; } = 1.0;

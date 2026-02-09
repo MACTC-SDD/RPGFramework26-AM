@@ -44,7 +44,6 @@ namespace RPGFramework
         public List<Armor> EquippedArmor { get; set; } = [];
         public Weapon PrimaryWeapon { get; set; }
         public Inventory PlayerInventory { get; set; } = new Inventory(); 
-
         #endregion
 
         #region --- Skill Attributes --- (0-20)
