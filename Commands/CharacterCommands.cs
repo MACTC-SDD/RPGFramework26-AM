@@ -168,7 +168,7 @@ namespace RPGFramework.Commands
 
         public bool Execute(Character character, List<string> parameters)
         {
-            _catalog = GameState.Instance.ShopCatalog;
+            _catalog = GameState.Instance.ShopkeepCatalog;
             _entityName = "shopkeep";
             _entityType = typeof(Shopkeep);
 
@@ -218,7 +218,7 @@ namespace RPGFramework.Commands
         }
         private static void ListShopKeeps(Player player)
         {
-            foreach (var shop in GameState.Instance.ShopCatalog)
+            foreach (var shop in GameState.Instance.ShopkeepCatalog)
             {
                 player.WriteLine($"Shop Name: {shop.Value.Name} Description: {shop.Value.Description}");
             }
@@ -236,13 +236,18 @@ namespace RPGFramework.Commands
             {
 
                 //Adds one to quantity if it exists already
-                if (GameState.Instance.ShopCatalog.ContainsKey(parameters[3]))
+                if (GameState.Instance.ShopkeepCatalog.ContainsKey(parameters[3]))
                 {
-                    Shopkeep shop = GameState.Instance.ShopCatalog[parameters[3]];
+                    Shopkeep? shop = CheckForCatalogAndObject(player, parameters[3]));
+                    if (shop == null)
+                        return false;
+
                     string itemID = parameters[4];
                     if (shop.ShopInventory.ContainsKey(itemID))
                     {
-                        shop.IncrementItemQuantity(itemID);
+                        int amount;
+                        int.TryParse(parameters[5],out amount);
+                        shop.IncrementItemQuantity(itemID, amount);
                         player.WriteLine("Added one of the item to the inventory!");
                     }
                     else
@@ -275,7 +280,7 @@ namespace RPGFramework.Commands
 
         public bool Execute(Character character, List<string> parameters)
         {
-            _catalog = GameState.Instance.ShopCatalog;
+            _catalog = GameState.Instance.ShopkeepCatalog;
             _entityName = "shop";
             _entityType = typeof(Shopkeep);
 
