@@ -247,12 +247,16 @@ namespace RPGFramework
         public bool AddTag(string tag)
         {
             // Accept enum names (case-insensitive) and avoid duplicates
-            if (Enum.TryParse<ValidTags>(tag, true, out _) && !Tags.Contains(tag))
+            ValidTags item;
+            Enum.TryParse<ValidTags>(tag, true, out item);
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+            if (item != null && !Tags.Contains(tag))
             {
                 Tags.Add(tag);
                 return true;
             }
-                return false;
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+            return false;
         }
         //removes tags from character
         public bool RemoveTag(string tag)

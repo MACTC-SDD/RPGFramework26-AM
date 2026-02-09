@@ -827,8 +827,8 @@ namespace RPGFramework.Commands
                 player.WriteLine($"Usage: /{_entityName} tag remove '<name>' '<tag>'");
                 return;
             }
-            string name = parameters[2];
-            string tag = parameters[3];
+            string name = parameters[3];
+            string tag = parameters[4];
             Character? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return;
@@ -871,6 +871,7 @@ namespace RPGFramework.Commands
         #region NpcTag Method
         protected static void NpcTag(Player player, List<string> parameters)
         {
+            parameters[2] = parameters[2].ToLower();
 
             if (parameters[2].Equals("add"))
             {
