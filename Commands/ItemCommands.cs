@@ -922,7 +922,7 @@ namespace RPGFramework.Commands
                     WeaponCreate(player, parameters);
                     break;
                 case "damage":
-                    WeaponSetDamage(player, parameters);
+                    //WeaponSetDamage(player, parameters);
                     break;
                 case "delete":
                     WeaponDelete(player, parameters);
