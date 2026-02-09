@@ -11,7 +11,7 @@ namespace RPGFramework
         public Shopkeep()
         {
             NpcType = NonPlayerType.Shopkeep;
-            Tags.Add("Shopkeep");
+            Tags.Add(NPCTag.Shopkeep);
         }
         #region --- Inventory Methods ---
 
