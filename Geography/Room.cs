@@ -14,6 +14,8 @@ namespace RPGFramework.Geography
 
         // Description of the room
         public string Description { get; set; } = "";
+        //Items in the room
+        public List<Item> Items { get; set; } = [];
 
         // Icon to display on map
         public string MapIcon { get; set; } = DisplaySettings.RoomMapIcon;
@@ -31,6 +33,7 @@ namespace RPGFramework.Geography
         public List<Player> Players { get; set; } = [];
         // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
+        // A list of items currently on the floor in this room.
         #endregion --- Properties ---
 
         #region --- Methods ---
@@ -154,7 +157,16 @@ namespace RPGFramework.Geography
         {
             DeleteRoom(room.AreaId, room.Id);
         }
+         public Item? FindItem(string itemName)
+        {
+            return Items.Find(x => x.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase));
+        }
 
+        public static Mob? FindMob(string name, Room room)
+        {
+            return room.Mobs.Find(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+        
         /// <summary>
         /// Return a list of Exit objects that are in this room.
         /// </summary>
@@ -321,24 +333,113 @@ namespace RPGFramework.Geography
             return;
         }
 
-        public void AddToSpawnableMobs(string npcName, int spawnChance)
+        public void AddToSpawnable(string npcName, int spawnChance, Player player, string type)
         {
-            if (!SpawnableMobs.ContainsKey(npcName))
+            if (type.ToLower().Equals("mob"))
             {
-                SpawnableMobs.Add(npcName, spawnChance);
+                if (!SpawnableMobs.ContainsKey(npcName))
+                {
+                    SpawnableMobs.Add(npcName, spawnChance);
+                    player.WriteLine($"{npcName} added to spawnable mobs with a spawn chance of {spawnChance}.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is already in the spawnable mobs list.");
+                }
+            }
+            else if (type.ToLower().Equals("npc"))
+            {
+                if (!SpawnableNpcs.ContainsKey(npcName))
+                {
+                    SpawnableNpcs.Add(npcName, spawnChance);
+                    player.WriteLine($"{npcName} added to spawnable npcs with a spawn chance of {spawnChance}.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is already in the spawnable npcs list.");
+                }
             }
             return;
         }
 
-        public void AddToSpawnableNpcs(string npcName, int spawnChance)
+        public void RemoveFromSpawnable(string npcName, Player player, string type)
         {
-            if (!SpawnableNpcs.ContainsKey(npcName))
+            if (type.ToLower().Equals("mob"))
             {
-                SpawnableNpcs.Add(npcName, spawnChance);
+                if (SpawnableMobs.ContainsKey(npcName))
+                {
+                    SpawnableMobs.Remove(npcName);
+                    player.WriteLine($"{npcName} removed from spawnable mobs.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is not in the spawnable mobs list.");
+                }
+            }
+            else if (type.ToLower().Equals("npc"))
+            {
+                if (SpawnableNpcs.ContainsKey(npcName))
+                {
+                    SpawnableNpcs.Remove(npcName);
+                    player.WriteLine($"{npcName} removed from spawnable npcs.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is not in the spawnable npcs list.");
+                }
             }
             return;
         }
-        private void SpawnMob(string npcName)
+        public void ModifyChance(string npcName, Player player, string type, int chance)
+        {
+            if (type.ToLower().Equals("mob"))
+            {
+                if (SpawnableMobs.ContainsKey(npcName))
+                {
+                    SpawnableMobs[npcName] = chance;
+                    player.WriteLine($"{npcName} spawn chance modified to {chance}.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is not in the spawnable mobs list.");
+                }
+            }
+            else if( type.ToLower().Equals("npc"))
+            {
+                if (SpawnableNpcs.ContainsKey(npcName))
+                {
+                    SpawnableNpcs[npcName] = chance;
+                    player.WriteLine($"{npcName} spawn chance modified to {chance}.");
+                }
+                else
+                {
+                    player.WriteLine($"{npcName} is not in the spawnable npcs list.");
+                }
+            }
+        }
+
+        public void ListSpawnables(Player player, string type)
+        {
+            if (type.ToLower().Equals("mob"))
+            {
+                player.WriteLine("Spawnable Mobs:");
+                foreach (var kvp in SpawnableMobs)
+                {
+                    player.WriteLine($"- {kvp.Key}: Spawn Chance {kvp.Value}");
+                }
+            }
+            else if (type.ToLower().Equals("npc"))
+            {
+                player.WriteLine("Spawnable NPCs:");
+                foreach (var kvp in SpawnableNpcs)
+                {
+                    player.WriteLine($"- {kvp.Key}: Spawn Chance {kvp.Value}");
+                }
+            }
+            return;
+        }
+
+        public void SpawnMob(string npcName)
         {
             Mob mob = GameState.Instance.MobCatalog[npcName];
             Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
@@ -377,13 +478,63 @@ namespace RPGFramework.Geography
             return;
         }
 
-        private void SpawnNpc(string npcName)
+        public void SpawnNpc(string npcName)
         {
             Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
             NonPlayer npc = GameState.Instance.NPCCatalog[npcName];
             npc.Spawned = true;
             Npcs.Add(npc);
             return;
+        }
+
+        public void SpawnEntitiesInRoom()
+        {
+            SpawnMobsInRoom();
+            SpawnNpcsInRoom();
+            return;
+        }
+
+        public void DespawnEntitiesInRoom()
+        {
+            foreach (var mob in Mobs)
+            {
+                mob.Spawned = false;
+            }
+            Mobs.Clear();
+            foreach(var npc in Npcs)
+            {
+                npc.Spawned = false;
+            }
+            Npcs.Clear();
+            return;
+        }
+        public void DespawnEntity(string mobName, string type)
+        {
+            if (type.ToLower().Equals("mob"))
+            {
+                Mob? mobToRemove = Mobs.Find(m => m.Name.Equals(mobName, StringComparison.OrdinalIgnoreCase));
+                if (mobToRemove != null)
+                {
+                    mobToRemove.Spawned = false;
+                    Mobs.Remove(mobToRemove);
+                    Comm.SendToRoom(this, $"{mobName} has been despawned from the room.");
+                }
+            }
+            else if(type.ToLower().Equals("npc"))
+            {
+                NonPlayer? npcToRemove = Npcs.Find(m => m.Name.Equals(mobName, StringComparison.OrdinalIgnoreCase));
+                if (npcToRemove != null)
+                {
+                    npcToRemove.Spawned = false;
+                    Npcs.Remove(npcToRemove);
+                    Comm.SendToRoom(this, $"{mobName} has been despawned from the room.");
+                }
+            }
+                return;
+        }
+
+        public NonPlayer GetNpcByName(string name) {
+            return Npcs.Find(npc => npc.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
         #endregion
     }

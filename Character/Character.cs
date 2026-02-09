@@ -1,6 +1,8 @@
 using RPGFramework.Geography;
 using RPGFramework.Items;
-using System.Security.Cryptography.X509Certificates;
+using RPGFramework.Enums;
+using System.Text.Json.Serialization;
+
 
 namespace RPGFramework
 {
@@ -15,11 +17,13 @@ namespace RPGFramework
     /// type.</remarks>
     internal abstract class Character : IDescribable
     {
-        enum CharacterState { 
-            Idle, 
-            Moving, 
-            Attacking, 
-            Dead 
+
+        enum CharacterState
+        {
+            Idle,
+            Moving,
+            Attacking,
+            Dead
         }
 
         #region --- Properties ---
@@ -34,9 +38,7 @@ namespace RPGFramework
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
         protected List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        public List<string> ValidTags { get; set; } = ["Wanderer", "Shopkeep", "Mob", "Hostile", "Greedy", "Healer", "Wimpy", "Talkative"];
-        //Might need to move later, but for now I need a place to keep them -Shelton
-        public Character? Target { get; set; } = null; // (for combat or interaction)
+        [JsonIgnore] public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = [];
@@ -57,8 +59,8 @@ namespace RPGFramework
         public Character()
         {
             Health = MaxHealth;
-            Weapon w = new Weapon() 
-              { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
+            Weapon w = new Weapon()
+            { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
             PrimaryWeapon = w;
         }
 
@@ -66,6 +68,94 @@ namespace RPGFramework
         /// Get Room object of current location.
         /// </summary>
         /// <returns></returns>
+        /// 
+        #region --- Skill Attribute Methods ---
+        protected void SetStrength(int value)
+        {
+            Strength = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetDexterity(int value)
+        {
+            Dexterity = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetConstitution(int value)
+        {
+            Constitution = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetIntelligence(int value)
+        {
+            Intelligence = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetWisdom(int value)
+        {
+            Wisdom = Math.Clamp(value, 0, 20);
+        }
+
+        protected void SetCharisma(int value)
+        {
+            Charisma = Math.Clamp(value, 0, 20);
+        }
+
+        public int GetStrength()
+        {
+            return Strength;
+        }
+        public int GetDexterity()
+        {
+            return Dexterity;
+        }
+        public int GetConstitution()
+        {
+            return Constitution;
+        }
+        public int GetIntelligence()
+        {
+            return Intelligence;
+        }
+        public int GetWisdom()
+        {
+            return Wisdom;
+        }
+        public int GetCharisma()
+        {
+            return Charisma;
+        }
+
+        public void IncrimentStrength(int value)
+        {
+            SetStrength(Strength + value);
+        }
+
+        public void IncrimentDexterity(int value)
+        {
+            SetDexterity(Dexterity + value);
+        }
+
+        public void IncrimentConstitution(int value)
+        {
+            SetConstitution(Constitution + value);
+        }
+
+        public void IncrimentIntelligence(int value)
+        {
+            SetIntelligence(Intelligence + value);
+        }
+
+        public void IncrimentWisdom(int value)
+        {
+            SetWisdom(Wisdom + value);
+        }
+
+        public void IncrimentCharisma(int value)
+        {
+            SetCharisma(Charisma + value);
+        }
+        #endregion
+
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
@@ -134,7 +224,6 @@ namespace RPGFramework
             Health = MaxHealth;
         }
 
-
         // Remove some amount from health
         public void TakeDamage(int damage)
         {
@@ -153,23 +242,16 @@ namespace RPGFramework
             throw new NotImplementedException();
         }
 
-        internal void WriteLine(object description)
-        {
-            throw new NotImplementedException();
-        }
-
         //Add tags to character
         public bool AddTag(string tag)
         {
-           if(ValidTags.Contains(tag) && !Tags.Contains(tag))
-           {
+            // Accept enum names (case-insensitive) and avoid duplicates
+            if (Enum.TryParse<ValidTags>(tag, true, out _) && !Tags.Contains(tag))
+            {
                 Tags.Add(tag);
                 return true;
-           }
-            else
-            {
-                return false;
             }
+                return false;
         }
         //removes tags from character
         public bool RemoveTag(string tag)
@@ -224,3 +306,5 @@ namespace RPGFramework
     }
 }
         
+
+      
