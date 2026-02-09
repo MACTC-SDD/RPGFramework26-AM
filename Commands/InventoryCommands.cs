@@ -11,13 +11,107 @@ namespace RPGFramework.Commands
             return
             [
                 new InventoryCommand(),
-                new AdminGetCommand(),
+                new GetCommand(),
+                new DropCommand(),
+                new AdminGetCommand()
                 // Add other communication commands here as they are implemented
             ];
         }
     }
+    internal class GetCommand : ICommand
+    {
+        public string Name => "get";
+        public IEnumerable<string> Aliases => new List<string> { "take", "grab" };
+        public string Help => "Usage: get [Item Name]\nPicks up an item from the current room and adds it to your inventory.";
 
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player) return false;
 
+            // 1. Check if the player actually typed an item name
+            if (parameters.Count < 2)
+            {
+                player.WriteLine("Get what?");
+                return true;
+            }
+
+            // 2. Combine parameters into the search name (handles "get iron sword")
+            string searchName = string.Join(" ", parameters.Skip(1));
+
+            // 3. Get the current room and look for the item
+            var room = player.GetRoom();
+            var itemInRoom = room.Items.FirstOrDefault(i => i.Name.Equals(searchName, StringComparison.OrdinalIgnoreCase));
+
+            // 4. Handle item not found
+            if (itemInRoom == null)
+            {
+                player.WriteLine($"There is no '{searchName}' here.");
+                return true;
+            }
+
+            // 5. Try to add to inventory
+            // We don't "Clone()" here because we are moving the physical object
+            if (player.PlayerInventory.AddItem(itemInRoom))
+            {
+                // Remove it from the room ground
+                room.Items.Remove(itemInRoom);
+
+                player.WriteLine($"You pick up the {itemInRoom.Name}.");
+            }
+            else
+            {
+                player.WriteLine("Your inventory is full! You can't carry any more.");
+            }
+
+            return true;
+        }
+    }
+    internal class DropCommand : ICommand
+    {
+        public string Name => "drop";
+        public IEnumerable<string> Aliases => new List<string> { "discard", "put" };
+        public string Help => "Usage: drop [Item Name]\nRemoves an item from your inventory and leaves it in the current room.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player) return false;
+
+            // 1. Check if they specified what to drop
+            if (parameters.Count < 2)
+            {
+                player.WriteLine("Drop what?");
+                return true;
+            }
+
+            // 2. Combine parameters (handles multi-word items like "Rusty Iron Sword")
+            string searchName = string.Join(" ", parameters.Skip(1));
+
+            // 3. Find the item in the player's inventory
+            // We look inside player.PlayerInventory.Items
+            var itemToDrop = player.PlayerInventory.Items
+                .FirstOrDefault(i => i.Name.Equals(searchName, StringComparison.OrdinalIgnoreCase));
+
+            // 4. Handle item not found in pockets
+            if (itemToDrop == null)
+            {
+                player.WriteLine($"You aren't carrying a '{searchName}'.");
+                return true;
+            }
+
+            // 5. THE REVERSE HANDOFF
+            // Remove from player's inventory list
+            player.PlayerInventory.Items.Remove(itemToDrop);
+
+            // Add to the room's item list
+            var room = player.GetRoom();
+            room.Items.Add(itemToDrop);
+
+            player.WriteLine($"You WHIPPED the [yellow]{itemToDrop.Name}[/] at the floor with the utmost force and velocity you could muster.");
+            return true;
+        }
+
+        public bool Execute(Character character, List<int> parameters) => throw new NotImplementedException();
+    }
     internal class InventoryCommand : ICommand
     {
         public string Name => "inventory"; // Change from "equip" to "inventory"
