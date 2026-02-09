@@ -86,14 +86,19 @@ namespace RPGFramework
 
         public void CheckAggressionTags()
         {
-            if (Tags.Contains("Hostile"))
+            if (Tags.Contains(NPCTag.Hostile))
             {
-                IncrementAgressionLevel(2);
+                IncrementAgressionLevel(3);
             }
-            else if (Tags.Contains("Peaceful"))
+            else if (Tags.Contains(NPCTag.Peaceful))
             {
                 IncrementAgressionLevel(1);
             }
+            else
+            {
+                IncrementAgressionLevel(2);
+            }
+            CheckAggressionLevel();
 
         }
         protected void CheckAggressionLevel()
@@ -136,7 +141,7 @@ namespace RPGFramework
         protected void PerformAggressiveBehavior()
         {
             int number = random.Next(1, 20);
-            if (Tags.Contains("Talkative") || Tags.Contains("Hostile"))
+            if (Tags.Contains(NPCTag.Talkative) || Tags.Contains(NPCTag.Hostile))
             {
                 number += 2;
             }
@@ -154,7 +159,7 @@ namespace RPGFramework
         //moves if the npc gets a high enough random number.
         private void NpcMovementChance(int number)
         {
-            if (Tags.Contains("Wanderer"))
+            if (Tags.Contains(NPCTag.Wanderer))
             {
                 number += 2;
             }
@@ -168,7 +173,7 @@ namespace RPGFramework
 
         private void NpcSpeakingChance(int number)
         {
-            if (Tags.Contains("Talkative"))
+            if (Tags.Contains(NPCTag.Talkative))
             {
                 number += 2;
             }

@@ -829,10 +829,16 @@ namespace RPGFramework.Commands
             }
             string name = parameters[3];
             string tag = parameters[4];
+            NPCTag tagEnum;
+            if (!Enum.TryParse<NPCTag>(tag, true, out tagEnum))
+            {
+                player.WriteLine($"Tag '{tag}' is not a valid tag.");
+                return;
+            }
             Character? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return;
-            bool completed = npc.RemoveTag(tag);
+            bool completed = npc.RemoveTag(tagEnum);
             if (!completed)
             {
                 player.WriteLine($"Tag '{tag}' does not exist on {_entityName} '{name}'.");
@@ -849,7 +855,7 @@ namespace RPGFramework.Commands
         protected static void ListValidTags(Player player)
         {
             player.WriteLine("Valid Tags:");
-            foreach (ValidTags tag in Enum.GetValues<ValidTags>())
+            foreach (NPCTag tag in Enum.GetValues<NPCTag>())
             {
                 string tagName = tag.ToString();
                 player.WriteLine(tagName);
@@ -861,9 +867,9 @@ namespace RPGFramework.Commands
         protected static void ListTagsOnNPC(Player player, Character npc)
         {
             player.WriteLine("Valid Tags:");
-            foreach (string tag in npc.GetTags())
+            foreach (NPCTag tag in npc.GetTags())
             {
-                player.WriteLine(tag);
+                player.WriteLine(tag.ToString());
             }
         }
         #endregion
