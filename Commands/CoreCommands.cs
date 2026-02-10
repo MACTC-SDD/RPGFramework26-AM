@@ -218,13 +218,16 @@ namespace RPGFramework.Commands
                     ShowStats(player);
                     break;
                 case "level":
-                    ShowLevelInformation(player);
+                    ShowLevelInformation(player, player);
                     break;
                 case "equipment":
-                    ShowEquipment(player);
+                    ShowEquipment(player, player);
                     break;
                 case "desc":
-                    ShowBasicInfo(player);
+                    ShowBasicInfo(player, player);
+                    break;
+                case "character":
+                    ShowCharacterInfo(player, parameters);
                     break;
             }
 
@@ -237,13 +240,27 @@ namespace RPGFramework.Commands
             player.WriteLine("stats atributes");
             player.WriteLine("stats level");
             player.WriteLine("stats equipment");
+            player.WriteLine("stats character '<name>'");
         }
 
-        public static void ShowBasicInfo(Player player)
+        public static void ShowCharacterInfo(Player player, List<string> parameters)
         {
-            player.WriteLine($"Name: {player.DisplayName()}");
-            player.WriteLine($"Description: {player.Description}");
-            player.WriteLine($"Role: {player.Role}");
+            string CharacterName = parameters[2].ToLower();
+            foreach(Player p in GameState.Instance.Players.Values){
+                string playerName = p.Name;
+                if (playerName.Equals(CharacterName)) { ShowBasicInfo(player, p); ShowLevelInformation(player, p);};
+            }
+            foreach(NonPlayer npc in GameState.Instance.NPCCatalog.Values)
+            {
+                string NpcName = npc.Name;
+                if (NpcName.Equals(CharacterName)) { ShowBasicInfo(player, npc); ShowLevelInformation(player, npc); }
+                ;
+            }
+        }
+        public static void ShowBasicInfo(Player player, Character target)
+        {
+            player.WriteLine($"Name: {target.Name}");
+            player.WriteLine($"Description: {target.Description}");
         }
         public static void ShowStats(Player player)
         {
@@ -256,14 +273,14 @@ namespace RPGFramework.Commands
             player.WriteLine($"Constitution: {player.GetConstitution()}");
         }
 
-        public static void ShowLevelInformation(Player player)
+        public static void ShowLevelInformation(Player player, Character target)
         {
             player.WriteLine($"Level: {player.Level}");
             player.WriteLine($"XP: {player.XP}");
             player.WriteLine($"XP to next level: {player.GetXPtoNextLevel()}");
         }
 
-        public static void ShowEquipment(Player player)
+        public static void ShowEquipment(Player player, Character target)
         {
             player.WriteLine($"Primary Weapon: {player.PrimaryWeapon.Name}");
             player.WriteLine("Equipped Armor:");
