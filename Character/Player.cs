@@ -25,6 +25,7 @@ namespace RPGFramework
         public string Password { get; private set; } = "SomeGarbage";
         public TimeSpan PlayTime { get; set; } = new TimeSpan();
         public PlayerRole Role { get; set; }
+      
         #endregion
         /*Made a small change?, undid it as it was for just testing*/
         public string DisplayName()

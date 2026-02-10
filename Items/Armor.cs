@@ -25,6 +25,7 @@ namespace RPGFramework
             case ArmorType.Heavy:
                 DamageReduction = 10;
                 MaxDurability = 100;
+
                 break;
 
                 //Mid armor tier
@@ -40,6 +41,7 @@ namespace RPGFramework
                     break;
 
             }
+           
         }
         //end armor damage reduction
 
@@ -56,7 +58,50 @@ namespace RPGFramework
             return reducedDamage;
 
             //end damage to durability
+
         }
+
+        //Mythril wearing check
+        public static bool WearingMythril(Armor armor)
+            {
+            if (armor.Material == ArmorMaterial.Mythril
+              )
+            {
+                return true; 
+            }
+            return false;
+              
+            }
+         //Mythril wearing check end
+         //armor type check
+         public static bool WearingLight(Armor type)
+        {
+            if (type.Type == ArmorType.Light)
+            {
+                return true;
+            }
+            return false;
+
+        }
+        public static bool WearingMedium(Armor type)
+        {
+            if (type.Type == ArmorType.Medium)
+            {
+                return true;
+            }
+            return false;
+
+        }
+        public static bool WearingHeavy(Armor type)
+        {
+            if (type.Type == ArmorType.Heavy)
+            {
+                return true;
+            }
+            return false;
+
+        }
+        //amror type cheek end
     }
     internal enum ArmorMaterial
     {
@@ -80,6 +125,11 @@ namespace RPGFramework
         Medium,
         Heavy
     }
+   
+            
+
+           
 }
 
 
+ 
