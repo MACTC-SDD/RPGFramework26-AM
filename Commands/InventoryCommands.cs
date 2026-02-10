@@ -15,7 +15,8 @@ namespace RPGFramework.Commands
                 new AdminRemoveCommand(),
                 new GetCommand(),
                 new DropCommand(),
-                new AdminGetCommand()
+                new AdminGetCommand(),
+                new GiveCommand(),
                 // Add other communication commands here as they are implemented
             ];
         }
@@ -158,6 +159,12 @@ namespace RPGFramework.Commands
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is not Player player) return false;
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.Role.ToString());
+                return false;
+            }
 
             // 1. Check Input (Must have at least Command + ItemName)
             // parameters[0] is "Ag", parameters[1] is the item name
@@ -240,7 +247,12 @@ namespace RPGFramework.Commands
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is not Player player) return false;
-
+            if (!Utility.CheckPermission(player, PlayerRole.Admin))
+            {
+                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("Your Role is: " + player.Role.ToString());
+                return false;
+            }
             // 1. Check Input
             if (parameters.Count < 2)
             {
@@ -276,6 +288,82 @@ namespace RPGFramework.Commands
             else
             {
                 player.WriteLine("Something went wrong removing the item.");
+            }
+
+            return true;
+        }
+    }
+    internal class GiveCommand : ICommand
+    {
+        public string Name => "give";
+        public IEnumerable<string> Aliases => new List<string> { "transfer", "send" };
+        public string Help => "Usage: give [Player Name] [Item Name]\nTransfers an item from your inventory to another player.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            // Ensure the executor is a Player
+            if (character is not Player sourcePlayer) return false;
+
+            // 1. Validate Input
+            // Expected syntax: give <PlayerName> <ItemName>
+            if (parameters.Count < 3)
+            {
+                sourcePlayer.WriteLine("Usage: give [Player Name] [Item Name]");
+                return true;
+            }
+
+            string targetName = parameters[1];
+            // Combine all words after the player name to get the item name (e.g., "Iron Sword")
+            string itemName = string.Join(" ", parameters.Skip(2));
+
+            // 2. Find the Target Player
+            // We use the static method you provided in Player.cs. 
+            // This looks through the entire GameState.Instance.Players dictionary.
+            if (!Player.TryFindPlayer(targetName, GameState.Instance.Players, out Player? targetPlayer) || targetPlayer == null)
+            {
+                sourcePlayer.WriteLine($"Could not find a player named '[red]{targetName}[/]'.");
+                return true;
+            }
+
+            // 3. Self-Check
+            if (sourcePlayer == targetPlayer)
+            {
+                sourcePlayer.WriteLine("You cannot give items to yourself.");
+                return true;
+            }
+
+            // 4. Find the Item in Source Player's Inventory
+            // We look specifically in the 'Items' list of the player initiating the command.
+            Item? itemToGive = sourcePlayer.PlayerInventory.Items
+                .FirstOrDefault(i => i.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase));
+
+            if (itemToGive == null)
+            {
+                sourcePlayer.WriteLine($"You do not have an item named '{itemName}'.");
+                return true;
+            }
+
+            // 5. Execute Transfer
+            // FIRST: Remove the specific instance from the source player.
+            // We use the 'internal' overload of RemoveItem(Item item) to ensure we remove this exact object.
+            bool removed = sourcePlayer.PlayerInventory.RemoveItem(itemToGive);
+
+            if (removed)
+            {
+                // SECOND: Add that same instance to the target player.
+                targetPlayer.PlayerInventory.Items.Add(itemToGive);
+
+                // 6. Notify Both Parties
+                sourcePlayer.WriteLine($"You sent [cyan]{itemToGive.Name}[/] to [green]{targetPlayer.Name}[/].");
+
+                // Because 'targetPlayer' is a valid Player object, we can write directly to their console
+                // even if they are halfway across the map.
+                targetPlayer.WriteLine($"[green]{sourcePlayer.Name}[/] sent you a [cyan]{itemToGive.Name}[/]!");
+            }
+            else
+            {
+                // This catches rare edge cases where the item might have been lost during processing
+                sourcePlayer.WriteLine("[red]An error occurred while trying to transfer the item.[/]");
             }
 
             return true;
