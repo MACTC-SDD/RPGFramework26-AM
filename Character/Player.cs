@@ -81,6 +81,10 @@ namespace RPGFramework
             return player != null;
         }
         
+        public static List<Player> GetOnlinePlayers(Dictionary<string, Player> players)
+        {
+            return [.. players.Values.Where(p => p.IsOnline).OrderBy(p => p.Name)];
+        }
         /// <summary>
         /// Things that should happen when a player logs in.
         /// </summary>

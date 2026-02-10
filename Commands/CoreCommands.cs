@@ -17,12 +17,13 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new AFKCommand(),
+                new AreaShowCommand(),
                 new IpCommand(),
                 new LookCommand(),
                 new QuitCommand(),
                 new SayCommand(),
                 new TimeCommand(),
-                new AreaShowCommand(),
+                new WhoCommand(),
                 // Add other core commands here as they are implemented
             };
         }
@@ -159,8 +160,8 @@ namespace RPGFramework.Commands
             }
             return false;
         }
-
     }
+
     // CODE REVIEW: Jibril PR #48 - You needed that extra using at the top because this was nested under
     // the TimeCommand. It just needed to be moved outside of it.
     internal class AreaShowCommand : ICommand
@@ -193,5 +194,33 @@ namespace RPGFramework.Commands
 
             return true;
         }
-    }    
+    }
+
+    internal class WhoCommand : ICommand
+    {
+        public string Name => "who";
+        public IEnumerable<string> Aliases => [ ];
+        public string Help => "See who is online.";
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+                return false;
+
+            var onlinePlayers = Player.GetOnlinePlayers(GameState.Instance.Players);
+
+            Table table = new Spectre.Console.Table();
+            table.AddColumn(new TableColumn("Name"));
+            table.AddColumn(new TableColumn("Last Login"));
+            
+            foreach (Player p in onlinePlayers)
+            {
+                table.AddRow(p.Name, p.LastLogin.ToString("g"));                
+            }
+
+            player.Write(table);
+            return true;
+        }
+    }
 }
+
+
