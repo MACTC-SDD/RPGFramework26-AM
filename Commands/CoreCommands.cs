@@ -181,62 +181,58 @@ namespace RPGFramework.Commands
 
             if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
             {
-                var player = character as Player;
-                if (player == null)
-                    return false;
-
-                if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
-                {
-                    player.WriteLine("Area not found.");
-                    return false;
-                }
-
-                player.WriteLine($"Area name: {area.Name}");
-                player.WriteLine($"Area description: {area.Description}");
-                player.WriteLine($"Area Id: {area.Id}");
-
-                return true;
+                player.WriteLine("Area not found.");
+                return false;
             }
+
+            player.WriteLine($"Area name: {area.Name}");
+            player.WriteLine($"Area description: {area.Description}");
+            player.WriteLine($"Area Id: {area.Id}");
+
+            return true;
+
         }
+    }
 
 
-        internal class RoomShowCommand : ICommand
+    internal class RoomShowCommand : ICommand
+    {
+        public string Name => "roomshow";
+        public IEnumerable<string> Aliases => new[] { "rmshow", "roominfo", "rminfo" };
+        public string Help => "Shows info for the current room and its available exits.";
+
+        public bool Execute(Character character, List<string> parameters)
         {
-            public string Name => "roomshow";
-            public IEnumerable<string> Aliases => new[] { "rmshow", "roominfo", "rminfo" };
-            public string Help => "Shows info for the current room and its available exits.";
+            var player = character as Player;
+            if (player == null)
+                return false;
 
-            public bool Execute(Character character, List<string> parameters)
+            if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
             {
-                var player = character as Player;
-                if (player == null)
-                    return false;
+                player.WriteLine("Area not found.");
+                return false;
+            }
 
-                if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
-                {
-                    player.WriteLine("Area not found.");
-                    return false;
-                }
-
-                if (!area.Rooms.TryGetValue(player.LocationId, out var room))
-                {
-                    player.WriteLine("Room not found.");
-                    return false;
-                }
-
-                player.WriteLine($"Room name: {room.Name}");
-                player.WriteLine($"Room description: {room.Description}");
-                player.WriteLine($"Room Id: {room.Id}");
-                player.WriteLine("Exits:");
-                
-                foreach (var exit in room.GetExits())
-                {
-                    player.WriteLine($"{exit.ExitDirection}: {exit.Description}");
-                }
-
-            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
+            if (!area.Rooms.TryGetValue(player.LocationId, out var room))
             {
-                player.WriteLine($"Room {room.Id}: {room.Name}");
+                player.WriteLine("Room not found.");
+                return false;
+            }
+
+            player.WriteLine($"Room name: {room.Name}");
+            player.WriteLine($"Room description: {room.Description}");
+            player.WriteLine($"Room Id: {room.Id}");
+            player.WriteLine("Exits:");
+
+            foreach (var exit in room.GetExits())
+            {
+                player.WriteLine($"{exit.ExitDirection}: {exit.Description}");
+            }
+
+
+            foreach (Room r in area.Rooms.Values.OrderBy(r => r.Id))
+            {
+                player.WriteLine($"Room {r.Id}: {r.Name}");
             }
 
             return true;
@@ -246,7 +242,7 @@ namespace RPGFramework.Commands
     internal class WhoCommand : ICommand
     {
         public string Name => "who";
-        public IEnumerable<string> Aliases => [ ];
+        public IEnumerable<string> Aliases => [];
         public string Help => "See who is online.";
         public bool Execute(Character character, List<string> parameters)
         {
@@ -258,10 +254,10 @@ namespace RPGFramework.Commands
             Table table = new Spectre.Console.Table();
             table.AddColumn(new TableColumn("Name"));
             table.AddColumn(new TableColumn("Last Login"));
-            
+
             foreach (Player p in onlinePlayers)
             {
-                table.AddRow(p.Name, p.LastLogin.ToString("g"));                
+                table.AddRow(p.Name, p.LastLogin.ToString("g"));
             }
 
             player.Write(table);
