@@ -1,5 +1,4 @@
-﻿
-using RPGFramework.Geography;
+﻿using RPGFramework.Geography;
 using static RPGFramework.Commands.TimeCommand;
 
 namespace RPGFramework.Commands
@@ -154,19 +153,14 @@ namespace RPGFramework.Commands
                     return false;
                 }
 
-                player.WriteLine($"Area name: {area.Id}");
+                player.WriteLine($"Area name: {area.Name}");
                 player.WriteLine($"Area description: {area.Description}");
                 player.WriteLine($"Area Id: {area.Id}");
-                player.WriteLine($"Rooms ({area.Rooms.Count})");
-
-                foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
-                {
-                    player.WriteLine($"Room {room.Id}: {room.Name}");
-                }
 
                 return true;
             }
         }
+
 
         internal class RoomShowCommand : ICommand
         {
@@ -180,55 +174,31 @@ namespace RPGFramework.Commands
                 if (player == null)
                     return false;
 
-                // Get area
                 if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
                 {
                     player.WriteLine("Area not found.");
                     return false;
                 }
 
-                // Get room
-                if (!area.Rooms.TryGetValue(player.RoomId, out var room))
+                if (!area.Rooms.TryGetValue(player.LocationId, out var room))
                 {
                     player.WriteLine("Room not found.");
                     return false;
                 }
 
-                // Room info
-                player.WriteLine($"Room: {room.Name}");
-                player.WriteLine($"{room.Description}");
-
-                // Exits (using real model)
-                var exits = room.GetExits();
-
-                if (exits != null && exits.Any())
+                player.WriteLine($"Room name: {room.Name}");
+                player.WriteLine($"Room description: {room.Description}");
+                player.WriteLine($"Room Id: {room.Id}");
+                player.WriteLine("Exits:");
+                
+                foreach (var exit in room.GetExits())
                 {
-                    player.WriteLine("Exits:");
-
-                    foreach (var exit in exits)
-                    {
-                        // Direction + exit description
-                        if (!string.IsNullOrWhiteSpace(exit.Description))
-                        {
-                            player.WriteLine($" - {exit.ExitDirection}: {exit.Description}");
-                        }
-                        else
-                        {
-                            player.WriteLine($" - {exit.ExitDirection}");
-                        }
-                    }
-                }
-                else
-                {
-                    player.WriteLine("Exits: None");
+                    player.WriteLine($"{exit.ExitDirection}: {exit.Description}");
                 }
 
                 return true;
             }
         }
-
-
     }
-
 
 }
