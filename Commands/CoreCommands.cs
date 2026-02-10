@@ -1,4 +1,5 @@
-﻿
+
+using static RPGFramework.Commands.TimeCommand;
 using RPGFramework.Geography;
 using RPGFramework.Display;
 using Spectre.Console;
@@ -17,6 +18,7 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new AFKCommand(),
+                new AreaShowCommand(),
                 new IpCommand(),
                 new LookCommand(),
                 new QuitCommand(),
@@ -24,6 +26,8 @@ namespace RPGFramework.Commands
                 new TimeCommand(),
                 new AreaShowCommand(),
                 new StatsCommand(),
+                new RoomShowCommand(),
+                new WhoCommand(),
                 // Add other core commands here as they are implemented
             };
         }
@@ -83,30 +87,26 @@ namespace RPGFramework.Commands
                 {
                     if (!string.IsNullOrWhiteSpace(item.Name))
                     {
-                        player.WriteLine($"[yellow]{item.DisplayText}[/]");
+                        string showText = item.DisplayText == "" ? item.Name : item.DisplayText;
+                        player.WriteLine($"[yellow]{showText}[/]");
                     }
                 }
-                // For now, we'll ignore the command and just show the room description
+            }
+            // For now, we'll ignore the command and just show the room description
 
-                player.WriteLine($"{player.GetRoom().Description}");
+            string content = "[red]Exits[/]\n";
+            string title = " ";
 
-
-                string content = "[red]Exits[/]\n";
-                string title = " ";
-
-                foreach (var exit in player.GetRoom().GetExits())
-                {
-                    content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
-                }
-
-                Panel panel = RPGPanel.GetPanel(content, title);
-
-                panel.Border = BoxBorder.Ascii;
-                panel.BorderColor(Color.Maroon);
-                player.Write(panel);
-                return true;
+            foreach (var exit in player.GetRoom().GetExits())
+            {
+                content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
             }
 
+            Panel panel = RPGPanel.GetPanel(content, title);
+
+            panel.Border = BoxBorder.Ascii;
+            panel.BorderColor(Color.Maroon);
+            player.Write(panel);
             return true;
         }
     }
@@ -160,8 +160,8 @@ namespace RPGFramework.Commands
             }
             return false;
         }
-
     }
+
     // CODE REVIEW: Jibril PR #48 - You needed that extra using at the top because this was nested under
     // the TimeCommand. It just needed to be moved outside of it.
     internal class AreaShowCommand : ICommand
@@ -182,16 +182,82 @@ namespace RPGFramework.Commands
                 return false;
             }
 
-            player.WriteLine($"Area name: {area.Id}");
+            player.WriteLine($"Area name: {area.Name}");
             player.WriteLine($"Area description: {area.Description}");
             player.WriteLine($"Area Id: {area.Id}");
-            player.WriteLine($"Rooms ({area.Rooms.Count})");
 
-            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
+            return true;
+
+        }
+    }
+
+
+    internal class RoomShowCommand : ICommand
+    {
+        public string Name => "roomshow";
+        public IEnumerable<string> Aliases => new[] { "rmshow", "roominfo", "rminfo" };
+        public string Help => "Shows info for the current room and its available exits.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            var player = character as Player;
+            if (player == null)
+                return false;
+
+            if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
             {
-                player.WriteLine($"Room {room.Id}: {room.Name}");
+                player.WriteLine("Area not found.");
+                return false;
             }
 
+            if (!area.Rooms.TryGetValue(player.LocationId, out var room))
+            {
+                player.WriteLine("Room not found.");
+                return false;
+            }
+
+            player.WriteLine($"Room name: {room.Name}");
+            player.WriteLine($"Room description: {room.Description}");
+            player.WriteLine($"Room Id: {room.Id}");
+            player.WriteLine("Exits:");
+
+            foreach (var exit in room.GetExits())
+            {
+                player.WriteLine($"{exit.ExitDirection}: {exit.Description}");
+            }
+
+
+            foreach (Room r in area.Rooms.Values.OrderBy(r => r.Id))
+            {
+                player.WriteLine($"Room {r.Id}: {r.Name}");
+            }
+
+            return true;
+        }
+    }
+
+    internal class WhoCommand : ICommand
+    {
+        public string Name => "who";
+        public IEnumerable<string> Aliases => [];
+        public string Help => "See who is online.";
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+                return false;
+
+            var onlinePlayers = Player.GetOnlinePlayers(GameState.Instance.Players);
+
+            Table table = new Spectre.Console.Table();
+            table.AddColumn(new TableColumn("Name"));
+            table.AddColumn(new TableColumn("Last Login"));
+
+            foreach (Player p in onlinePlayers)
+            {
+                table.AddRow(p.Name, p.LastLogin.ToString("g"));
+            }
+
+            player.Write(table);
             return true;
         }
     }
@@ -291,3 +357,5 @@ namespace RPGFramework.Commands
         }
     }
 }
+
+
