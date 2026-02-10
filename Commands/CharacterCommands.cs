@@ -1066,12 +1066,17 @@ namespace RPGFramework.Commands
         #endregion
 
         #region ListTagsOnNPC Method
-        protected static void ListTagsOnNPC(Player player, Character npc)
+        // CODE REVIEW: Shelton PR #60 - I see where you are headed with GetTags returning a list of strings
+        // I think that makes sense, but your foreach loop is still treating it like a list of NPCTags. 
+        // I have modified GetTags method to return a sorted list of strings and adjusted this method accordingly.
+        // Because this is on Character and applies equally to players and npcs I have adjusted the method name and parameter name to be more general as well.
+        protected static void ListTagsOnCharacter(Player player, Character character)
         {
             player.WriteLine("Valid Tags:");
-            foreach (NPCTag tag in npc.GetTags())
+
+            foreach (string tag in character.GetTags())
             {
-                player.WriteLine(tag.ToString());
+                player.WriteLine(tag);
             }
         }
         #endregion
@@ -1101,7 +1106,7 @@ namespace RPGFramework.Commands
                     Character? npc = CheckForCatalogAndObject(player, name);
                     if (npc != null)
                     {
-                        ListTagsOnNPC(player, npc);
+                        ListTagsOnCharacter(player, npc);
                     }
                 }
             }

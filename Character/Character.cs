@@ -364,11 +364,14 @@ namespace RPGFramework
         }
         //end armor type crits
         //End critical hit
-        
-        // CODE REVIEW: Is there a reason we don't just access the Tags property instead of creating a new method?
+
+        // CODE REVIEW: Shelton PR #60 - See notes on CharacterCommands / ShowNPCTags for reasoning behind this method.
         public List<string> GetTags()
         {
-            return Tags;
+            //return Tags;
+            // Look at the tags list, sort by the the string representatation and return those strings
+            return [.. this.Tags.Select(t => t.ToString()).OrderBy(t => t.ToString())];
+
         }
     }
 }
