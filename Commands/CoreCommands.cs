@@ -210,11 +210,7 @@ namespace RPGFramework.Commands
             if(parameters.Count > 3 || parameters.Count < 2)
             {
                 WriteUsage(player);
-            }
-            if(parameters.Count == 1)
-            {
-                ShowBasicInfo(player);
-                return true;
+                return false;
             }
             switch (parameters[1].ToLower())
             {
@@ -227,6 +223,9 @@ namespace RPGFramework.Commands
                 case "equipment":
                     ShowEquipment(player);
                     break;
+                case "desc":
+                    ShowBasicInfo(player);
+                    break;
             }
 
             return true;
@@ -234,7 +233,7 @@ namespace RPGFramework.Commands
 
         public static void WriteUsage(Player player)
         {
-            player.WriteLine("stats");
+            player.WriteLine("stats desc");
             player.WriteLine("stats atributes");
             player.WriteLine("stats level");
             player.WriteLine("stats equipment");
