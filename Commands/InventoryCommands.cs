@@ -12,6 +12,7 @@ namespace RPGFramework.Commands
             [
                 new InventoryCommand(),
                 new AdminGetCommand(),
+                new AdminRemoveCommand(),
                 // Add other communication commands here as they are implemented
             ];
         }
@@ -52,7 +53,7 @@ namespace RPGFramework.Commands
             }
             return true;
         }
-      }
+    }
     internal class AdminGetCommand : ICommand
     {
         public string Name => "/Admin get";
@@ -129,6 +130,57 @@ namespace RPGFramework.Commands
             else
             {
                 player.WriteLine("Your inventory is full!");
+            }
+
+            return true;
+        }
+
+    }
+    internal class AdminRemoveCommand : ICommand
+    {
+        public string Name => "/Admin remove";
+        public IEnumerable<string> Aliases => new List<string> { "Ar", "rm" };
+        public string Help => "Usage: Ar [Item Name]\nTrashes an item from your inventory. Does not affect the global catalog.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player) return false;
+
+            // 1. Check Input
+            if (parameters.Count < 2)
+            {
+                player.WriteLine("Usage: Ar [Item Name]");
+                return true;
+            }
+
+            // 2. Get the name user typed (e.g., "Iron Sword")
+            // parameters[0] is "Ar", so we grab everything after that.
+            List<string> itemWords = parameters.GetRange(1, parameters.Count - 1);
+            string searchName = string.Join(" ", itemWords);
+
+            // 3. Search ONLY the Player's Inventory
+            // We are NOT looking at GameState.Instance.ItemCatalog here.
+            Item? itemToDelete = player.PlayerInventory.Items
+                .FirstOrDefault(i => i.Name.Equals(searchName, StringComparison.OrdinalIgnoreCase));
+
+            // 4. Handle Not Found
+            if (itemToDelete == null)
+            {
+                player.WriteLine($"You are not carrying an item named '{searchName}'.");
+                return true;
+            }
+
+            // 5. Remove the instance
+            // This calls the method we fixed in Step 1
+            bool success = player.PlayerInventory.RemoveItem(itemToDelete);
+
+            if (success)
+            {
+                player.WriteLine($"You successfully trashed the {itemToDelete.Name}.");
+            }
+            else
+            {
+                player.WriteLine("Something went wrong removing the item.");
             }
 
             return true;
