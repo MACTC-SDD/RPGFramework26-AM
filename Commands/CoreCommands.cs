@@ -1,5 +1,8 @@
-﻿using RPGFramework.Geography;
+
 using static RPGFramework.Commands.TimeCommand;
+using RPGFramework.Geography;
+using RPGFramework.Display;
+using Spectre.Console;
 
 namespace RPGFramework.Commands
 {
@@ -15,6 +18,7 @@ namespace RPGFramework.Commands
             return new List<ICommand>
             {
                 new AFKCommand(),
+                new AreaShowCommand(),
                 new IpCommand(),
                 new LookCommand(),
                 new QuitCommand(),
@@ -22,6 +26,7 @@ namespace RPGFramework.Commands
                 new TimeCommand(),
                 new AreaShowCommand(),
                 new RoomShowCommand(),
+                new WhoCommand(),
                 // Add other core commands here as they are implemented
             };
         }
@@ -69,18 +74,43 @@ namespace RPGFramework.Commands
         public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
-            if (character is Player player)
+            if (character is not Player player) return false;
+            Room room = player.GetRoom();
+
+            player.WriteLine($"[bold white]{room.Name}[/]");
+            player.WriteLine(room.Description);
+
+            if (room.Items.Count > 0)
             {
+                foreach (var item in room.Items)
+                {
+                    if (!string.IsNullOrWhiteSpace(item.Name))
+                    {
+                        player.WriteLine($"[yellow]{item.DisplayText}[/]");
+                    }
+                }
                 // For now, we'll ignore the command and just show the room description
+
                 player.WriteLine($"{player.GetRoom().Description}");
-                player.WriteLine("Exits:");
+
+
+                string content = "[red]Exits[/]\n";
+                string title = " ";
+
                 foreach (var exit in player.GetRoom().GetExits())
                 {
-                    player.WriteLine($"{exit.Description} to the {exit.ExitDirection}");
+                    content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
                 }
+
+                Panel panel = RPGPanel.GetPanel(content, title);
+
+                panel.Border = BoxBorder.Ascii;
+                panel.BorderColor(Color.Maroon);
+                player.Write(panel);
                 return true;
             }
-            return false;
+
+            return true;
         }
     }
 
@@ -133,15 +163,23 @@ namespace RPGFramework.Commands
             }
             return false;
         }
+    }
 
+    // CODE REVIEW: Jibril PR #48 - You needed that extra using at the top because this was nested under
+    // the TimeCommand. It just needed to be moved outside of it.
+    internal class AreaShowCommand : ICommand
+    {
+        public string Name => "areashow";
+        public IEnumerable<string> Aliases => new[] { "arshow", "areainfo", "arinfo" };
+        public string Help => "Shows information about the current area.";
 
-        internal class AreaShowCommand : ICommand
+        public bool Execute(Character character, List<string> parameters)
         {
-            public string Name => "areashow";
-            public IEnumerable<string> Aliases => new[] { "arshow", "areainfo", "arinfo" };
-            public string Help => "Shows information about the current area.";
+            var player = character as Player;
+            if (player == null)
+                return false;
 
-            public bool Execute(Character character, List<string> parameters)
+            if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
             {
                 var player = character as Player;
                 if (player == null)
@@ -196,9 +234,40 @@ namespace RPGFramework.Commands
                     player.WriteLine($"{exit.ExitDirection}: {exit.Description}");
                 }
 
-                return true;
+            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
+            {
+                player.WriteLine($"Room {room.Id}: {room.Name}");
             }
+
+            return true;
         }
     }
 
+    internal class WhoCommand : ICommand
+    {
+        public string Name => "who";
+        public IEnumerable<string> Aliases => [ ];
+        public string Help => "See who is online.";
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+                return false;
+
+            var onlinePlayers = Player.GetOnlinePlayers(GameState.Instance.Players);
+
+            Table table = new Spectre.Console.Table();
+            table.AddColumn(new TableColumn("Name"));
+            table.AddColumn(new TableColumn("Last Login"));
+            
+            foreach (Player p in onlinePlayers)
+            {
+                table.AddRow(p.Name, p.LastLogin.ToString("g"));                
+            }
+
+            player.Write(table);
+            return true;
+        }
+    }
 }
+
+

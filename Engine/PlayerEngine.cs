@@ -1,4 +1,5 @@
-﻿using RPGFramework.Workflows;
+﻿using RPGFramework.Enums;
+using RPGFramework.Workflows;
 using Spectre.Console;
 using System.Net.Sockets;
 using System.Text.Json.Serialization;
@@ -30,6 +31,8 @@ namespace RPGFramework
                 .Rooms[GameState.Instance.StartRoomId]
                 .Id;
             Name = name;
+
+            Role = PlayerRole.Admin;
         }
 
         public Player()

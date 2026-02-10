@@ -26,7 +26,7 @@ namespace RPGFramework.Workflows
 
                 GameState.Persistence.EnsureInitializedAsync(new GamePersistenceInitializationOptions()
                 {
-                    CopyFilesFromDataSeedToRuntimeData = true
+                    OverwriteFromDataSeedToRuntimeData = true
                 });
 
                 _ = GameState.Instance.LoadAllAreas();

@@ -1,6 +1,7 @@
 ﻿using RPGFramework.Enums;
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using System;
 using System.Numerics;
 using System.Text.Json.Serialization;
 
@@ -15,13 +16,16 @@ namespace RPGFramework
 
         [JsonIgnore]
         public bool IsOnline { get; set; }
-        
+
         // Properties
+        
+       
         public DateTime LastLogin { get; set; }
         public int MapRadius { get; set; } = 2; // How far the player can see on the map
         public string Password { get; private set; } = "SomeGarbage";
         public TimeSpan PlayTime { get; set; } = new TimeSpan();
         public PlayerRole Role { get; set; }
+      
         #endregion
         /*Made a small change?, undid it as it was for just testing*/
         public string DisplayName()
@@ -78,6 +82,10 @@ namespace RPGFramework
             return player != null;
         }
         
+        public static List<Player> GetOnlinePlayers(Dictionary<string, Player> players)
+        {
+            return [.. players.Values.Where(p => p.IsOnline).OrderBy(p => p.Name)];
+        }
         /// <summary>
         /// Things that should happen when a player logs in.
         /// </summary>
@@ -103,7 +111,7 @@ namespace RPGFramework
         }
 
 
-        
+
         /// <summary>
         /// Save the player to the database.
         /// </summary>
@@ -139,7 +147,7 @@ namespace RPGFramework
             Console?.Write(line ?? String.Empty); // Re-write current input line
         }
 
-        
+
         /// <summary>
         /// Writes the specified message to the output, followed by a line terminator.
         /// </summary>
@@ -164,8 +172,47 @@ namespace RPGFramework
             }
         }
 
+        #region Leveling Methods
 
-        
+        public void AddXP(int xp)
+        {
+            XP += xp;
+            // Check for level up
+            int xpForNextLevel = Level * 100; // Example: 100 XP per level
+            while (XP >= xpForNextLevel)
+            {
+                XP -= xpForNextLevel;
+                LevelUp();
+                xpForNextLevel = Level * 100;
+            }
+        }
+        protected void LevelUp()
+        {
+            Level += 1;
+            // Increase Max Health by 10% per level
+            int healthIncrease = (int)(MaxHealth * 0.1);
+            SetMaxHealth(MaxHealth + healthIncrease);
+            // Restore health to full on level up
+            SetHealth(MaxHealth);
+            this.WriteLine($"[green]Congratulations! You've reached level {Level}![/]");
+            this.WriteLine($"[green]Your Max Health has increased by {healthIncrease} to {MaxHealth}.[/]");
+            this.WriteLine($"Please select a stat to level up!: ");
+            string input = Network!.TelnetConnection!.ReadLine();
+
+            if (input != null)
+            {
+                switch (input.ToLower())
+                {
+                    case "strength":
+                        // Use the provided increment method on Character instead of assigning to the private setter
+                        IncrimentStrength(1);
+                        this.WriteLine($"[green]Your Strength has increased to {Strength}.[/]");
+                        break;
+                }
+            }
+        }
+
+        #endregion
 
     }
 

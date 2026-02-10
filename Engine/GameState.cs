@@ -1,5 +1,6 @@
 ﻿
 using System.Text.Json.Serialization;
+using RPGFramework.Combat;
 using RPGFramework.Enums;
 using RPGFramework.Geography;
 using RPGFramework.Interfaces;
@@ -36,8 +37,15 @@ namespace RPGFramework
         #region --- Fields ---
         private CancellationTokenSource? _saveCts;
         private Task? _saveTask;
+
         private CancellationTokenSource? _timeOfDayCts;
         private Task? _timeOfDayTask;
+
+        private CancellationTokenSource? _battleCts;
+        private Task? _battleTask;
+
+        private CancellationTokenSource? _spawnMobsCts;
+        private Task? _spawnMobsTask;
 
         private int _logSuppressionSeconds = 30;
         #endregion
@@ -51,7 +59,9 @@ namespace RPGFramework
         /// <summary>
         /// All Areas are loaded into this dictionary
         /// </summary>
-        [JsonIgnore] public Dictionary<int, Area> Areas { get; set; } = [];          
+        [JsonIgnore] public Dictionary<int, Area> Areas { get; set; } = [];
+
+        [JsonIgnore] public List<Battle> Battles { get; set; } = [];
 
         /// <summary>
         /// All Players are loaded into this dictionary, with the player's name as the key 
@@ -65,6 +75,7 @@ namespace RPGFramework
         [JsonIgnore] public Catalog<string, Weapon> WeaponCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, Armor> ArmorCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, Shopkeep> ShopCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, HelpEntry> HelpCatalog { get; set; } = [];
 
         [JsonIgnore] public TelnetServer? TelnetServer { get; private set; }
         #endregion
@@ -80,16 +91,17 @@ namespace RPGFramework
         // Move starting area/room to configuration settings
         public int StartAreaId { get; set; } = 0;
         public int StartRoomId { get; set; } = 0;
-       
+
         #endregion --- Properties ---
 
         private GameState()
         {
+            Catalogs.Add(ArmorCatalog);
+            Catalogs.Add(ItemCatalog);
+            Catalogs.Add(HelpCatalog);
             Catalogs.Add(MobCatalog);
             Catalogs.Add(NPCCatalog);
-            Catalogs.Add(ItemCatalog);
             Catalogs.Add(WeaponCatalog);
-            Catalogs.Add(ArmorCatalog);
             Catalogs.Add(ShopCatalog);
         }
 
@@ -253,7 +265,7 @@ namespace RPGFramework
             // Initialize game data if it doesn't exist            
             await Persistence.EnsureInitializedAsync(new GamePersistenceInitializationOptions()
             {
-                CopyFilesFromDataSeedToRuntimeData = _OVERWRITE_DATA
+                OverwriteFromDataSeedToRuntimeData = _OVERWRITE_DATA
             });
 
             await LoadAllAreas();
@@ -269,6 +281,11 @@ namespace RPGFramework
             _timeOfDayCts = new CancellationTokenSource();
             _timeOfDayTask = RunTimeOfDayLoopAsync(TimeSpan.FromMilliseconds(15000), _timeOfDayCts.Token);
 
+            _battleCts = new CancellationTokenSource();
+            _battleTask = RunBattleManagerLoopAsync(TimeSpan.FromSeconds(5), _battleCts.Token);
+
+            _spawnMobsCts = new CancellationTokenSource();
+            _spawnMobsTask = RunSpawnMobLoopAsync(TimeSpan.FromSeconds(30), _spawnMobsCts.Token);
             // Other threads will go here
             // Weather?
             // Area threads?
@@ -293,8 +310,8 @@ namespace RPGFramework
         /// will terminate upon completion.</returns>
         /// TODO: Allow user to supply a duration to avoid immediate shutdown
         public async Task Stop()
-        {               
-            await SaveAllPlayers(includeOffline: true);         
+        {
+            await SaveAllPlayers(includeOffline: true);
             await SaveAllAreas();
 
             foreach (var player in Players.Values.Where(p => p.IsOnline))
@@ -310,7 +327,8 @@ namespace RPGFramework
             // Wait for threads to finish
             _saveCts?.Cancel();
             _timeOfDayCts?.Cancel();
-
+            _battleCts?.Cancel();
+            _spawnMobsCts?.Cancel();
             // Exit program
             Environment.Exit(0);
         }
@@ -395,7 +413,55 @@ namespace RPGFramework
             }
             GameState.Log(DebugLevel.Alert, "Time of Day thread stopping.");
         }
+
+        private async Task RunBattleManagerLoopAsync(TimeSpan interval, CancellationToken ct)
+        {
+            GameState.Log(DebugLevel.Alert, "Battle Manager thread started.");
+            while (!ct.IsCancellationRequested && IsRunning)
+            {
+                try
+                {
+                    GameState.Log(DebugLevel.Debug, "Updating battles...");
+                    foreach (Battle b in Battles)
+                    {
+                        b.ProcessTurn();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GameState.Log(DebugLevel.Error, $"Error during battle update: {ex.Message}");
+                }
+                await Task.Delay(interval, ct);
+            }
+        }
         #endregion --- Thread Methods ---
+        #region RunSpawnMobLoopAsync Method
+        private async Task RunSpawnMobLoopAsync(TimeSpan interval, CancellationToken ct)
+        {
+            GameState.Log(DebugLevel.Alert, "Spawn mobs started.");
+            while (!ct.IsCancellationRequested && IsRunning)
+            {
+                try
+                {
+                    GameState.Log(DebugLevel.Debug, "Spawning Mobs...");
+                    foreach (Area area in GameState.Instance.Areas.Values)
+                    {
+                        foreach (Room room in area.Rooms.Values)
+                        {
+                            room.SpawnMobsInRoom();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GameState.Log(DebugLevel.Error, $"Error during Mobs spawning: {ex.Message}");
+                }
+
+                await Task.Delay(interval, ct);
+            }
+            GameState.Log(DebugLevel.Alert, "Mobs spawn thread stopping.");
+        }
+        #endregion
 
     }
 }
