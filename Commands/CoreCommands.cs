@@ -23,6 +23,7 @@ namespace RPGFramework.Commands
                 new SayCommand(),
                 new TimeCommand(),
                 new AreaShowCommand(),
+                new StatsCommand(),
                 // Add other core commands here as they are implemented
             };
         }
@@ -193,5 +194,84 @@ namespace RPGFramework.Commands
 
             return true;
         }
-    }    
+    }
+
+    internal class StatsCommand : ICommand
+    {
+        public string Name => "stats";
+        public IEnumerable<string> Aliases => [];
+        public string Help => "Shows information about the current player stats.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            var player = character as Player;
+            if (player == null)
+                return false;
+            if(parameters.Count > 3 || parameters.Count < 2)
+            {
+                WriteUsage(player);
+            }
+            if(parameters.Count == 1)
+            {
+                ShowBasicInfo(player);
+                return true;
+            }
+            switch (parameters[1].ToLower())
+            {
+                case "atributes":
+                    ShowStats(player);
+                    break;
+                case "level":
+                    ShowLevelInformation(player);
+                    break;
+                case "equipment":
+                    ShowEquipment(player);
+                    break;
+            }
+
+            return true;
+        }
+
+        public static void WriteUsage(Player player)
+        {
+            player.WriteLine("stats");
+            player.WriteLine("stats atributes");
+            player.WriteLine("stats level");
+            player.WriteLine("stats equipment");
+        }
+
+        public static void ShowBasicInfo(Player player)
+        {
+            player.WriteLine($"Name: {player.DisplayName()}");
+            player.WriteLine($"Description: {player.Description}");
+            player.WriteLine($"Role: {player.Role}");
+        }
+        public static void ShowStats(Player player)
+        {
+            player.WriteLine($"Health: {player.Health}/{player.MaxHealth}");
+            player.WriteLine($"Strength: {player.GetStrength()}");
+            player.WriteLine($"Agility: {player.GetStrength()}");
+            player.WriteLine($"Intellect: {player.GetIntelligence()}");
+            player.WriteLine($"Wisdom: {player.GetWisdom()}");
+            player.WriteLine($"Charisma: {player.GetCharisma()}");
+            player.WriteLine($"Constitution: {player.GetConstitution()}");
+        }
+
+        public static void ShowLevelInformation(Player player)
+        {
+            player.WriteLine($"Level: {player.Level}");
+            player.WriteLine($"XP: {player.XP}");
+            player.WriteLine($"XP to next level: {player.GetXPtoNextLevel()}");
+        }
+
+        public static void ShowEquipment(Player player)
+        {
+            player.WriteLine($"Primary Weapon: {player.PrimaryWeapon.Name}");
+            player.WriteLine("Equipped Armor:");
+            foreach (var armor in player.EquippedArmor)
+            {
+                player.WriteLine($"- {armor.Name} ({armor.Slot})");
+            }
+        }
+    }
 }

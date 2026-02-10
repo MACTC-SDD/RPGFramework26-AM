@@ -162,6 +162,10 @@ namespace RPGFramework
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
         }
 
+        public int GetXPtoNextLevel()
+        {
+            return Level * 100; // Example: 100 XP per level
+        }
         public Area GetArea()
         {
             return GameState.Instance.Areas[AreaId];
