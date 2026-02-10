@@ -68,7 +68,7 @@ namespace RPGFramework.Workflows
                     if (chosenClass == "warrior" || chosenClass == "mage" || chosenClass == "rogue")
                     {
                         WorkflowData["ChosenClass"] = chosenClass;
-                        player.WriteLine($"You have chosen the {chosenClass} class. Now Press Enter TWICE ONLYYYY!!! until text comes up :D");
+                        player.WriteLine($"You have chosen the {chosenClass} class. Now Press Enter TWICE ONLYYYY!!! please :D.");
                         // If class is valid, proceed, otherwise print message and stay on this step
                         // Placeholder logic
                         CurrentStep++;
@@ -120,7 +120,7 @@ namespace RPGFramework.Workflows
                         $"\nXP : {player.XP}" +
                         "\n\tThe Accumulated Souls Of The Innocent You've Aqquired." +
                         $"\nWisdom : {player.Wisdom}" +
-                        "\n\tI've Heard This Increases With Age. either they lied, or im still 5." +
+                        "\n\tI've Heard This Increases With Age. Either they lied, or im still 5." +
                         "\n============================================================================"
                         );
                     player.WriteLine("Type 'help' to see a list of available commands.");
@@ -170,11 +170,11 @@ namespace RPGFramework.Workflows
                             "\n========================================================================================================================" +
                             "\n" +
                            $"\nPlayer Name: {player.Name}" +
-                           $"\nXP:{player.XP}" +
-                           $"\nLevel :{player.Level}" +
-                           $"\nHealth :{player.Health}/{player.MaxHealth}" + $"\tGold :{player.Gold}" +
+                           $"\nXP: {player.XP}" +
+                           $"\nLevel : {player.Level}" +
+                           $"\nHealth : {player.Health}/{player.MaxHealth}" + $"\tGold :{player.Gold}" +
                            $"\nPlaytime : {player.PlayTime}" +
-                           $"\n DMG Reduction:  " +
+                           //$"\n DMG Reduction:  " +
                             "\n" +
                             "\n========================================================================================================================" +
                             "\n" +
@@ -197,20 +197,20 @@ namespace RPGFramework.Workflows
                         string backType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.Type.ToString() ?? "None";
                         output +=
                                $"\nHelmet: {helmetName}" +
-                               $"\n\tHelmet Armor Type : {helmetType}" +
-                               $"\n\tHelmet Material : {helmetMat}" +
+                               $"\n\tWeight Type : {helmetType}" +
+                               $"\n\tMaterial : {helmetMat}" +
                                 "\n" +
                                $"\nChestplate: {chestName}" +
-                               $"\n\tChestplate Armor Type : {chestType}" +
-                               $"\n\tChestplate Material : {chestMat}" +
+                               $"\n\tWeight Type : {chestType}" +
+                               $"\n\tMaterial : {chestMat}" +
                                 "\n" +
                                $"\nLeggings: {legName}" +
-                               $"\n\tLeggings Armor Type : {legType}" +
-                               $"\n\tLeggings Material : {legMat}" +
+                               $"\n\tWeight Type : {legType}" +
+                               $"\n\tMaterial : {legMat}" +
                                 "\n" +
                                $"\nBack Piece: {backName}" +
-                               $"\n\tBack Piece Armor Type : {backType}" +
-                               $"\n\tBack Piece Material : {backMat}" +
+                               $"\n\tWeight Type : {backType}" +
+                               $"\n\tMaterial : {backMat}" +
                                 "\n" +
                                $"\nWeapon :{player.PrimaryWeapon.Name}" +
                                $"\n\tWeapon DMG : {player.PrimaryWeapon.Damage}" +
