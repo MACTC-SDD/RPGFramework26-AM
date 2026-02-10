@@ -70,6 +70,26 @@ namespace RPGFramework.Commands
                     break;
                 case "set":
                     return SetNpcProperty(player, parameters);
+                case "add":
+                    if (parameters[2].Equals("armour"))
+                    { 
+                        AddArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        GiveItem(player, parameters);
+                    }
+                    break;
+                case "remove":
+                    if (parameters[2].Equals("armour"))
+                    {
+                        RemoveArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        RemoveItem(player, parameters);
+                    }
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -141,6 +161,26 @@ namespace RPGFramework.Commands
                 case "dialog":
                     NpcDialogCommands(player, parameters);
                     break;
+                case "add":
+                    if (parameters[2].Equals("armour"))
+                    {
+                        AddArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        GiveItem(player, parameters);
+                    }
+                    break;
+                case "remove":
+                    if (parameters[2].Equals("armour"))
+                    {
+                        RemoveArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        RemoveItem(player, parameters);
+                    }
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -157,6 +197,7 @@ namespace RPGFramework.Commands
         }
     }
     #endregion
+
     #region ShopKeepBuilderCommand Class
     internal class ShopKeepBuilderCommand : BaseNpcCommand, ICommand
     {
@@ -205,9 +246,28 @@ namespace RPGFramework.Commands
                         return AddItem(player, parameters);
                     }
                     break;
-                // For longer commands with a lot of optiosn like this, we might send this to another method
                 case "dialog":
                     NpcDialogCommands(player, parameters);
+                    break;
+                case "add":
+                    if (parameters[2].Equals("armour"))
+                    {
+                        AddArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        GiveItem(player, parameters);
+                    }
+                    break;
+                case "remove":
+                    if (parameters[2].Equals("armour"))
+                    {
+                        RemoveArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        RemoveItem(player, parameters);
+                    }
                     break;
                 default:
                     WriteUsage(player);
@@ -274,6 +334,7 @@ namespace RPGFramework.Commands
         }
     }
     #endregion
+
     #region PlayerShopCommand Class
     internal class PlayerShopCommand : BaseNpcCommand, ICommand
     {
@@ -477,6 +538,11 @@ namespace RPGFramework.Commands
             player.WriteLine($"/{_entityName} tag list '<name>'");
             player.WriteLine($"/{_entityName} set location '<name>' '<locationid>");
             player.WriteLine($"/{_entityName} set area '<name>' '<areaid>");
+            player.WriteLine($"/{_entityName} set weapon '<name>' '<weaponname>'");
+            player.WriteLine($"/{_entityName} give armour '<name>' '<armourID>'");
+            player.WriteLine($"/{_entityName} give item '<name>' '<itemID>'");
+            player.WriteLine($"/{_entityName} remove armour '<name>' '<armourID>'");
+            player.WriteLine($"/{_entityName} remove item '<name>' '<itemID>'");
             if (_entityName == "shopkeep" || _entityName == "npc")
             {
                 player.WriteLine($"/{_entityName} dialog list '<character>' '<category>'");
@@ -491,6 +557,114 @@ namespace RPGFramework.Commands
                     player.WriteLine($"/{_entityName} inventory delete '<character'> '<itemID>'");
                 }
             }
+        }
+
+        #endregion
+
+        #region Remove Item Method
+        public static void RemoveItem(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine($"Usage: /{_entityName} remove item '<name>' '<itemID>'");
+                return;
+            }
+            string name = parameters[3];
+            string itemId = parameters[4];
+            NonPlayer? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            if (!GameState.Instance.ItemCatalog.ContainsKey(itemId))
+            {
+                player.WriteLine($"Item with ID '{itemId}' does not exist in the item catalog.");
+                return;
+            }
+            bool removed = npc.PlayerInventory.RemoveItem(itemId);
+            if (removed)
+            {
+                player.WriteLine($"Item '{itemId}' removed from {_entityName} '{name}' inventory.");
+            }
+            else
+            {
+                player.WriteLine($"Item '{itemId}' not found in {_entityName} '{name}' inventory.");
+            }
+        }
+        #endregion
+
+        #region RemoveArmour Method
+        public static void RemoveArmour(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine($"Usage: /{_entityName} remove armour '<name>' '<armourID>'");
+                return;
+            }
+            string name = parameters[3];
+            string armourId = parameters[4];
+            NonPlayer? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            if (!GameState.Instance.ArmorCatalog.ContainsKey(armourId))
+            {
+                player.WriteLine($"Armour with ID '{armourId}' does not exist in the armour catalog.");
+                return;
+            }
+            bool removed = npc.EquippedArmor.RemoveAll(a => a.Name.Equals(armourId, StringComparison.OrdinalIgnoreCase)) > 0;
+            if (removed)
+            {
+                player.WriteLine($"Armour '{armourId}' removed from {_entityName} '{name}' inventory.");
+            }
+            else
+            {
+                player.WriteLine($"Armour '{armourId}' not found in {_entityName} '{name}' inventory.");
+            }
+        }
+        #endregion
+
+        #region AddArmour Method
+        public static void AddArmour(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine($"Usage: /{_entityName} give armour '<name>' '<armourID>'");
+                return;
+            }
+            string name = parameters[3];
+            string armourId = parameters[4];
+            NonPlayer? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            if (!GameState.Instance.ArmorCatalog.ContainsKey(armourId))
+            {
+                player.WriteLine($"Armour with ID '{armourId}' does not exist in the armour catalog.");
+                return;
+            }
+            npc.EquippedArmor.Add((Armor)GameState.Instance.ArmorCatalog[armourId].Clone());
+            player.WriteLine($"Armour '{armourId}' added to {_entityName} '{name}' inventory.");
+        }
+
+        #endregion
+
+        #region GiveItem Method
+        public static void GiveItem(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine($"Usage: /{_entityName} give item '<name>' '<itemID>'");
+                return;
+            }
+            string name = parameters[3];
+            string itemId = parameters[4];
+            NonPlayer? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            if (!GameState.Instance.ItemCatalog.ContainsKey(itemId))
+            {
+                player.WriteLine($"Item with ID '{itemId}' does not exist in the item catalog.");
+                return;
+            }
+            npc.PlayerInventory.AddItem(GameState.Instance.ItemCatalog[itemId].Clone());
+            player.WriteLine($"Item '{itemId}' added to {_entityName} '{name}' inventory.");
         }
 
         #endregion
@@ -611,6 +785,26 @@ namespace RPGFramework.Commands
                         return false;
                     }
                 // Add other properties here as needed
+                case "weapon":
+                    bool found = false;
+                    foreach(string w in GameState.Instance.WeaponCatalog.Keys)
+                    {
+                        if(w.Equals(value))
+                        {
+                            npc.PrimaryWeapon = (Weapon)GameState.Instance.WeaponCatalog[w].Clone();
+                            player.WriteLine($"{_entityName} '{name}' weapon set to '{value}'.");
+                            found = true;
+                        }
+                    }
+                    if (found) {
+                        player.WriteLine($"{_entityName} '{name}' weapon set to '{value}'.");
+                    }
+                    else
+                    {
+                        player.WriteLine($"Weapon '{value}' not found in weapon catalog.");
+                        return false;
+                    }
+                    return true;
                 default:
                     player.WriteLine($"Property '{property}' is not recognized for {_entityName}.");
                     break;
