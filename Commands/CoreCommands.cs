@@ -1,4 +1,5 @@
-﻿
+
+using static RPGFramework.Commands.TimeCommand;
 using RPGFramework.Geography;
 using RPGFramework.Display;
 using Spectre.Console;
@@ -23,6 +24,8 @@ namespace RPGFramework.Commands
                 new QuitCommand(),
                 new SayCommand(),
                 new TimeCommand(),
+                new AreaShowCommand(),
+                new RoomShowCommand(),
                 new WhoCommand(),
                 // Add other core commands here as they are implemented
             };
@@ -178,14 +181,58 @@ namespace RPGFramework.Commands
 
             if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
             {
-                player.WriteLine("Area not found.");
-                return false;
-            }
+                var player = character as Player;
+                if (player == null)
+                    return false;
 
-            player.WriteLine($"Area name: {area.Id}");
-            player.WriteLine($"Area description: {area.Description}");
-            player.WriteLine($"Area Id: {area.Id}");
-            player.WriteLine($"Rooms ({area.Rooms.Count})");
+                if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
+                {
+                    player.WriteLine("Area not found.");
+                    return false;
+                }
+
+                player.WriteLine($"Area name: {area.Name}");
+                player.WriteLine($"Area description: {area.Description}");
+                player.WriteLine($"Area Id: {area.Id}");
+
+                return true;
+            }
+        }
+
+
+        internal class RoomShowCommand : ICommand
+        {
+            public string Name => "roomshow";
+            public IEnumerable<string> Aliases => new[] { "rmshow", "roominfo", "rminfo" };
+            public string Help => "Shows info for the current room and its available exits.";
+
+            public bool Execute(Character character, List<string> parameters)
+            {
+                var player = character as Player;
+                if (player == null)
+                    return false;
+
+                if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
+                {
+                    player.WriteLine("Area not found.");
+                    return false;
+                }
+
+                if (!area.Rooms.TryGetValue(player.LocationId, out var room))
+                {
+                    player.WriteLine("Room not found.");
+                    return false;
+                }
+
+                player.WriteLine($"Room name: {room.Name}");
+                player.WriteLine($"Room description: {room.Description}");
+                player.WriteLine($"Room Id: {room.Id}");
+                player.WriteLine("Exits:");
+                
+                foreach (var exit in room.GetExits())
+                {
+                    player.WriteLine($"{exit.ExitDirection}: {exit.Description}");
+                }
 
             foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
             {

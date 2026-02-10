@@ -33,7 +33,8 @@ namespace RPGFramework.Geography
         public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
         // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
-        // A list of items currently on the floor in this room.
+        public object Exits { get; internal set; }
+
         #endregion --- Properties ---
 
         #region --- Methods ---

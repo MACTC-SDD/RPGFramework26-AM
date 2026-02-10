@@ -148,9 +148,6 @@ namespace RPGFramework.Commands
                 case "create":
                     RoomCreate(player, parameters);
                     break;
-                case "show":
-                    RoomShow(player, parameters);
-                    break;
                 case "icon":
                     RoomSetIcon(player, parameters);
                     break;
@@ -183,7 +180,6 @@ namespace RPGFramework.Commands
             player.WriteLine("/room description '<set room desc to this>'");
             player.WriteLine("/room name '<set room name to this>'");
             player.WriteLine("/room create '<name>' '<description>' <exit direction> '<exit description>'");
-            player.WriteLine("/room show 'Details about the room you are in'");
             player.WriteLine("/room Tag '<add or remove room tags>'");
             player.WriteLine("/room validate <roomId>");
             player.WriteLine("/room spawnable add '<areaid>' '<roomid>' '<mob/npc>' '<name>' '<chance>'");
@@ -1168,104 +1164,7 @@ namespace RPGFramework.Commands
         }
     }
 
-    // CODE REVIEW: BUILD TEAM (Landon, Jibril)
-    // There appear to be two AreaBuilderCommand classes in this file.
-    // I'm not sure which one is intended to be used, or maybe pieces of both.
-    // These merged really strangely and I tried to correct it, but please review and adjust as needed.
-    // I renamed the second one to AreaBuilderCommand2 to avoid conflicts.
-    /// <summary>
-    /// /area command for building and editing areas.
-    /// </summary>
- //   internal class AreaBuilderCommand2 : ICommand
-  //  {
-//        public string Name => "/area";
-//        public IEnumerable<string> Aliases => Array.Empty<string>();
- //       public string Help => "";
 
-   //     public bool Execute(Character character, List<string> parameters)
-    //    {
-  //          if (character is not Player player) return false;
-   //         if (parameters.Count < 2) { WriteUsage(player); return false; }
-
-  //          switch (parameters[1].ToLower())
-  //          {
-  //              case "name":
-  //                  AreaSetName(player, parameters);
-  //                  break;
-
-  //              case "desc":
-  //            case "description":
-  //                  AreaSetDescription(player, parameters);
-  //                  break;
-
-  //              default:
-  //                  WriteUsage(player);
-  //                  break;
-  //          }
-
-  //          return true;
-  //      }
-
-  //      private static void WriteUsage(Player player)
-   //     {
-  //          player.WriteLine("");
-  //          player.WriteLine("Usage:");
-   //         player.WriteLine("/area name <new area name>");
-  //          player.WriteLine("/area desc <new area description>");
-   //         player.WriteLine("");
-  //      }
-
-   //     private static void AreaSetName(Player player, List<string> parameters)
-     //   {
-   //         if (!Utility.CheckPermission(player, PlayerRole.Admin))
-        //    {
-   //             player.WriteLine("You do not have permission to do that.");
-      //          return;
-       //     }
-
-            // Get the area the player is currently in
-   //         Area area = GameState.Instance.Areas[player.AreaId];
-
-     //       if (parameters.Count < 3)
-       //     {
-     //           player.WriteLine("");
-       //         player.WriteLine(area.Name);
-    //        }
-      //      else
-        //    {
-        //        // Multi-word support
-          //      area.Name = string.Join(" ", parameters.Skip(2));
-          //      player.WriteLine("");
- //               player.WriteLine("Area name set.");
-         //   }
-   //     }
-
-      //  private static void AreaSetDescription(Player player, List<string> parameters)
-      //  {
-     //       if (!Utility.CheckPermission(player, PlayerRole.Admin))
-         //   {
-      //          player.WriteLine("You do not have permission to do that.");
-        //        return;
-         //   }
-
-            // Get the area the player is currently in
-         //   Area area = GameState.Instance.Areas[player.AreaId];
-
-      //      if (parameters.Count < 3)
-         //   {
-         //       player.WriteLine("");
-         //       player.WriteLine(area.Description);
-         //   }
-        //    else
-       //     {
-                /*Multi-word support*/
-           //     area.Description = string.Join(" ", parameters.Skip(2));
-          //      player.WriteLine("");
-           //     player.WriteLine("Area description set.");
-         //   }
-       // }
-
-   // }
     #endregion
 }
 
