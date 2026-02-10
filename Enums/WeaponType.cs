@@ -1,5 +1,4 @@
-﻿
-namespace RPGFramework.Enums
+﻿namespace RPGFramework.Enums
 {
     // CODE REVIEW: Liam (PR #21)
     // Before you start actually creating weapons, alphabatize this list.
