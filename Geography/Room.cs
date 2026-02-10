@@ -1,5 +1,6 @@
 ﻿using RPGFramework.Display;
 using RPGFramework.Enums;
+using System.Security.Cryptography.X509Certificates;
 
 namespace RPGFramework.Geography
 {
@@ -248,10 +249,10 @@ namespace RPGFramework.Geography
 
             // Send a message to all players in the room
             Comm.SendToRoomExcept(this, $"{character.Name} enters the room.", character);
-            if(character is NonPlayer npc){ 
+            if (character is NonPlayer npc) {
                 Npcs.Add(npc);
             }
-            else if(character is Player player)
+            else if (character is Player player)
             {
                 Players.Add(player);
             }
@@ -260,6 +261,25 @@ namespace RPGFramework.Geography
                 Mobs.Add(mob);
             }
         }
+
+        //EngagementRules
+        public void SafeZone()
+        {
+            
+        }
+        public void AgroRoom() 
+        { 
+        
+        }
+        public void SameRoom() 
+        { 
+        
+        }
+        public void TrapRoom() 
+        { 
+        
+        }
+        //end EngagementRules
 
         /// <summary>
         /// When a character leaves a room, do this.
