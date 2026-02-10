@@ -86,30 +86,26 @@ namespace RPGFramework.Commands
                 {
                     if (!string.IsNullOrWhiteSpace(item.Name))
                     {
-                        player.WriteLine($"[yellow]{item.DisplayText}[/]");
+                        string showText = item.DisplayText == "" ? item.Name : item.DisplayText;
+                        player.WriteLine($"[yellow]{showText}[/]");
                     }
                 }
-                // For now, we'll ignore the command and just show the room description
+            }
+            // For now, we'll ignore the command and just show the room description
 
-                player.WriteLine($"{player.GetRoom().Description}");
+            string content = "[red]Exits[/]\n";
+            string title = " ";
 
-
-                string content = "[red]Exits[/]\n";
-                string title = " ";
-
-                foreach (var exit in player.GetRoom().GetExits())
-                {
-                    content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
-                }
-
-                Panel panel = RPGPanel.GetPanel(content, title);
-
-                panel.Border = BoxBorder.Ascii;
-                panel.BorderColor(Color.Maroon);
-                player.Write(panel);
-                return true;
+            foreach (var exit in player.GetRoom().GetExits())
+            {
+                content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
             }
 
+            Panel panel = RPGPanel.GetPanel(content, title);
+
+            panel.Border = BoxBorder.Ascii;
+            panel.BorderColor(Color.Maroon);
+            player.Write(panel);
             return true;
         }
     }
