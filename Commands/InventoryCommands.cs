@@ -21,7 +21,7 @@ namespace RPGFramework.Commands
     internal class GetCommand : ICommand
     {
         public string Name => "get";
-        public IEnumerable<string> Aliases => new List<string> { "take", "grab" };
+        public IEnumerable<string> Aliases => new List<string> { "take", "grab", "nab", "snatch", "pocket" };
         public string Help => "Usage: get [Item Name]\nPicks up an item from the current room and adds it to your inventory.";
 
         public bool Execute(Character character, List<string> parameters)
@@ -45,7 +45,7 @@ namespace RPGFramework.Commands
             // 4. Handle item not found
             if (itemInRoom == null)
             {
-                player.WriteLine($"There is no '{searchName}' here.");
+                player.WriteLine($"There is no [red]'{searchName}'[/] here.");
                 return true;
             }
 
@@ -56,7 +56,7 @@ namespace RPGFramework.Commands
                 // Remove it from the room ground
                 room.Items.Remove(itemInRoom);
 
-                player.WriteLine($"You pick up the {itemInRoom.Name}.");
+                player.WriteLine($"You pick up the [yellow]{itemInRoom.Name}[/].");
             }
             else
             {
@@ -94,7 +94,7 @@ namespace RPGFramework.Commands
             // 4. Handle item not found in pockets
             if (itemToDrop == null)
             {
-                player.WriteLine($"You aren't carrying a '{searchName}'.");
+                player.WriteLine($"You aren't carrying a [red]'{searchName}'[/].");
                 return true;
             }
 
@@ -106,7 +106,7 @@ namespace RPGFramework.Commands
             var room = player.GetRoom();
             room.Items.Add(itemToDrop);
 
-            player.WriteLine($"You WHIPPED the [yellow]{itemToDrop.Name}[/] at the floor with the utmost force and velocity you could muster.");
+            player.WriteLine($"You [bold red]WHIPPED[/] the [yellow]{itemToDrop.Name}[/] at the floor with the utmost force and velocity you could muster.");
             return true;
         }
 
