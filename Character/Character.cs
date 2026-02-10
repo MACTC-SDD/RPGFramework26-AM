@@ -39,7 +39,7 @@ namespace RPGFramework
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
-        protected List<string> Tags { get; set; } = []; // (for scripting or special behavior)
+        protected List<NPCTag> Tags { get; set; } = []; // (for scripting or special behavior)
         [JsonIgnore] public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
@@ -166,6 +166,10 @@ namespace RPGFramework
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
         }
 
+        public int GetXPtoNextLevel()
+        {
+            return Level * 100; // Example: 100 XP per level
+        }
         public Area GetArea()
         {
             return GameState.Instance.Areas[AreaId];
@@ -251,15 +255,19 @@ namespace RPGFramework
         public bool AddTag(string tag)
         {
             // Accept enum names (case-insensitive) and avoid duplicates
-            if (Enum.TryParse<ValidTags>(tag, true, out _) && !Tags.Contains(tag))
+            NPCTag item;
+            Enum.TryParse<NPCTag>(tag, true, out item);
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+            if (item != null && !Tags.Contains(item))
             {
-                Tags.Add(tag);
+                Tags.Add(item);
                 return true;
             }
-                return false;
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+            return false;
         }
         //removes tags from character
-        public bool RemoveTag(string tag)
+        public bool RemoveTag(NPCTag tag)
         {
             if (Tags.Contains(tag))
             {
@@ -356,6 +364,8 @@ namespace RPGFramework
         }
         //end armor type crits
         //End critical hit
+        
+        // CODE REVIEW: Is there a reason we don't just access the Tags property instead of creating a new method?
         public List<string> GetTags()
         {
             return Tags;

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 
 namespace RPGFramework.Items
@@ -26,16 +27,13 @@ namespace RPGFramework.Items
             return true;
         }
 
-        // CODE REVIEW: Shelton - we might want to discuss. In this case we are giving
-        // the player the actual copy from the catalog, meaning if it got degraded or modified
-        // it's modifying the catalog version, which isn't the intent. 
-        // Check out Utility.Clone which will take an object and give you a copy of it (not just a reference to the same thing)
         //Added for the sake of sell commands (remove if you hate) -Shelton
         public bool AddItem(string item)
         {
             if (InventorySlots.Count >= MaxSlots)
                 return false;
-            Item itemNew = GameState.Instance.ItemCatalog[item];
+            
+            Item itemNew = GameState.Instance.ItemCatalog[item].Clone();
             InventorySlots.Add(itemNew);
             return true;
         }

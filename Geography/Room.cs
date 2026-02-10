@@ -31,7 +31,6 @@ namespace RPGFramework.Geography
         public List<NonPlayer> Npcs{ get; set; } = [];
         public int MaxSpawnedAllowed { get; set; } = 3;
         public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
         public object Exits { get; internal set; }
 

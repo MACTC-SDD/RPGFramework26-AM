@@ -12,7 +12,7 @@ namespace RPGFramework
         public Mob()
         {
             NpcType = NonPlayerType.Mob;
-            Tags.Add("Mob");
+            Tags.Add(NPCTag.Mob);
         }
         public bool CanChase()
         {
