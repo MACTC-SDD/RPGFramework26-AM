@@ -102,6 +102,18 @@ namespace RPGFramework
             }
             return DialogLines[index];
         }
+
+        public bool GetDialogGroup(DialogGroupCategory category)
+        {
+            if(Category == category)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         #endregion
     }
 }

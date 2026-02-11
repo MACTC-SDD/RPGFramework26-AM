@@ -852,11 +852,11 @@ namespace RPGFramework.Commands
             // for mobs or whatever if it isn't appropriate.
             if (parameters.Count < 6)
             {
-                player.WriteLine("Usage: /npc dialog delete '<category>' '<character>' '<line to remove>'");
+                player.WriteLine("Usage: /npc dialog delete '<character>' '<category>' '<line to remove>'");
                 return;
             }
-            string name = parameters[4];
-            string category = parameters[3].ToLower();
+            string name = parameters[3];
+            string category = parameters[4];
             string description = parameters[5];
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
@@ -876,11 +876,11 @@ namespace RPGFramework.Commands
         {
             if (parameters.Count < 5)
             {
-                player.WriteLine($"Usage: /{_entityName} dialog delete '<category>' '<character>'");
+                player.WriteLine($"Usage: /{_entityName} dialog delete '<character>' '<category>'");
                 return false;
             }
-            string name = parameters[4];
-            string category = parameters[3].ToLower();
+            string name = parameters[3];
+            string category = parameters[4];
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
@@ -946,18 +946,15 @@ namespace RPGFramework.Commands
         #endregion
 
         #region CheckForCatalogAndObject Method
-        protected static NonPlayer? CheckForCatalogAndObject(Player player, object key)
+        protected static NonPlayer? CheckForCatalogAndObject(Player player, string key)
         {
-            if (_catalog is null || !_catalog.ContainsKey(key))
+            var catalog = _catalog as Catalog<string, NonPlayer>;
+            if (!catalog!.TryGetValue(key, out NonPlayer? npc) || npc == null)
             {
                 player.WriteLine($"{_entityName} '{key}' not found.");
                 return null;
             }
-            if (_catalog[key] is not NonPlayer npc)
-            {
-                player.WriteLine($"{_entityName} '{key}' is not a valid NonPlayer entity.");
-                return null;
-            }
+
             return npc;
         }
         #endregion
@@ -965,37 +962,36 @@ namespace RPGFramework.Commands
         #region NpcAddDialog Method
         protected static bool NpcAddDialog(Player player, List<string> parameters)
         {
-            if (parameters.Count < 6)
-            {
-                player.WriteLine("Usage: /npc dialog add '<character'> <category>' '<line to add>'");
-                return false;
-            }
-
             string name = parameters[3];
             string category = parameters[4];
             string dialogLine = parameters[5];
-
+            player.WriteLine("Adding dialog");
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return false;
 
             // Might need to check if category exists first
-            if (npc.HasDialogGroup(category)){
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+            if (!Enum.TryParse<DialogGroupCategory>(category, true, out DialogGroupCategory groupCategory))
+            {
+                player.WriteLine($"Dialog group {category} isn't valid.");
+                return false;
+            }
+            if (npc.HasDialogGroup(groupCategory)){
                 DialogGroup dialogCategory = npc.GetDialogGroup(category);
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (!dialogCategory.HasDialogLine(dialogLine))
                 {
                     dialogCategory.AddDialogLine(dialogLine);
+                    player.WriteLine($"Dialog line added to category '{category}' for {_entityName} '{name}'.");
                 }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                else
+                {
+                    player.WriteLine("Line already exists!");
+                }
             }
             else
             {
                 player.WriteLine($"Category does not exist");
             }
-                player.WriteLine($"Dialog line added to category '{category}' for {_entityName} '{name}'.");
             return true;
         }
         #endregion
@@ -1013,13 +1009,18 @@ namespace RPGFramework.Commands
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return false;
-            if (!npc.HasDialogGroup(category))
+
+            if (!Enum.TryParse<DialogGroupCategory>(category, true, out DialogGroupCategory groupCategory))
             {
-                DialogGroup dialogCategory = new DialogGroup();
-                DialogGroupCategory categoryName;
-                Enum.TryParse<DialogGroupCategory>(category, true, out categoryName);
-                dialogCategory.SetCategory(categoryName);
-                npc.DialogGroups.Add(dialogCategory);
+                player.WriteLine($"Dialog group {category} isn't valid.");
+                return false;
+            }
+            
+            if (!npc.HasDialogGroup(groupCategory))
+            {
+                DialogGroup dialogGroup = new DialogGroup();
+                dialogGroup.SetCategory(groupCategory);
+                npc.DialogGroups.Add(dialogGroup);
             }
             else
             {
