@@ -25,6 +25,7 @@ namespace RPGFramework.Commands
                 new SayCommand(),
                 new TimeCommand(),
                 new AreaShowCommand(),
+                new StatsCommand(),
                 new RoomShowCommand(),
                 new WhoCommand(),
                 new GoldCommand(),
@@ -87,30 +88,26 @@ namespace RPGFramework.Commands
                 {
                     if (!string.IsNullOrWhiteSpace(item.Name))
                     {
-                        player.WriteLine($"[yellow]{item.DisplayText}[/]");
+                        string showText = item.DisplayText == "" ? item.Name : item.DisplayText;
+                        player.WriteLine($"[yellow]{showText}[/]");
                     }
                 }
-                // For now, we'll ignore the command and just show the room description
+            }
+            // For now, we'll ignore the command and just show the room description
 
-                player.WriteLine($"{player.GetRoom().Description}");
+            string content = "[red]Exits[/]\n";
+            string title = " ";
 
-
-                string content = "[red]Exits[/]\n";
-                string title = " ";
-
-                foreach (var exit in player.GetRoom().GetExits())
-                {
-                    content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
-                }
-
-                Panel panel = RPGPanel.GetPanel(content, title);
-
-                panel.Border = BoxBorder.Ascii;
-                panel.BorderColor(Color.Maroon);
-                player.Write(panel);
-                return true;
+            foreach (var exit in player.GetRoom().GetExits())
+            {
+                content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
             }
 
+            Panel panel = RPGPanel.GetPanel(content, title);
+
+            panel.Border = BoxBorder.Ascii;
+            panel.BorderColor(Color.Maroon);
+            player.Write(panel);
             return true;
         }
     }
@@ -197,8 +194,15 @@ namespace RPGFramework.Commands
             }
             return true;
         }
+    }
 
     }
+    internal class RoomShowCommand : ICommand
+    {
+        public string Name => "roomshow";
+        public IEnumerable<string> Aliases => new[] { "rmshow", "roominfo", "rminfo" };
+        public string Help => "Shows info for the current room and its available exits.";
+
     internal class RoomShowCommand : ICommand
     {
         public string Name => "roomshow";
@@ -233,12 +237,11 @@ namespace RPGFramework.Commands
                 player.WriteLine($"{exit.ExitDirection}: {exit.Description}");
             }
 
-            /*
-            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
+
+            foreach (Room r in area.Rooms.Values.OrderBy(r => r.Id))
             {
-                player.WriteLine($"Room {room.Id}: {room.Name}");
-            }
-            */
+                player.WriteLine($"Room {r.Id}: {r.Name}");
+            }            
 
             return true;
         }
@@ -318,6 +321,100 @@ namespace RPGFramework.Commands
         }
     }
 
+    internal class StatsCommand : ICommand
+    {
+        public string Name => "stats";
+        public IEnumerable<string> Aliases => [];
+        public string Help => "Shows information about the current player stats.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            var player = character as Player;
+            if (player == null)
+                return false;
+            if(parameters.Count > 3 || parameters.Count < 2)
+            {
+                WriteUsage(player);
+                return false;
+            }
+            switch (parameters[1].ToLower())
+            {
+                case "atributes":
+                    ShowStats(player);
+                    break;
+                case "level":
+                    ShowLevelInformation(player, player);
+                    break;
+                case "equipment":
+                    ShowEquipment(player, player);
+                    break;
+                case "desc":
+                    ShowBasicInfo(player, player);
+                    break;
+                case "character":
+                    ShowCharacterInfo(player, parameters);
+                    break;
+            }
+
+            return true;
+        }
+
+        public static void WriteUsage(Player player)
+        {
+            player.WriteLine("stats desc");
+            player.WriteLine("stats atributes");
+            player.WriteLine("stats level");
+            player.WriteLine("stats equipment");
+            player.WriteLine("stats character '<name>'");
+        }
+
+        public static void ShowCharacterInfo(Player player, List<string> parameters)
+        {
+            string CharacterName = parameters[2].ToLower();
+            foreach(Player p in GameState.Instance.Players.Values){
+                string playerName = p.Name;
+                if (playerName.Equals(CharacterName)) { ShowBasicInfo(player, p); ShowLevelInformation(player, p);};
+            }
+            foreach(NonPlayer npc in GameState.Instance.NPCCatalog.Values)
+            {
+                string NpcName = npc.Name;
+                if (NpcName.Equals(CharacterName)) { ShowBasicInfo(player, npc); ShowLevelInformation(player, npc); }
+                ;
+            }
+        }
+        public static void ShowBasicInfo(Player player, Character target)
+        {
+            player.WriteLine($"Name: {target.Name}");
+            player.WriteLine($"Description: {target.Description}");
+        }
+        public static void ShowStats(Player player)
+        {
+            player.WriteLine($"Health: {player.Health}/{player.MaxHealth}");
+            player.WriteLine($"Strength: {player.GetStrength()}");
+            player.WriteLine($"Agility: {player.GetStrength()}");
+            player.WriteLine($"Intellect: {player.GetIntelligence()}");
+            player.WriteLine($"Wisdom: {player.GetWisdom()}");
+            player.WriteLine($"Charisma: {player.GetCharisma()}");
+            player.WriteLine($"Constitution: {player.GetConstitution()}");
+        }
+
+        public static void ShowLevelInformation(Player player, Character target)
+        {
+            player.WriteLine($"Level: {player.Level}");
+            player.WriteLine($"XP: {player.XP}");
+            player.WriteLine($"XP to next level: {player.GetXPtoNextLevel()}");
+        }
+
+        public static void ShowEquipment(Player player, Character target)
+        {
+            player.WriteLine($"Primary Weapon: {player.PrimaryWeapon.Name}");
+            player.WriteLine("Equipped Armor:");
+            foreach (var armor in player.EquippedArmor)
+            {
+                player.WriteLine($"- {armor.Name} ({armor.Slot})");
+            }
+        }
+    }
 }
 
 

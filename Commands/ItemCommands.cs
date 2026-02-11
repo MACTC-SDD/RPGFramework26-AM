@@ -169,7 +169,7 @@ namespace RPGFramework.Commands
                 player.WriteLine("Your Role is: " + player.Role.ToString());
                 return false;
             }
-
+            
             // 0: /item
             // 1: create
             // 2: name
@@ -180,7 +180,27 @@ namespace RPGFramework.Commands
             // 7: Level
             // 8: Value
             // 9: Weight
-            if (parameters.Count < 5)
+            if (parameters.Count == 4)
+            {
+                // Short create
+                if (GameState.Instance.ItemCatalog.TryGetValue(parameters[1], out _))
+                {
+                    player.WriteLine("This object already exists.");
+                    return false;
+                }
+
+                Item i = new()
+                {
+                    Name = parameters[2],
+                    Description = parameters[3]
+                };
+                GameState.Instance.ItemCatalog.Add(i.Name, i);
+                player.WriteLine($"New item ({i.Name} created.");
+                return true;
+            }
+
+            // Full create (all parameters)
+            if (parameters.Count < 10)
             {
                 player.WriteLine("Usage: /item create '<name>' '<description>'");
                 return false;
@@ -1343,6 +1363,21 @@ namespace RPGFramework.Commands
         public bool Execute(Character character, List<int> parameters)
        {
             throw new NotImplementedException();
+        }
+    }
+    internal class ListRoomItemCommand : ICommand
+    {
+        public string Name => "roomitems";
+        public IEnumerable<string> Aliases => new List<string>() { "ri" };
+        public string Help => "Lists the items in the current room.";
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+            {
+                return false;
+            }
+            player.WriteLine("");
+            return true;
         }
     }
 }

@@ -22,6 +22,7 @@ namespace RPGFramework.Commands
             TestCommands.GetAllCommands().ForEach(o => Register(o));
             UXCommands.GetAllCommands().ForEach(o => Register(o));
             ItemCommands.GetAllCommands().ForEach(o => Register(o));
+            UXCommands.GetAllCommands().ForEach(o => Register(o));
         }
 
         #region Execute Methods (Static)

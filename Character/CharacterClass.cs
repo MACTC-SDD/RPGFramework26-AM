@@ -28,7 +28,31 @@ namespace RPGFramework
                 player.IncrimentIntelligence(3);
                 player.IncrimentWisdom(2);
             }
+            else if(ClassType == Enums.Classes.Knight)
+            {
+                player.IncrimentStrength(3);
+                player.IncrimentConstitution(2);
+            }
+            else if (ClassType == Enums.Classes.Thief)
+            {
+                player.IncrimentDexterity(3);
+                player.IncrimentCharisma(2);
+            }
+            else if (ClassType == Enums.Classes.Archer)
+            {
+                player.IncrimentDexterity(3);
+                player.IncrimentIntelligence(2);
+            }
+            else if (ClassType == Enums.Classes.Healer)
+            {
+                player.IncrimentWisdom(3);
+                player.IncrimentIntelligence(2);
+            }
 
+        }
+        public override string ToString()
+        {
+            return ClassType.ToString();
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿
 using Microsoft.VisualBasic;
 using RPGFramework.Enums;
+using System.Drawing;
+using static EquipmentBase;
 
 namespace RPGFramework
 {
@@ -15,8 +17,33 @@ namespace RPGFramework
         public float DodgeChance { get; set; } = 0f;
         public float HealthBonus { get; set; } = 0f;
 
+        public EquipmentSlot EquipmentSlot { get; private set; }
+        public int Defense { get; private set; } = 0;
+
+        public Armor(string name, EquipmentSlot slot, int defense)
+        {
+            Name = name;
+            EquipmentSlot = slot;
+            Defense = defense;
+        }
+
+        public Armor()
+        {
+        }
+
+        public ArmorRarity Rarity { get; set; }
 
 
+        Dictionary<ArmorRarity, Color> rarityColors = new()
+{
+    { ArmorRarity  .Common, Color.Gray },
+    { ArmorRarity.Uncommon, Color.Green },
+    { ArmorRarity.Rare, Color.Blue },
+    { ArmorRarity.Epic, Color.Purple },
+    { ArmorRarity.Legendary, Color.Orange },
+    { ArmorRarity.Mythic, Color.Gold }
+};
+    
         //armor based damage reduction
         private void Stats() {
             switch (Type) { 
@@ -103,6 +130,7 @@ namespace RPGFramework
         }
         //amror type cheek end
     }
+
     internal enum ArmorMaterial
     {
         Cloth,
