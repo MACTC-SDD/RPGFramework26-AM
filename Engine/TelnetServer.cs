@@ -113,7 +113,9 @@ internal class TelnetServer
             catch (Exception ex)
             {
                 // Should this use GameState.Log instead?
-                AnsiConsole.WriteException(ex);
+                player.Logout();
+                GameState.Log(DebugLevel.Error,
+                    $"Player Exception ({player.Name})\n{ex.Message}\n{ex.StackTrace}");                    
             }
             finally
             {

@@ -63,9 +63,9 @@ namespace RPGFramework
         {
             return ShopInventory.ContainsKey(index);
         }
-        public void IncrementItemQuantity(string index)
+        public void IncrementItemQuantity(string index, int amount)
         {
-            ShopInventory[index]++;
+            ShopInventory[index] += amount;
         }
         public void AddItemToInventory(string index, int amount)
         {

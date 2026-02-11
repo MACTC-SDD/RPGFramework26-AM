@@ -70,6 +70,36 @@ namespace RPGFramework.Commands
                     break;
                 case "set":
                     return SetNpcProperty(player, parameters);
+                case "add":
+                    if (parameters[2].Equals("armour"))
+                    { 
+                        AddArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        GiveItem(player, parameters);
+                    }
+                    break;
+                case "remove":
+                    if (parameters[2].Equals("armour"))
+                    {
+                        RemoveArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        RemoveItem(player, parameters);
+                    }
+                    break;
+                case "level":
+                    NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
+                    if (npc == null)
+                    {
+                        break;
+                    }
+                    int amount;
+                    int.TryParse(parameters[3], out amount);
+                    npc.LevelUp(amount);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -141,6 +171,36 @@ namespace RPGFramework.Commands
                 case "dialog":
                     NpcDialogCommands(player, parameters);
                     break;
+                case "add":
+                    if (parameters[2].Equals("armour"))
+                    {
+                        AddArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        GiveItem(player, parameters);
+                    }
+                    break;
+                case "remove":
+                    if (parameters[2].Equals("armour"))
+                    {
+                        RemoveArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        RemoveItem(player, parameters);
+                    }
+                    break;
+                case "level":
+                    NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
+                    if (npc == null)
+                    {
+                        break;
+                    }
+                    int amount;
+                    int.TryParse(parameters[3], out amount);
+                    npc.LevelUp(amount);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -157,6 +217,7 @@ namespace RPGFramework.Commands
         }
     }
     #endregion
+
     #region ShopKeepBuilderCommand Class
     internal class ShopKeepBuilderCommand : BaseNpcCommand, ICommand
     {
@@ -168,7 +229,7 @@ namespace RPGFramework.Commands
 
         public bool Execute(Character character, List<string> parameters)
         {
-            _catalog = GameState.Instance.ShopCatalog;
+            _catalog = GameState.Instance.ShopkeepCatalog;
             _entityName = "shopkeep";
             _entityType = typeof(Shopkeep);
 
@@ -205,9 +266,38 @@ namespace RPGFramework.Commands
                         return AddItem(player, parameters);
                     }
                     break;
-                // For longer commands with a lot of optiosn like this, we might send this to another method
                 case "dialog":
                     NpcDialogCommands(player, parameters);
+                    break;
+                case "add":
+                    if (parameters[2].Equals("armour"))
+                    {
+                        AddArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        GiveItem(player, parameters);
+                    }
+                    break;
+                case "remove":
+                    if (parameters[2].Equals("armour"))
+                    {
+                        RemoveArmour(player, parameters);
+                    }
+                    else if (parameters[2].Equals("item"))
+                    {
+                        RemoveItem(player, parameters);
+                    }
+                    break;
+                case "level":
+                    NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
+                    if(npc == null)
+                    {
+                        break;
+                    }
+                    int amount;
+                    int.TryParse(parameters[3], out amount);
+                    npc.LevelUp(amount);
                     break;
                 default:
                     WriteUsage(player);
@@ -218,7 +308,7 @@ namespace RPGFramework.Commands
         }
         private static void ListShopKeeps(Player player)
         {
-            foreach (var shop in GameState.Instance.ShopCatalog)
+            foreach (var shop in GameState.Instance.ShopkeepCatalog)
             {
                 player.WriteLine($"Shop Name: {shop.Value.Name} Description: {shop.Value.Description}");
             }
@@ -236,13 +326,23 @@ namespace RPGFramework.Commands
             {
 
                 //Adds one to quantity if it exists already
-                if (GameState.Instance.ShopCatalog.ContainsKey(parameters[3]))
+                if (GameState.Instance.ShopkeepCatalog.ContainsKey(parameters[3]))
                 {
-                    Shopkeep shop = GameState.Instance.ShopCatalog[parameters[3]];
+                    Shopkeep? shop = (Shopkeep?)CheckForCatalogAndObject(player, parameters[3]);
+                    if (shop == null)
+                        return false;
+                    
                     string itemID = parameters[4];
+                    if(GameState.Instance.ItemCatalog.ContainsKey(itemID) == false)
+                    {
+                        player.WriteLine($"Item with ID '{itemID}' does not exist in the item catalog.");
+                        return false;
+                    }
                     if (shop.ShopInventory.ContainsKey(itemID))
                     {
-                        shop.IncrementItemQuantity(itemID);
+                        int amount;
+                        int.TryParse(parameters[5],out amount);
+                        shop.IncrementItemQuantity(itemID, amount);
                         player.WriteLine("Added one of the item to the inventory!");
                     }
                     else
@@ -264,6 +364,7 @@ namespace RPGFramework.Commands
         }
     }
     #endregion
+
     #region PlayerShopCommand Class
     internal class PlayerShopCommand : BaseNpcCommand, ICommand
     {
@@ -275,7 +376,7 @@ namespace RPGFramework.Commands
 
         public bool Execute(Character character, List<string> parameters)
         {
-            _catalog = GameState.Instance.ShopCatalog;
+            _catalog = GameState.Instance.ShopkeepCatalog;
             _entityName = "shop";
             _entityType = typeof(Shopkeep);
 
@@ -467,6 +568,12 @@ namespace RPGFramework.Commands
             player.WriteLine($"/{_entityName} tag list '<name>'");
             player.WriteLine($"/{_entityName} set location '<name>' '<locationid>");
             player.WriteLine($"/{_entityName} set area '<name>' '<areaid>");
+            player.WriteLine($"/{_entityName} set weapon '<name>' '<weaponname>'");
+            player.WriteLine($"/{_entityName} give armour '<name>' '<armourID>'");
+            player.WriteLine($"/{_entityName} give item '<name>' '<itemID>'");
+            player.WriteLine($"/{_entityName} remove armour '<name>' '<armourID>'");
+            player.WriteLine($"/{_entityName} remove item '<name>' '<itemID>'");
+            player.WriteLine($"/{_entityName} level '<name>' '<amount>'");
             if (_entityName == "shopkeep" || _entityName == "npc")
             {
                 player.WriteLine($"/{_entityName} dialog list '<character>' '<category>'");
@@ -481,6 +588,114 @@ namespace RPGFramework.Commands
                     player.WriteLine($"/{_entityName} inventory delete '<character'> '<itemID>'");
                 }
             }
+        }
+
+        #endregion
+
+        #region Remove Item Method
+        public static void RemoveItem(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine($"Usage: /{_entityName} remove item '<name>' '<itemID>'");
+                return;
+            }
+            string name = parameters[3];
+            string itemId = parameters[4];
+            NonPlayer? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            if (!GameState.Instance.ItemCatalog.ContainsKey(itemId))
+            {
+                player.WriteLine($"Item with ID '{itemId}' does not exist in the item catalog.");
+                return;
+            }
+            bool removed = npc.PlayerInventory.RemoveItem(itemId);
+            if (removed)
+            {
+                player.WriteLine($"Item '{itemId}' removed from {_entityName} '{name}' inventory.");
+            }
+            else
+            {
+                player.WriteLine($"Item '{itemId}' not found in {_entityName} '{name}' inventory.");
+            }
+        }
+        #endregion
+
+        #region RemoveArmour Method
+        public static void RemoveArmour(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine($"Usage: /{_entityName} remove armour '<name>' '<armourID>'");
+                return;
+            }
+            string name = parameters[3];
+            string armourId = parameters[4];
+            NonPlayer? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            if (!GameState.Instance.ArmorCatalog.ContainsKey(armourId))
+            {
+                player.WriteLine($"Armour with ID '{armourId}' does not exist in the armour catalog.");
+                return;
+            }
+            bool removed = npc.EquippedArmor.RemoveAll(a => a.Name.Equals(armourId, StringComparison.OrdinalIgnoreCase)) > 0;
+            if (removed)
+            {
+                player.WriteLine($"Armour '{armourId}' removed from {_entityName} '{name}' inventory.");
+            }
+            else
+            {
+                player.WriteLine($"Armour '{armourId}' not found in {_entityName} '{name}' inventory.");
+            }
+        }
+        #endregion
+
+        #region AddArmour Method
+        public static void AddArmour(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine($"Usage: /{_entityName} give armour '<name>' '<armourID>'");
+                return;
+            }
+            string name = parameters[3];
+            string armourId = parameters[4];
+            NonPlayer? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            if (!GameState.Instance.ArmorCatalog.ContainsKey(armourId))
+            {
+                player.WriteLine($"Armour with ID '{armourId}' does not exist in the armour catalog.");
+                return;
+            }
+            npc.EquippedArmor.Add((Armor)GameState.Instance.ArmorCatalog[armourId].Clone());
+            player.WriteLine($"Armour '{armourId}' added to {_entityName} '{name}' inventory.");
+        }
+
+        #endregion
+
+        #region GiveItem Method
+        public static void GiveItem(Player player, List<string> parameters)
+        {
+            if (parameters.Count < 5)
+            {
+                player.WriteLine($"Usage: /{_entityName} give item '<name>' '<itemID>'");
+                return;
+            }
+            string name = parameters[3];
+            string itemId = parameters[4];
+            NonPlayer? npc = CheckForCatalogAndObject(player, name);
+            if (npc == null)
+                return;
+            if (!GameState.Instance.ItemCatalog.ContainsKey(itemId))
+            {
+                player.WriteLine($"Item with ID '{itemId}' does not exist in the item catalog.");
+                return;
+            }
+            npc.PlayerInventory.AddItem(GameState.Instance.ItemCatalog[itemId].Clone());
+            player.WriteLine($"Item '{itemId}' added to {_entityName} '{name}' inventory.");
         }
 
         #endregion
@@ -601,6 +816,26 @@ namespace RPGFramework.Commands
                         return false;
                     }
                 // Add other properties here as needed
+                case "weapon":
+                    bool found = false;
+                    foreach(string w in GameState.Instance.WeaponCatalog.Keys)
+                    {
+                        if(w.Equals(value))
+                        {
+                            npc.PrimaryWeapon = (Weapon)GameState.Instance.WeaponCatalog[w].Clone();
+                            player.WriteLine($"{_entityName} '{name}' weapon set to '{value}'.");
+                            found = true;
+                        }
+                    }
+                    if (found) {
+                        player.WriteLine($"{_entityName} '{name}' weapon set to '{value}'.");
+                    }
+                    else
+                    {
+                        player.WriteLine($"Weapon '{value}' not found in weapon catalog.");
+                        return false;
+                    }
+                    return true;
                 default:
                     player.WriteLine($"Property '{property}' is not recognized for {_entityName}.");
                     break;
@@ -617,11 +852,11 @@ namespace RPGFramework.Commands
             // for mobs or whatever if it isn't appropriate.
             if (parameters.Count < 6)
             {
-                player.WriteLine("Usage: /npc dialog delete '<category>' '<character>' '<line to remove>'");
+                player.WriteLine("Usage: /npc dialog delete '<character>' '<category>' '<line to remove>'");
                 return;
             }
-            string name = parameters[4];
-            string category = parameters[3].ToLower();
+            string name = parameters[3];
+            string category = parameters[4];
             string description = parameters[5];
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
@@ -630,7 +865,9 @@ namespace RPGFramework.Commands
                 player.WriteLine($"{_entityName} '{name}' not found.");
                 return;
             }
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             npc.GetDialogGroup(category).RemoveDialogLine(description);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
         #endregion
 
@@ -639,11 +876,11 @@ namespace RPGFramework.Commands
         {
             if (parameters.Count < 5)
             {
-                player.WriteLine($"Usage: /{_entityName} dialog delete '<category>' '<character>'");
+                player.WriteLine($"Usage: /{_entityName} dialog delete '<character>' '<category>'");
                 return false;
             }
-            string name = parameters[4];
-            string category = parameters[3].ToLower();
+            string name = parameters[3];
+            string category = parameters[4];
 
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
@@ -664,15 +901,9 @@ namespace RPGFramework.Commands
             {
                 return false;
             }
-            int index = 0;
             foreach (DialogGroup dialog in npc.DialogGroups)
             {
-                foreach (string dialogLine in dialog.DialogLines)
-                {
-                    player.WriteLine(dialog.GetDialogLine(index));
-                    index++;
-                }
-                index = 0;
+                player.WriteLine($"Category: {dialog.Category}");
             }
             return true;
         }
@@ -695,7 +926,9 @@ namespace RPGFramework.Commands
             {
                 return false;
             }
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
             DialogGroup dialogGroup = npc.GetDialogGroup(category);
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
             if (dialogGroup == null)
             {
                 player.WriteLine($"Dialog category '{category}' not found for {_entityName} '{name}'.");
@@ -713,18 +946,15 @@ namespace RPGFramework.Commands
         #endregion
 
         #region CheckForCatalogAndObject Method
-        protected static NonPlayer? CheckForCatalogAndObject(Player player, object key)
+        protected static NonPlayer? CheckForCatalogAndObject(Player player, string key)
         {
-            if (_catalog is null || !_catalog.ContainsKey(key))
+            var catalog = _catalog as Catalog<string, NonPlayer>;
+            if (!catalog!.TryGetValue(key, out NonPlayer? npc) || npc == null)
             {
                 player.WriteLine($"{_entityName} '{key}' not found.");
                 return null;
             }
-            if (_catalog[key] is not NonPlayer npc)
-            {
-                player.WriteLine($"{_entityName} '{key}' is not a valid NonPlayer entity.");
-                return null;
-            }
+
             return npc;
         }
         #endregion
@@ -732,29 +962,36 @@ namespace RPGFramework.Commands
         #region NpcAddDialog Method
         protected static bool NpcAddDialog(Player player, List<string> parameters)
         {
-            if (parameters.Count < 6)
-            {
-                player.WriteLine("Usage: /npc dialog add '<character'> <category>' '<line to add>'");
-                return false;
-            }
-
             string name = parameters[3];
             string category = parameters[4];
             string dialogLine = parameters[5];
-
+            player.WriteLine("Adding dialog");
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return false;
 
             // Might need to check if category exists first
-            if (npc.HasDialogGroup(category)){
+            if (!Enum.TryParse<DialogGroupCategory>(category, true, out DialogGroupCategory groupCategory))
+            {
+                player.WriteLine($"Dialog group {category} isn't valid.");
+                return false;
+            }
+            if (npc.HasDialogGroup(groupCategory)){
                 DialogGroup dialogCategory = npc.GetDialogGroup(category);
                 if (!dialogCategory.HasDialogLine(dialogLine))
                 {
                     dialogCategory.AddDialogLine(dialogLine);
+                    player.WriteLine($"Dialog line added to category '{category}' for {_entityName} '{name}'.");
+                }
+                else
+                {
+                    player.WriteLine("Line already exists!");
                 }
             }
-            player.WriteLine($"Dialog line added to category '{category}' for {_entityName} '{name}'.");
+            else
+            {
+                player.WriteLine($"Category does not exist");
+            }
             return true;
         }
         #endregion
@@ -764,21 +1001,26 @@ namespace RPGFramework.Commands
         {
             if (parameters.Count < 5)
             {
-                player.WriteLine("Usage: /npc dialog add category '<character'> <category>'");
+                player.WriteLine("Usage: /npc dialog add '<character'> <category>'");
                 return false;
             }
-            string name = parameters[4];
-            string category = parameters[5];
+            string name = parameters[3];
+            string category = parameters[4];
             NonPlayer? npc = CheckForCatalogAndObject(player, name);
             if (npc == null)
                 return false;
-            if (!npc.HasDialogGroup(category))
+
+            if (!Enum.TryParse<DialogGroupCategory>(category, true, out DialogGroupCategory groupCategory))
             {
-                DialogGroup dialogCategory = new DialogGroup();
-                DialogGroupCategory categoryName;
-                Enum.TryParse<DialogGroupCategory>(category, true, out categoryName);
-                dialogCategory.SetCategory(categoryName);
-                npc.DialogGroups.Add(dialogCategory);
+                player.WriteLine($"Dialog group {category} isn't valid.");
+                return false;
+            }
+            
+            if (!npc.HasDialogGroup(groupCategory))
+            {
+                DialogGroup dialogGroup = new DialogGroup();
+                dialogGroup.SetCategory(groupCategory);
+                npc.DialogGroups.Add(dialogGroup);
             }
             else
             {
@@ -867,7 +1109,7 @@ namespace RPGFramework.Commands
         protected static void ListTagsOnNPC(Player player, Character npc)
         {
             player.WriteLine("Valid Tags:");
-            foreach (NPCTag tag in npc.GetTags())
+            foreach(NPCTag tag in npc.Tags)
             {
                 player.WriteLine(tag.ToString());
             }
@@ -909,12 +1151,12 @@ namespace RPGFramework.Commands
         #region NpcDialogCommands Method
         protected static void NpcDialogCommands(Player player, List<string> parameters)
         {
-            if (parameters[2].Equals("add"))
+            if (parameters[2].Equals("add") && parameters.Count == 5)
             {
-                NpcAddDialog(player, parameters);
+                NpcAddDialogCategory(player, parameters);
                 return;
             }
-            if (parameters[2].Equals("add") && parameters[4].Equals("category"))
+            else if (parameters[2].Equals("add") && parameters.Count == 6)
             {
                 NpcAddDialog(player, parameters);
                 return;

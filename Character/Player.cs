@@ -25,6 +25,7 @@ namespace RPGFramework
         public string Password { get; private set; } = "SomeGarbage";
         public TimeSpan PlayTime { get; set; } = new TimeSpan();
         public PlayerRole Role { get; set; }
+      
         #endregion
         /*Made a small change?, undid it as it was for just testing*/
         public string DisplayName()
@@ -81,6 +82,10 @@ namespace RPGFramework
             return player != null;
         }
         
+        public static List<Player> GetOnlinePlayers(Dictionary<string, Player> players)
+        {
+            return [.. players.Values.Where(p => p.IsOnline).OrderBy(p => p.Name)];
+        }
         /// <summary>
         /// Things that should happen when a player logs in.
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using RPGFramework.Display;
 using RPGFramework.Enums;
+using System.Security.Cryptography.X509Certificates;
 
 namespace RPGFramework.Geography
 {
@@ -30,10 +31,9 @@ namespace RPGFramework.Geography
         public List<NonPlayer> Npcs{ get; set; } = [];
         public int MaxSpawnedAllowed { get; set; } = 3;
         public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        public List<Player> Players { get; set; } = [];
-        // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
-        // A list of items currently on the floor in this room.
+        public object Exits { get; internal set; }
+
         #endregion --- Properties ---
 
         #region --- Methods ---
@@ -260,18 +260,33 @@ namespace RPGFramework.Geography
 
             // Send a message to all players in the room
             Comm.SendToRoomExcept(this, $"{character.Name} enters the room.", character);
-            if(character is NonPlayer npc){ 
+            if (character is NonPlayer npc) {
                 Npcs.Add(npc);
-            }
-            else if(character is Player player)
-            {
-                Players.Add(player);
             }
             else if (character is Mob mob)
             {
                 Mobs.Add(mob);
             }
         }
+
+        //EngagementRules
+        public void SafeZone()
+        {
+            
+        }
+        public void AgroRoom() 
+        { 
+        
+        }
+        public void SameRoom() 
+        { 
+        
+        }
+        public void TrapRoom() 
+        { 
+        
+        }
+        //end EngagementRules
 
         /// <summary>
         /// When a character leaves a room, do this.
@@ -285,10 +300,6 @@ namespace RPGFramework.Geography
             if (character is NonPlayer npc)
             {
                 Npcs.Remove(npc);
-            }
-            else if (character is Player player)
-            {
-                Players.Remove(player);
             }
             else if (character is Mob mob)
             {
@@ -304,7 +315,7 @@ namespace RPGFramework.Geography
         /// </summary>
         public void SpawnMobsInRoom()
         {
-            if(Players.Count <= 0)
+            if(this.GetPlayers().Count <= 0)
             {
                 // Don't spawn mobs if players aren't present
                 return;
@@ -450,7 +461,7 @@ namespace RPGFramework.Geography
 
         public void SpawnNpcsInRoom()
         {
-            if (Players.Count <= 0)
+            if (this.GetPlayers().Count <= 0)
             {
                 // Don't spawn npcs if players aren't present
                 return;

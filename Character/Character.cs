@@ -1,6 +1,9 @@
-using RPGFramework.Geography;
-using RPGFramework.Items;
 using RPGFramework.Enums;
+using RPGFramework.Geography;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using RPGFramework.Items;
+using System.Net;
 using System.Text.Json.Serialization;
 
 
@@ -37,14 +40,16 @@ namespace RPGFramework
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
-        protected List<NPCTag> Tags { get; set; } = []; // (for scripting or special behavior)
+        public List<NPCTag> Tags { get; set; } = []; // (for scripting or special behavior)
         [JsonIgnore] public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = [];
         public Weapon PrimaryWeapon { get; set; }
-        public Inventory PlayerInventory { get; set; } = new Inventory(); 
+        public static double CritChance { get; set; } = CritChance = Math.Clamp(CritChance, 0.0, 0.38);
+        public static double CritDamage { get; set; } = 1;
 
+        public Inventory PlayerInventory { get; set; } = new Inventory(); 
         #endregion
 
         #region --- Skill Attributes --- (0-20)
@@ -157,11 +162,44 @@ namespace RPGFramework
         }
         #endregion
 
+        public void LevelUp(int amount)
+        {
+            Level += amount;
+            Random random = new Random();
+            for (int i = 0; i < amount; i++)
+            {
+                int healthIncrease = (int)(MaxHealth * 0.1);
+                SetMaxHealth(MaxHealth + healthIncrease);
+                int randomSkill = random.Next(0, 5);
+                switch (randomSkill)
+                {
+                    case 0:
+                        IncrimentStrength(1); break;
+                    case 1:
+                        IncrimentDexterity(1); break;
+                    case 2:
+                        IncrimentCharisma(1); break;
+                    case 3:
+                        IncrimentConstitution(1); break;
+                    case 4:
+                        IncrimentWisdom(1); break;
+                    case 5:
+                        IncrimentIntelligence(1); break;
+
+                }
+            }
+            // Restore health to full on level up
+            SetHealth(MaxHealth);
+        }
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
         }
 
+        public int GetXPtoNextLevel()
+        {
+            return Level * 100; // Example: 100 XP per level
+        }
         public Area GetArea()
         {
             return GameState.Instance.Areas[AreaId];
@@ -304,10 +342,59 @@ namespace RPGFramework
             return dodgedroll;
         }
         //End Attack Resolution
-        public List<NPCTag> GetTags()
+        //Stored Actions 
+
+        /* public void Task StoredActions()
+         {
+            if //(Enemy attacking)
+               {
+                 (Actions) await (EnemyAttack);
+             }
+         }*/
+
+        //End Stored Actions
+
+        //Critical hit based on level
+        private void CritOnLevel()
         {
-            return Tags;
+            CritChance = (Level / 50.0) * 0.10;
+            CritChance = Math.Clamp(CritChance, 0.0, 0.10);
         }
+        //Mythril critical hit 
+        private void MythrilCrit()
+        {
+            Armor equiped = new Armor();
+
+
+            if (Armor.WearingMythril(equiped))
+                CritChance += 0.13;
+                CritDamage = 2;
+            string ResultP = Player.CritChance.ToString("P");
+
+        }
+
+        //Mythril end critical hit
+        //armor type crits
+        private void ArmorTypeCrit()
+        {
+            Armor type = new Armor();
+
+            if (Armor.WearingLight(type))
+            {
+                CritChance += 0.05;
+            }
+            if (Armor.WearingMedium(type))
+            {
+                CritChance += 0.1;
+            }
+            if (Armor.WearingHeavy(type))
+            {
+                CritChance += 0.2;
+            }
+        }
+        //end armor type crits
+        //End critical hit
+        
     }
 }
         
