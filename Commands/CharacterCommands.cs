@@ -1151,32 +1151,35 @@ namespace RPGFramework.Commands
         #region NpcDialogCommands Method
         protected static void NpcDialogCommands(Player player, List<string> parameters)
         {
+            if (parameters[2].Equals("add") && parameters.Count == 6)
+            {
+                NpcAddDialog(player, parameters);
+                return;
+            }
             if (parameters[2].Equals("add") && parameters.Count == 5)
             {
                 NpcAddDialogCategory(player, parameters);
                 return;
             }
-            else if (parameters[2].Equals("add") && parameters.Count == 6)
-            {
-                NpcAddDialog(player, parameters);
-                return;
-            }
-            else if (parameters[2].Equals("list") && parameters.Count == 4)
+            if (parameters[2].Equals("list") && parameters.Count == 4)
             {
                 NpcListDialog(player, parameters);
                 return;
             }
-            else if (parameters[2].Equals("list") && parameters.Count == 5)
+            if (parameters[2].Equals("list") && parameters.Count == 5)
             {
                 NpcListCategoryDialog(player, parameters);
+                return;
             }
-            else if (parameters[2].Equals("delete") && parameters.Count == 5)
+            if (parameters[2].Equals("delete") && parameters.Count == 5)
             {
                 DeleteNpcDialogCategory(player, parameters);
+                return;
             }
-            else if (parameters[2].Equals("delete") && parameters.Count == 6)
+            if (parameters[2].Equals("delete") && parameters.Count == 6)
             {
                 DeleteNpcDialogLine(player, parameters);
+                return;
             }
         }
         #endregion
