@@ -14,6 +14,7 @@ namespace RPGFramework.Interfaces
         Task LoadCatalogAsync();
 
         Task SaveCatalogAsync();
+        //bool TryGetValue(string keyString, out object value);
 
         bool Remove(object key);
 
@@ -29,7 +30,8 @@ namespace RPGFramework.Interfaces
         void Add(TKey key, TValue value);
         bool ContainsKey(TKey key);
         bool Remove(TKey key);
-        bool TryGetValue(TKey key, out TValue? value);        
+        bool TryGetValue(TKey key, out TValue? value);
+        bool TryGetValue(string keyString, out TValue? value);
     }
 }
 

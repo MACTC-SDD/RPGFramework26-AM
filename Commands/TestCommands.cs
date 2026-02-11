@@ -1,6 +1,4 @@
-﻿using RPGFramework.Items;
-using System.Runtime.InteropServices;
-using static RPGFramework.Commands.TestItemSizeCommand;
+﻿using RPGFramework.Combat;
 
 namespace RPGFramework.Commands
 {
@@ -8,10 +6,12 @@ namespace RPGFramework.Commands
     {
         public static List<ICommand> GetAllCommands()
         {
+            TestItemSizeCommand testItemSizeCommand = new();
             return new List<ICommand>
             {
                 new TestItemSizeCommand(),
                 new TestItemCommand(),
+                new TestBattleCommand(),
                 // Add more test commands here as needed
             };
         }
@@ -31,16 +31,44 @@ namespace RPGFramework.Commands
         public string Name => "example";
 
         // These are the aliases that can also be used to execute this command. This can be empty.
-        public IEnumerable<string> Aliases => new List<string>() { "ex" };
+        public IEnumerable<string> Aliases => [];
+        public string Help => "";
 
         // What will happen when the command is executed
         public bool Execute(Character character, List<string> parameters)
         {
             // A lot of times we want to make sure it's a Player issuing the command, but not always
-            if (character is Player player)
-            {
-                player.WriteLine("This is an example command.");
-            }
+            if (character is not Player player)
+                return false;
+
+            // If the command failed to run for some reason, return false
+            player.WriteLine("This is an example command.");
+
+            return true;
+        }
+    }
+
+    internal class TestBattleCommand : ICommand
+    {
+        // This is the command a player would type to execute this command
+        public string Name => "tb";
+
+        // These are the aliases that can also be used to execute this command. This can be empty.
+        public IEnumerable<string> Aliases => [];
+        public string Help => "Start a test battle.";
+
+        // What will happen when the command is executed
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+                return false;
+
+            player.WriteLine("This is an example command.");
+
+            Mob m = new Mob() { Name = "Test Mob", Description = "A mob for testing" };
+            Battle b = new Battle(player, m, player.GetArea(), player.GetRoom());
+            GameState.Instance.Battles.Add(b);
+
 
             // If the command failed to run for some reason, return false
             return true;
@@ -54,25 +82,27 @@ namespace RPGFramework.Commands
 
         // These are the aliases that can also be used to execute this command. This can be empty.
         public IEnumerable<string> Aliases => new List<string>() {  };
+        public string Help => "";
 
         // What will happen when the command is executed
         public bool Execute(Character character, List<string> parameters)
         {
             // A lot of times we want to make sure it's a Player issuing the command, but not always
-            if (character is Player player)
-            {
-                player.WriteLine("This is an example command.");
-                Item i = new Item();
-                i.Name = character.Name;
-                i.Description = "Test Item";
-                GameState.Instance.ItemCatalog.Add(i.Name, i);
-            }
+            if (character is not Player player)
+                return false;
+
+
+            player.WriteLine("This is an example command.");
+            Item i = new Item();
+            i.Name = character.Name;
+            i.Description = "Test Item";
+            GameState.Instance.ItemCatalog.Add(i.Name, i);
+
 
             // If the command failed to run for some reason, return false
             return true;
         }
     }
-
 
     /// <summary>
     /// Measures the memory usage of creating a large number of <see cref="Item"/> instances.
@@ -84,6 +114,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "testitemsize";
         public IEnumerable<string> Aliases => new List<string>() { };
+        public string Help => "";
         public bool Execute(Character character, List<string> parameters)
         {
             long startMem = GC.GetTotalMemory(true);

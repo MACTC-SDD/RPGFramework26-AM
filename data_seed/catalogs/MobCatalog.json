@@ -1,0 +1,927 @@
+{
+  "Items": {
+    "Large Rat": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "A dog-sized rat that looks infested with some kind of rabies\u2026",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Large Rat",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Flying Eyeball": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "A giant eyeball with boney, webbed wings keeping it airborne.",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Flying Eyeball",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Horned Frog": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "A large frog with two horns protruding from the top of its head.",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Horned Frog",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Froggoyle": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "A stone statue of a winged frog that came to life.",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Froggoyle",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Cat Fish": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "Half cat, half fish, all claws.",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Cat Fish",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Sea Lion": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "Catfish but big kitty.",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Sea Lion",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Tophat Bear": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "A small plush bear with a fancy tophat and secret...",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Tophat Bear",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Purple Bunny": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "A small plush bunny with a red bowtie and a tendency to defy the laws of physics.",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Purple Bunny",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Hungry Chicken": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "A small plush chicken holding a cupcake. She looks hungry...",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Hungry Chicken",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Pirate Fox": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "A small plush fox with an eyepatch and a hook. Doesn",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Pirate Fox",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Baby Clown": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "A plush clown with red hair. She might offer you ice cream.",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Baby Clown",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Battery Boy": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "A little robotic boy with a propeller hat who will ask for all of your AA batteries.",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Battery Boy",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    },
+    "Militia": {
+      "ChaseDistance": 0,
+      "MaxRoomsToChase": 5,
+      "DialogGroups": [
+        {
+          "Category": 0,
+          "DialogLines": [
+            "Hello there!"
+          ]
+        },
+        {
+          "Category": 1,
+          "DialogLines": []
+        }
+      ],
+      "CurrentAggressionLevel": 0,
+      "MaxAggressionLevel": 10,
+      "MinAgressionLevel": 0,
+      "Spawned": false,
+      "NpcType": 1,
+      "CurrentState": 0,
+      "Alive": true,
+      "AreaId": 0,
+      "Description": "Recruited and swiftly trained after the incursion began.",
+      "Gold": 0,
+      "Health": 0,
+      "Level": 1,
+      "LocationId": 0,
+      "MaxHealth": 0,
+      "Name": "Militia",
+      "XP": 0,
+      "Class": {
+        "ClassType": 0
+      },
+      "EquippedArmor": [],
+      "PrimaryWeapon": {
+        "Damage": 2,
+        "OnehandDamage": 0,
+        "AttackTime": 1,
+        "TwohandDamage": 0,
+        "HeavyAttack": 0,
+        "LightAttack": 0,
+        "Range": 0,
+        "Abilities": 0,
+        "Type": 0,
+        "Material": 0,
+        "Id": 0,
+        "Description": "A fist",
+        "DisplayText": "",
+        "IsDroppable": false,
+        "IsGettable": false,
+        "IsStackable": false,
+        "Level": 0,
+        "Name": "Fist",
+        "Tags": [],
+        "UsesRemaining": -1,
+        "Value": 0,
+        "Weight": 0
+      },
+      "PlayerInventory": {
+        "InventorySlots": [],
+        "Items": [],
+        "MaxSlots": 16
+      },
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Wisdom": 0,
+      "Charisma": 0
+    }
+  }
+}
