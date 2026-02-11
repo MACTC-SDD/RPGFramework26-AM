@@ -28,13 +28,14 @@ namespace RPGFramework.Commands
                 new StatsCommand(),
                 new RoomShowCommand(),
                 new WhoCommand(),
+                new GoldCommand(),
                 // Add other core commands here as they are implemented
             };
         }
 
 
     }
-
+    
     internal class AFKCommand : ICommand
     {
         public string Name => "afk";
@@ -178,19 +179,29 @@ namespace RPGFramework.Commands
 
             if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
             {
-                player.WriteLine("Area not found.");
-                return false;
+                if (area == null)
+                {
+                    player.WriteLine("Area not found.");
+                    return false;
+                }
+
+
+                player.WriteLine($"Area name: {area.Name}");
+                player.WriteLine($"Area description: {area.Description}");
+                player.WriteLine($"Area Id: {area.Id}");
+
+                return true;
             }
-
-            player.WriteLine($"Area name: {area.Name}");
-            player.WriteLine($"Area description: {area.Description}");
-            player.WriteLine($"Area Id: {area.Id}");
-
             return true;
-
         }
     }
 
+    }
+    internal class RoomShowCommand : ICommand
+    {
+        public string Name => "roomshow";
+        public IEnumerable<string> Aliases => new[] { "rmshow", "roominfo", "rminfo" };
+        public string Help => "Shows info for the current room and its available exits.";
 
     internal class RoomShowCommand : ICommand
     {
@@ -230,7 +241,7 @@ namespace RPGFramework.Commands
             foreach (Room r in area.Rooms.Values.OrderBy(r => r.Id))
             {
                 player.WriteLine($"Room {r.Id}: {r.Name}");
-            }
+            }            
 
             return true;
         }
@@ -258,6 +269,54 @@ namespace RPGFramework.Commands
             }
 
             player.Write(table);
+            return true;
+        }
+    }
+
+    internal class GoldCommand : ICommand
+    {
+        public string Name => "gold";
+        public IEnumerable<string> Aliases => new List<string> { "/gold"};//I ran into a small error where typing "/gold" wouldn't work, so I added it here to force it to work, but this way of doing it is probably wrong-Landon
+        public string Help => "/gold <player> <amount> - Add/subtract gold or show gold.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player caller)
+                return false;
+
+            if (parameters.Count < 2)
+            {
+                caller.WriteLine("Usage: /gold <player> <amount>");
+                return true;
+            }
+
+            string targetName = parameters[1];
+
+            if (!Player.TryFindPlayer(targetName, GameState.Instance.Players, out Player? target) || target == null)
+            {
+                caller.WriteLine("Player not found.");
+                return true;
+            }
+
+            // SHOW GOLD
+            if (parameters.Count == 2)
+            {
+                caller.WriteLine($"{target.Name} has {target.Gold} gold.");
+                return true;
+            }
+
+            // PARSE AMOUNT
+            if (!int.TryParse(parameters[2], out int amount))
+            {
+                caller.WriteLine("Invalid gold amount.");
+                return true;
+            }
+
+            target.Gold += amount;
+
+            caller.WriteLine($"{target.Name} now has {target.Gold} gold.");
+            target.Save(); // saves instantly
+
             return true;
         }
     }
@@ -357,5 +416,6 @@ namespace RPGFramework.Commands
         }
     }
 }
+
 
 
