@@ -30,6 +30,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Large Rat",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -37,15 +40,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -57,7 +65,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -101,6 +111,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Flying Eyeball",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -108,15 +121,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -128,7 +146,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -172,6 +192,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Horned Frog",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -179,15 +202,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -199,7 +227,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -243,6 +273,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Froggoyle",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -250,15 +283,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -270,7 +308,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -314,6 +354,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Cat Fish",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -321,15 +364,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -341,7 +389,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -385,6 +435,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Sea Lion",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -392,15 +445,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -412,7 +470,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -456,6 +516,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Tophat Bear",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -463,15 +526,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -483,7 +551,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -527,6 +597,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Purple Bunny",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -534,15 +607,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -554,7 +632,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -598,6 +678,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Hungry Chicken",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -605,15 +688,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -625,7 +713,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -669,6 +759,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Pirate Fox",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -676,15 +769,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -696,7 +794,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -740,6 +840,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Baby Clown",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -747,15 +850,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -767,7 +875,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -811,6 +921,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Battery Boy",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -818,15 +931,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -838,7 +956,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],
@@ -882,6 +1002,9 @@
       "LocationId": 0,
       "MaxHealth": 0,
       "Name": "Militia",
+      "Tags": [
+        3
+      ],
       "XP": 0,
       "Class": {
         "ClassType": 0
@@ -889,15 +1012,20 @@
       "EquippedArmor": [],
       "PrimaryWeapon": {
         "Damage": 2,
+        "Durability": 0,
+        "MaxDurability": 0,
         "OnehandDamage": 0,
         "AttackTime": 1,
         "TwohandDamage": 0,
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": 0,
+        "Abilities": null,
         "Type": 0,
         "Material": 0,
+        "IsTwoHanded": false,
+        "AbilitiesDamage": 0,
+        "Rarity": 0,
         "Id": 0,
         "Description": "A fist",
         "DisplayText": "",
@@ -909,7 +1037,9 @@
         "Tags": [],
         "UsesRemaining": -1,
         "Value": 0,
-        "Weight": 0
+        "Weight": 0,
+        "StrengthBonus": 0,
+        "DefenseBonus": 0
       },
       "PlayerInventory": {
         "InventorySlots": [],

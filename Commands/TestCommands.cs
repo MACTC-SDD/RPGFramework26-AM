@@ -1,4 +1,5 @@
 ﻿using RPGFramework.Combat;
+using RPGFramework.Items;
 
 namespace RPGFramework.Commands
 {
@@ -150,6 +151,7 @@ namespace RPGFramework.Commands
         {
             // This is the command a player would type to execute this command
             public string Name => "/joe";
+            public string Help => "A test command for Joe to mess around with his inventory.";
 
             // These are the aliases that can also be used to execute this command. This can be empty.
             public IEnumerable<string> Aliases => new List<string>() {};

@@ -1369,6 +1369,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "roomitems";
         public IEnumerable<string> Aliases => new List<string>() { "ri" };
+        public string Help => "Lists the items in the current room.";
         public bool Execute(Character character, List<string> parameters)
         {
             if (character is not Player player)

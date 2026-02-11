@@ -43,8 +43,7 @@ namespace RPGFramework
     { ArmorRarity.Legendary, Color.Orange },
     { ArmorRarity.Mythic, Color.Gold }
 };
-    }
-}
+    
         //armor based damage reduction
         private void Stats() {
             switch (Type) { 
@@ -131,6 +130,7 @@ namespace RPGFramework
         }
         //amror type cheek end
     }
+
     internal enum ArmorMaterial
     {
         Cloth,
