@@ -17,6 +17,7 @@ namespace RPGFramework.Items
 
             Item item = GameState.Instance.ItemCatalog[value];
             InventorySlots[index] = item;
+            if (index < 0) {string playerReminder = "Inventory Is Full!"}
         }
 
         public bool AddItem(Item item)
@@ -24,6 +25,8 @@ namespace RPGFramework.Items
             if (Items.Count >= MaxSlots) return false;
             Items.Add(item);
             return true;
+            //ux team
+            if (Items.Count >= MaxSlots) { string playeraction = $"No Space In Inventory To Add Item!"; }
         }
 
         // CODE REVIEW: Shelton - we might want to discuss. In this case we are giving
@@ -54,6 +57,8 @@ namespace RPGFramework.Items
             {
                 InventorySlots.Remove(itemToSell);
                 player.Gold += ((int) itemToSell.Value / 2);
+                //ux team
+                string playeraction = $"You Sold {itemToSell} for {itemToSell.Value}!";
             }
         }
 
