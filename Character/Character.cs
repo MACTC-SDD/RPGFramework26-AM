@@ -1,8 +1,9 @@
+using RPGFramework.Enums;
 using RPGFramework.Geography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using RPGFramework.Items;
-using RPGFramework.Enums;
+using System.Net;
 using System.Text.Json.Serialization;
 
 
@@ -39,7 +40,7 @@ namespace RPGFramework
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
-        protected List<NPCTag> Tags { get; set; } = []; // (for scripting or special behavior)
+        public List<NPCTag> Tags { get; set; } = []; // (for scripting or special behavior)
         [JsonIgnore] public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
@@ -161,6 +162,35 @@ namespace RPGFramework
         }
         #endregion
 
+        public void LevelUp(int amount)
+        {
+            Level += amount;
+            Random random = new Random();
+            for (int i = 0; i < amount; i++)
+            {
+                int healthIncrease = (int)(MaxHealth * 0.1);
+                SetMaxHealth(MaxHealth + healthIncrease);
+                int randomSkill = random.Next(0, 5);
+                switch (randomSkill)
+                {
+                    case 0:
+                        IncrimentStrength(1); break;
+                    case 1:
+                        IncrimentDexterity(1); break;
+                    case 2:
+                        IncrimentCharisma(1); break;
+                    case 3:
+                        IncrimentConstitution(1); break;
+                    case 4:
+                        IncrimentWisdom(1); break;
+                    case 5:
+                        IncrimentIntelligence(1); break;
+
+                }
+            }
+            // Restore health to full on level up
+            SetHealth(MaxHealth);
+        }
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];

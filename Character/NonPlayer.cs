@@ -1,6 +1,7 @@
 ﻿using RPGFramework.Commands;
 using RPGFramework.Enums;
 using RPGFramework.Geography;
+using System.Diagnostics.Contracts;
 using System.Text.Json.Serialization;
 
 namespace RPGFramework
@@ -200,20 +201,12 @@ namespace RPGFramework
         {
             DialogGroups.Remove(group);
         }
-        public bool HasDialogGroup(string groupName)
+        public bool HasDialogGroup(DialogGroupCategory groupCategory)
         {
-            DialogGroupCategory category;
-            Enum.TryParse<DialogGroupCategory>(groupName, true, out category);
-            foreach(var group in DialogGroups)
-            {
-                if(group.Category == category)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return DialogGroups.Any(o => o.Category == groupCategory);
         }
-        public DialogGroup? GetDialogGroup(string groupName)
+
+        public DialogGroup GetDialogGroup(string groupName)
         {
             DialogGroupCategory category;
             Enum.TryParse<DialogGroupCategory>(groupName, true, out category);
