@@ -1365,5 +1365,19 @@ namespace RPGFramework.Commands
             throw new NotImplementedException();
         }
     }
+    internal class ListRoomItemCommand : ICommand
+    {
+        public string Name => "roomitems";
+        public IEnumerable<string> Aliases => new List<string>() { "ri" };
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+            {
+                return false;
+            }
+            player.WriteLine("");
+            return true;
+        }
+    }
 }
 

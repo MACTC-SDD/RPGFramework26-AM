@@ -36,6 +36,9 @@ namespace RPGFramework.Geography
 
         #endregion --- Properties ---
 
+        // Items in the room
+        List<Item> RoomItems = new List<Item>();
+
         #region --- Methods ---
 
         #region AddExits Method

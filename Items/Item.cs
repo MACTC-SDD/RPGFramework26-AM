@@ -4,6 +4,8 @@ namespace RPGFramework
 {
     internal class Item : IDescribable
     {
+        internal EquipmentBase slot;
+
         public int Id { get; set; } = 0;
         public string Description { get; set; } = ""; // What you see when you look at it
         public string DisplayText { get; set; } = ""; // How it appears when in a room
@@ -31,5 +33,7 @@ namespace RPGFramework
         {
             throw new NotImplementedException();
         }
+        public int StrengthBonus { get; internal set; }
+        public int DefenseBonus { get; internal set; }
     }
 }

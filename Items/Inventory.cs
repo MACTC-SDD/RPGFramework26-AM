@@ -1,3 +1,9 @@
+﻿using RPGFramework;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Xml.Linq;
+
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -76,3 +82,5 @@ namespace RPGFramework.Items
     }
 
 }
+
+
