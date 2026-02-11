@@ -865,7 +865,9 @@ namespace RPGFramework.Commands
                 player.WriteLine($"{_entityName} '{name}' not found.");
                 return;
             }
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             npc.GetDialogGroup(category).RemoveDialogLine(description);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
         #endregion
 
@@ -924,7 +926,9 @@ namespace RPGFramework.Commands
             {
                 return false;
             }
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
             DialogGroup dialogGroup = npc.GetDialogGroup(category);
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
             if (dialogGroup == null)
             {
                 player.WriteLine($"Dialog category '{category}' not found for {_entityName} '{name}'.");
@@ -977,11 +981,15 @@ namespace RPGFramework.Commands
 
             // Might need to check if category exists first
             if (npc.HasDialogGroup(category)){
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                 DialogGroup dialogCategory = npc.GetDialogGroup(category);
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (!dialogCategory.HasDialogLine(dialogLine))
                 {
                     dialogCategory.AddDialogLine(dialogLine);
                 }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             }
             else
             {
@@ -1100,7 +1108,7 @@ namespace RPGFramework.Commands
         protected static void ListTagsOnNPC(Player player, Character npc)
         {
             player.WriteLine("Valid Tags:");
-            foreach (NPCTag tag in npc.GetTags())
+            foreach(NPCTag tag in npc.Tags)
             {
                 player.WriteLine(tag.ToString());
             }
