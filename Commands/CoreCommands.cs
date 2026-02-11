@@ -196,13 +196,7 @@ namespace RPGFramework.Commands
         }
     }
 
-    }
-    internal class RoomShowCommand : ICommand
-    {
-        public string Name => "roomshow";
-        public IEnumerable<string> Aliases => new[] { "rmshow", "roominfo", "rminfo" };
-        public string Help => "Shows info for the current room and its available exits.";
-
+    
     internal class RoomShowCommand : ICommand
     {
         public string Name => "roomshow";
