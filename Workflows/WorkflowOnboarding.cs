@@ -4,12 +4,16 @@ using RPGFramework.Geography;
 using Spectre.Console;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace RPGFramework.Workflows
 {
     internal class WorkflowOnboarding : IWorkflow
     {
+        public string playerReminder { get; set } = "";
+        public string playerAction { get; set; } = "";
+        public string playerStatus { get; set; } = "";
         public int CurrentStep { get; set; } = 0;
         public string Description => "Guides new players through the initial setup and familiarization with the game mechanics.";
         public string Name => "Onboarding Workflow";
@@ -95,18 +99,18 @@ namespace RPGFramework.Workflows
                     CurrentStep++;
                     break;
                 case 4:
-                      
-                    
-                        // Onboarding complete
-                        // TODO: Set PlayerClass (or maybe do that in step above) and save Player
 
-                        player.WriteLine(Name + ": Onboarding complete! ");
+
+                    // Onboarding complete
+                    // TODO: Set PlayerClass (or maybe do that in step above) and save Player
+
+                    player.WriteLine(Name + ": Onboarding complete! ");
                     player.WriteLine("============================================================================" +
                         "\nYour stats are:" +
                         "\nClass : " + WorkflowData["ChosenClass"] +
+                        "\n\t\t- Player Stats -" +
                         $"\nDexterity : {player.Dexterity}" +
-                        "\n\tIncrease 'Dex' To Have A To Get The First Attack! " +
-                        "\n{player.EquippedArmor}" +
+                        "\n\tIncrease 'Dex' To Have A To Dodge Attacks, is a chance based system; you're increasing it to increase your chances of dodging! " +
                         $"\nHealth : {player.Health} out of {player.MaxHealth}" +
                         "\n\tYour Health Is Limited; Make Sure To Choose Your Actions Wisely! " +
                         $"\nConstitution : {player.Constitution}" +
@@ -114,22 +118,24 @@ namespace RPGFramework.Workflows
                         $"\nGold : {player.Gold}" +
                         "\n\tYour Currency In Our Totally Great Text RPG Game; Spend It Wisely!" +
                         $"\nIntelligence : {player.Intelligence}" +
-                        "\n\tIf This Was Based Of Who Put Me In Charge Of This It Would Be 0." +
+                        "\n\tIf This Was Based Of Me It Would Be 0." +
                         $"\nLevel : {player.Level}" +
                         "\n\tHow Many Levels Gained Through Getting XP!" +
                         $"\nCurrent Playtime for user {player.Name}" +
-                        $"\n\t{player.PlayTime} "
-                        +
+                        $"\n\t{player.PlayTime} " +
                         "\n\tHow Many Hours, Minutes, Se- you get it." +
-                        $"\nCurrent Weapon : {player.PrimaryWeapon.Name}"
-                        +
-                        "\n\tThe Weapon You Pulled Out The Monster That Probably Has Some Type Of Diease You Don't Need To Be Getting Close To..." +
+                        $"Charisma : {player.Charisma}" +
+                        "\n\tA Rating Of How Good You Look!" +
                         $"\nStrength : {player.Strength}" +
                         "\n\tHULK SMASHH, This Increases Your Damage... i think?" +
                         $"\nXP : {player.XP}" +
                         "\n\tThe Accumulated Souls Of The Innocent You've Aqquired." +
                         $"\nWisdom : {player.Wisdom}" +
                         "\n\tI've Heard This Increases With Age. Either they lied, or im still 5." +
+                        "\n\t\t- Player Equipment -" +
+                        $"\nCurrent Weapon : {player.PrimaryWeapon.Name}" +
+                         "\n\tThe Weapon You Pulled Out The Monster That Probably Has Some Type Of Disease You Don't Need To Be Getting Close To..." +
+
                         "\n============================================================================"
                         );
                     player.WriteLine("Type 'help' to see a list of available commands.");
@@ -140,10 +146,13 @@ namespace RPGFramework.Workflows
                     break;
                 case 5:
 
-                    
-                    
-                    
-                    
+
+
+
+
+
+
+                    player.Console!.Clear();
                     if (player.Health <= 0)
                     {
                         player.Console!.Clear();
@@ -151,45 +160,44 @@ namespace RPGFramework.Workflows
                     }
                     else
                     {
-                        player.Console!.Clear();
                         string output =
-                           $"                                                 --Area : {player.AreaId}–-                   " +
-                            "\n========================================================================================================================" +
-                           $"\n                                             Room Level : {player.LocationId}" +
-                            "\n========================================================================================================================" +
-                            "\n" +
-                            "\n" +
-                            "\n" +
-                            "\n" +
-                            "\n" +
-                            "\n" +
-                            "\n" +
-                           $"\n {player.Target} " +
-                            "\n" +
-                            "\n" +
-                            "\n" +
-                            "\n" +
-                            "\n" +
-                            "\n" +
-                            "\n" +
-                            "\n========================================================================================================================" +
-                            "\n" +
-                            "\n({action} Just :____!) <-- Player Action Goes Here! " +
-                            "\n" +
-                            "\n========================================================================================================================" +
-                            "\n" +
-                           $"\nPlayer Name: {player.Name}" +
-                           $"\nXP: {player.XP}" +
-                           $"\nLevel : {player.Level}" +
-                           $"\nHealth : {player.Health}/{player.MaxHealth}" + $"\tGold :{player.Gold}" +
-                           $"\nPlaytime : {player.PlayTime}" +
-                           //$"\n DMG Reduction:  " +
-                            "\n" +
-                            "\n========================================================================================================================" +
-                            "\n" +
-                            "\n--Equipment--";
 
-                        // Equipped Armor Name
+                    $"                                                 --Area : {player.AreaId}–-                   " +
+                        "\n========================================================================================================================" +
+                       $"\n                                             Room Level : {player.LocationId}" +
+                        "\n========================================================================================================================" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n========================================================================================================================" +
+                        "\n" +
+
+                        $"\n{playerAction}" +
+
+                        "\n" +
+                        "\n========================================================================================================================" +
+                        "\n" +
+                       $"\nPlayer Name: {player.Name}" +
+                       $"\nXP: {player.XP} / " +
+                       $"\nLevel : {player.Level}" +
+                       $"\nHealth : {player.Health}/{player.MaxHealth}" + $"\tGold :{player.Gold}" +
+                       $"\nPlaytime : {player.PlayTime}" +
+                       $"\nStatus : {playerStatus}  " +
+                        "\n" +
+                        "\n========================================================================================================================" +
+                        "\n" +
+                        "\n--Equipment--";  // Equipped Armor Name
                         string helmetName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Head)?.Name ?? "None";
                         string chestName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.Name ?? "None";
                         string legName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.Name ?? "None";
@@ -204,29 +212,47 @@ namespace RPGFramework.Workflows
                         string chestType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.Type.ToString() ?? "None";
                         string legType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.Type.ToString() ?? "None";
                         string backType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.Type.ToString() ?? "None";
-                        output +=
-                               $"\nHelmet: {helmetName}" +
-                               $"\n\tWeight Type : {helmetType}" +
-                               $"\n\tMaterial : {helmetMat}" +
-                                "\n" +
-                               $"\nChestplate: {chestName}" +
-                               $"\n\tWeight Type : {chestType}" +
-                               $"\n\tMaterial : {chestMat}" +
-                                "\n" +
-                               $"\nLeggings: {legName}" +
-                               $"\n\tWeight Type : {legType}" +
-                               $"\n\tMaterial : {legMat}" +
-                                "\n" +
-                               $"\nBack Piece: {backName}" +
-                               $"\n\tWeight Type : {backType}" +
-                               $"\n\tMaterial : {backMat}" +
-                                "\n" +
-                               $"\nWeapon :{player.PrimaryWeapon.Name}" +
-                               $"\n\tWeapon DMG : {player.PrimaryWeapon.Damage}" +
-                               $"\n\tWeapon Material : {player.PrimaryWeapon.Material}" +
-                               $"\n{player.PrimaryWeapon.DisplayText}" +
-                                "\n========================================================================================================================";
+                        //Equipped Armor Durability
+                        string helmetDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Head)?.Durability.ToString() ?? "0";
+                        string chestDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.Durability.ToString() ?? "0";
+                        string legDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.Durability.ToString() ?? "0";
+                        string backDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.Durability.ToString() ?? "0";
+                        //Equipped Armor MAX Durability
+                        string helmetMAXDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Head)?.MaxDurability.ToString() ?? "0";
+                        string chestMAXDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.MaxDurability.ToString() ?? "0";
+                        string legMAXDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.MaxDurability.ToString() ?? "0";
+                        string backMAXDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.MaxDurability.ToString() ?? "0"; output +=
+                                   $"\nHelmet : {helmetName}" +
+                                   $"\n\tWeight Type : {helmetType}" +
+                                   $"\n\tMaterial : {helmetMat}" +
+                                   $"\n\tCurrent Durability : {helmetDURA} / {helmetMAXDURA}" +
+                                    "\n" +
+                                   $"\nChestplate : {chestName}" +
+                                   $"\n\tWeight Type : {chestType}" +
+                                   $"\n\tMaterial : {chestMat}" +
+                                   $"\n\t Current Durability : {chestDURA} / {chestMAXDURA}" +
+                                    "\n" +
+                                   $"\nLeggings : {legName}" +
+                                   $"\n\tWeight Type : {legType}" +
+                                   $"\n\tMaterial : {legMat}" +
+                                   $"\n\tCurrent Durability : {legDURA} / {legMAXDURA}" +
+                                    "\n" +
+                                   $"\nBack Piece : {backName}" +
+                                   $"\n\tWeight Type : {backType}" +
+                                   $"\n\tMaterial : {backMat}" +
+                                   $"\n\tCurrent Durability : {backDURA} / {backMAXDURA}" +
+                                    "\n" +
+                                   $"\nWeapon : {player.PrimaryWeapon.Name} - {player.PrimaryWeapon.Description}" +
+                                   $"\n\tWeapon DMG : {player.PrimaryWeapon.Damage}" +
+                                   $"\n\tWeapon Attack Speed : {player.PrimaryWeapon.AttackTime}" +
+                                   $"\n\tWeapon Material : {player.PrimaryWeapon.Material}" +
+                                  $"\n\tCrit Chance : {Character.CritChance}" +
+                                  $"\n\tCrit DMG : {Character.CritDamage}" +
+                              $"\nRemaining Inventory Slots : {player.PlayerInventory.InventorySlots.Count} {playerReminder}" +
+                                    "\n========================================================================================================================";
 
+                       
+                    
                         player.WriteLine(output);
 
 

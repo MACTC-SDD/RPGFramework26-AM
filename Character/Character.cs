@@ -105,7 +105,10 @@ namespace RPGFramework
         {
             Charisma = Math.Clamp(value, 0, 20);
         }
-
+        #region
+        //ux team
+        public int healthBefore;
+        #endregion
         public int GetStrength()
         {
             return Strength;
@@ -266,19 +269,46 @@ namespace RPGFramework
         // Remove some amount from health
         public void TakeDamage(int damage)
         {
+          
             SetHealth(Health - damage);
+            //ux team
+            #region
+            healthBefore = Health;
+            Health = Math.Max(Health - damage, 0); //cannot have negative health
+            
+            if (HasTakenDMG(damage)) 
+            {         
+             string playerAction = $"You Took {healthBefore - Health} Damage!";
+            }
+
         }
 
+        private bool HasTakenDMG(int damage)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
         // Add some amount to health
         public void Heal(int heal)
         {
             SetHealth(Health + heal);
-
+            // ux team
+            #region
+            if (heal >= MaxHealth) { string playerAction = $"You're Already At Max Health!"; }
+            if (heal >= 0) { string playerAction = $"You Healed {heal} HP!"; }
+            #endregion
         }
 
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
         {
             throw new NotImplementedException();
+            //ux team
+            #region
+            if (bleedDuration >= 0)
+            {
+                string playerStatus = $"You're Taking {bleedDamagePerSecond}  Bleed Damage!";
+            }
+            #endregion
         }
 
         //Add tags to character
