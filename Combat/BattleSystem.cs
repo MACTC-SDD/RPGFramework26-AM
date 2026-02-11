@@ -1,15 +1,12 @@
 ﻿using RPGFramework;
+using RPGFramework.Enums;
 namespace RPGFramework.Combat
 {
     // =========================
     // GAME STATE
     // =========================
 
-    public enum CombatState
-    {
-        Exploration,
-        Combat
-    }
+    
 
     // =========================
     // COMMANDS (NETWORK PAYLOADS)
@@ -46,7 +43,7 @@ namespace RPGFramework.Combat
 
     internal class CombatManager
     {
-        public CombatState State { get; private set; } = CombatState.Exploration;
+        public BattleState State { get; private set; } = BattleState.CombatComplete;
         public List<Character> Combatants { get; private set; } = [];
         public int TurnIndex { get; private set; }
 

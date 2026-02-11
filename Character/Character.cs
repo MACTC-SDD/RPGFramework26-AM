@@ -222,6 +222,13 @@ namespace RPGFramework
         {
             return Tags;
         }
+
+        public static implicit operator Character(bool v)
+        {
+            throw new NotImplementedException();
+        }
+
+        
     }
 }
         
