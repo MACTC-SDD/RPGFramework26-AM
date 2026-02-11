@@ -13,7 +13,7 @@ namespace RPGFramework
         public static void Broadcast(string message)
         {
             // Loop through all online players
-            foreach (Player p in GameState.Instance.Players.Values.Where(p => p.IsOnline))
+            foreach (Player p in Player.GetOnlinePlayers(GameState.Instance.Players))
             {
                 p.WriteLine(message);
             }

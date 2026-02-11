@@ -1,5 +1,7 @@
 using RPGFramework.Enums;
 using RPGFramework.Geography;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using RPGFramework.Items;
 using System.Net;
 using System.Text.Json.Serialization;
@@ -44,8 +46,10 @@ namespace RPGFramework
         public CharacterClass Class { get; set; } = new CharacterClass();
         public List<Armor> EquippedArmor { get; set; } = [];
         public Weapon PrimaryWeapon { get; set; }
-        public Inventory PlayerInventory { get; set; } = new Inventory(); 
+        public static double CritChance { get; set; } = CritChance = Math.Clamp(CritChance, 0.0, 0.38);
+        public static double CritDamage { get; set; } = 1;
 
+        public Inventory PlayerInventory { get; set; } = new Inventory(); 
         #endregion
 
         #region --- Skill Attributes --- (0-20)
@@ -338,7 +342,61 @@ namespace RPGFramework
             return dodgedroll;
         }
         //End Attack Resolution
-        public List<NPCTag> GetTags()
+        //Stored Actions 
+
+        /* public void Task StoredActions()
+         {
+            if //(Enemy attacking)
+               {
+                 (Actions) await (EnemyAttack);
+             }
+         }*/
+
+        //End Stored Actions
+
+        //Critical hit based on level
+        private void CritOnLevel()
+        {
+            CritChance = (Level / 50.0) * 0.10;
+            CritChance = Math.Clamp(CritChance, 0.0, 0.10);
+        }
+        //Mythril critical hit 
+        private void MythrilCrit()
+        {
+            Armor equiped = new Armor();
+
+
+            if (Armor.WearingMythril(equiped))
+                CritChance += 0.13;
+                CritDamage = 2;
+            string ResultP = Player.CritChance.ToString("P");
+
+        }
+
+        //Mythril end critical hit
+        //armor type crits
+        private void ArmorTypeCrit()
+        {
+            Armor type = new Armor();
+
+            if (Armor.WearingLight(type))
+            {
+                CritChance += 0.05;
+            }
+            if (Armor.WearingMedium(type))
+            {
+                CritChance += 0.1;
+            }
+            if (Armor.WearingHeavy(type))
+            {
+                CritChance += 0.2;
+            }
+        }
+        //end armor type crits
+        //End critical hit
+        
+        // CODE REVIEW: Is there a reason we don't just access the Tags property instead of creating a new method?
+        public List<string> GetTags()
         {
             return Tags;
         }

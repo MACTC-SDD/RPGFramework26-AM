@@ -62,7 +62,17 @@ namespace RPGFramework.Items
                 return false;
             return true;
         }
+
         //End of added NPC team methods
+        internal bool RemoveItem(Item itemToRemove)
+        {
+            if (Items.Contains(itemToRemove))
+            {
+                Items.Remove(itemToRemove);
+                return true;
+            }
+            return false;
+        }
     }
 
 }

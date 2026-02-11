@@ -1,4 +1,7 @@
-﻿using RPGFramework.Enums;
+﻿using RPGFramework;
+using RPGFramework.Enums;
+using RPGFramework.Geography;
+using System.Numerics;
 
 namespace RPGFramework.Geography
 {
@@ -7,6 +10,7 @@ namespace RPGFramework.Geography
     /// </summary>
     internal class Navigation
     {
+        public static object ExitResult { get; private set; }
 
         /// <summary>
         /// Move the character in the specified direction if possible, otherwise, send error.
@@ -25,11 +29,23 @@ namespace RPGFramework.Geography
                 return;
             }
 
+            if (exit.ExitType == ExitType.LockedDoor)
+            {
+                Comm.SendToIfPlayer(character, "That way is blocked by a locked door.");
+                return;
+            }
+
+            if (exit.ExitType == ExitType.Impassable)
+            {
+                Comm.SendToIfPlayer(character, "That way is blocked off");
+                return;
+            }
+
             Room destinationRoom = GameState.Instance.Areas[character.AreaId].Rooms[exit.DestinationRoomId];
 
             currentRoom.LeaveRoom(character, destinationRoom);
             destinationRoom.EnterRoom(character, currentRoom);
-            
+
             character.AreaId = destinationRoom.AreaId;
             character.LocationId = exit.DestinationRoomId;
         }
@@ -54,5 +70,8 @@ namespace RPGFramework.Geography
                     return Direction.None;
             }
         }
+
     }
+
 }
+
