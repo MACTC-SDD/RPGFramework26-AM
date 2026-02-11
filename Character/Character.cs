@@ -1,6 +1,7 @@
+using RPGFramework.Enums;
 using RPGFramework.Geography;
 using RPGFramework.Items;
-using RPGFramework.Enums;
+using System.Net;
 using System.Text.Json.Serialization;
 
 
@@ -157,6 +158,35 @@ namespace RPGFramework
         }
         #endregion
 
+        public void LevelUp(int amount)
+        {
+            Level += amount;
+            Random random = new Random();
+            for (int i = 0; i < amount; i++)
+            {
+                int healthIncrease = (int)(MaxHealth * 0.1);
+                SetMaxHealth(MaxHealth + healthIncrease);
+                int randomSkill = random.Next(0, 5);
+                switch (randomSkill)
+                {
+                    case 0:
+                        IncrimentStrength(1); break;
+                    case 1:
+                        IncrimentDexterity(1); break;
+                    case 2:
+                        IncrimentCharisma(1); break;
+                    case 3:
+                        IncrimentConstitution(1); break;
+                    case 4:
+                        IncrimentWisdom(1); break;
+                    case 5:
+                        IncrimentIntelligence(1); break;
+
+                }
+            }
+            // Restore health to full on level up
+            SetHealth(MaxHealth);
+        }
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];

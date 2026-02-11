@@ -90,6 +90,16 @@ namespace RPGFramework.Commands
                         RemoveItem(player, parameters);
                     }
                     break;
+                case "level":
+                    NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
+                    if (npc == null)
+                    {
+                        break;
+                    }
+                    int amount;
+                    int.TryParse(parameters[3], out amount);
+                    npc.LevelUp(amount);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -181,6 +191,16 @@ namespace RPGFramework.Commands
                         RemoveItem(player, parameters);
                     }
                     break;
+                case "level":
+                    NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
+                    if (npc == null)
+                    {
+                        break;
+                    }
+                    int amount;
+                    int.TryParse(parameters[3], out amount);
+                    npc.LevelUp(amount);
+                    break;
                 default:
                     WriteUsage(player);
                     break;
@@ -268,6 +288,16 @@ namespace RPGFramework.Commands
                     {
                         RemoveItem(player, parameters);
                     }
+                    break;
+                case "level":
+                    NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
+                    if(npc == null)
+                    {
+                        break;
+                    }
+                    int amount;
+                    int.TryParse(parameters[3], out amount);
+                    npc.LevelUp(amount);
                     break;
                 default:
                     WriteUsage(player);
@@ -543,6 +573,7 @@ namespace RPGFramework.Commands
             player.WriteLine($"/{_entityName} give item '<name>' '<itemID>'");
             player.WriteLine($"/{_entityName} remove armour '<name>' '<armourID>'");
             player.WriteLine($"/{_entityName} remove item '<name>' '<itemID>'");
+            player.WriteLine($"/{_entityName} level '<name>' '<amount>'");
             if (_entityName == "shopkeep" || _entityName == "npc")
             {
                 player.WriteLine($"/{_entityName} dialog list '<character>' '<category>'");
