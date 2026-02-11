@@ -11,7 +11,7 @@ namespace RPGFramework.Workflows
 {
     internal class WorkflowOnboarding : IWorkflow
     {
-        public string playerReminder { get; set } = "";
+        public string playerReminder { get; set; } = "";
         public string playerAction { get; set; } = "";
         public string playerStatus { get; set; } = "";
         public int CurrentStep { get; set; } = 0;

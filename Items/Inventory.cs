@@ -24,7 +24,7 @@ namespace RPGFramework.Items
 
             Item item = GameState.Instance.ItemCatalog[value];
             InventorySlots[index] = item;
-            if (index < 0) {string playerReminder = "Inventory Is Full!"}
+            if (index < 0) { string playerReminder = "Inventory Is Full!"; }
         }
 
         public bool AddItem(Item item)
