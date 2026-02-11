@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Linq;
 
@@ -200,6 +201,7 @@ namespace RPGFramework.Commands
                     int amount;
                     int.TryParse(parameters[3], out amount);
                     npc.LevelUp(amount);
+                    player.WriteLine("Succesfully leveled up!");
                     break;
                 default:
                     WriteUsage(player);
@@ -787,9 +789,11 @@ namespace RPGFramework.Commands
                     npc.Name = value;
                     _catalog!.Remove(name);
                     _catalog.Add(value, npc);
+                    player.WriteLine("Success!");
                     return true;
                 case "desc":
                     npc.Description = value;
+                    player.WriteLine("Success!");
                     return true;
                 case "location":
                     if (int.TryParse(value, out int locationId))
@@ -1159,32 +1163,26 @@ namespace RPGFramework.Commands
             if (parameters[2].Equals("add") && parameters.Count == 6)
             {
                 NpcAddDialog(player, parameters);
-                return;
             }
             if (parameters[2].Equals("add") && parameters.Count == 5)
             {
                 NpcAddDialogCategory(player, parameters);
-                return;
             }
             if (parameters[2].Equals("list") && parameters.Count == 4)
             {
                 NpcListDialog(player, parameters);
-                return;
             }
             if (parameters[2].Equals("list") && parameters.Count == 5)
             {
                 NpcListCategoryDialog(player, parameters);
-                return;
             }
             if (parameters[2].Equals("delete") && parameters.Count == 5)
             {
                 DeleteNpcDialogCategory(player, parameters);
-                return;
             }
             if (parameters[2].Equals("delete") && parameters.Count == 6)
             {
                 DeleteNpcDialogLine(player, parameters);
-                return;
             }
         }
         #endregion
