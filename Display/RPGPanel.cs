@@ -8,7 +8,7 @@ namespace RPGFramework.Display
         // TODO These should come from DisplaySettings
         public static BoxBorder Border { get; private set; } = BoxBorder.Rounded;
         public static string HeaderColor { get; private set; } = "[bold yellow]";
-
+      
         /// <summary>
         /// Get a Spectre Panel object using our default settings
         /// </summary>
@@ -30,6 +30,7 @@ namespace RPGFramework.Display
             {
                 Header = new PanelHeader($"{HeaderColor}{title}[/]"),
                 Border = Border
+
             };
         }
     }

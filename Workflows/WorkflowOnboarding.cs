@@ -1,5 +1,10 @@
 ﻿using RPGFramework.Commands;
 using RPGFramework.Enums;
+using RPGFramework.Geography;
+using Spectre.Console;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace RPGFramework.Workflows
 {
@@ -11,6 +16,10 @@ namespace RPGFramework.Workflows
         public List<ICommand> PreProcessCommands { get; private set; } = [];
         public List<ICommand> PostProcessCommands { get; private set; } = [];
         public Dictionary<string, object> WorkflowData { get; set; } = new Dictionary<string, object>();
+        public bool gamestarted = false;
+        public string Chosenclass = "";
+       
+        public string started = "";
         public void Execute(Player player, List<string> parameters)
         {
             // 1. We'll assume we didn't get here if player exists, if they did that will have authenticated instead
@@ -25,11 +34,13 @@ namespace RPGFramework.Workflows
             //   Or, should we Serialize Workflow with Player, at least for onboarding. Might be confusing.
 
             // The action we take will depend on the CurrentStep, we will store progress in WorkflowData
+
             switch (CurrentStep)
             {
+
                 case 0:
                     // TODO: Make the name of the game configurable
-                    player.WriteLine(Name + ": Hello and welcome to the RPG World!");
+                    player.WriteLine("Hello and welcome to the RPG World!");
                     player.WriteLine("Let's secure your account first. Please enter a password.");
 
                     GameState.Log(DebugLevel.Debug, $"{player.Name} is starting onboarding workflow.");
@@ -41,8 +52,12 @@ namespace RPGFramework.Workflows
                     else
                     {
                         player.SetPassword(parameters[0]);
-                        player.WriteLine(Name + ": Welcome to the game! Let's start by choosing your character class.");
-                        player.WriteLine("Available classes: Warrior, Mage, Rogue.");
+                        player.WriteLine($"{player.Name} : Welcome to the game! Let's start by choosing your character class.");
+                        player.WriteLine(
+                             "============================================================================"
+                           + "\n Knight \tMage \tTheif \tArcher \tHealer" +
+                             "\n============================================================================");
+
                         CurrentStep++;
                     }
                     break;
@@ -50,17 +65,28 @@ namespace RPGFramework.Workflows
                 case 2:
                     // Step 2: Gather player class and validate
                     string chosenClass = parameters.Count > 0 ? parameters[0].ToLower() : string.Empty;
-                    if (chosenClass == "warrior" || chosenClass == "mage" || chosenClass == "rogue")
+                    if (chosenClass == "knight" || chosenClass == "mage" || chosenClass == "theif" || chosenClass == "healer" || chosenClass == "archer")
                     {
                         WorkflowData["ChosenClass"] = chosenClass;
-                        player.WriteLine($"You have chosen the {chosenClass} class.");
+                        player.WriteLine($"You have chosen the {chosenClass} class. Now Press Enter TWICE ONLYYYY!!! please :D.");
                         // If class is valid, proceed, otherwise print message and stay on this step
                         // Placeholder logic
                         CurrentStep++;
+                        player.Class.SetClass(player, chosenClass switch
+                        {
+                            "knight" => Enums.Classes.Knight,
+                            "mage" => Enums.Classes.Mage,
+                            "theif" => Enums.Classes.Thief,
+                            "archer" => Enums.Classes.Archer,
+                            "healer" => Enums.Classes.Healer,
+                            _ => throw new InvalidOperationException("Invalid class") // This should never happen due to the if check above
+                        });
+                        Chosenclass = $"{chosenClass}";
                     }
                     else
                     {
-                        player.WriteLine("Invalid class chosen. Please choose from: Warrior, Mage, Rogue.");
+                        player.WriteLine("Invalid class chosen. Please choose from: Warrior, Mage, Rogue!");
+
                     }
                     break;
                 case 3:
@@ -69,19 +95,148 @@ namespace RPGFramework.Workflows
                     CurrentStep++;
                     break;
                 case 4:
-                    // Step 3: Introduce basic commands
-                    // Placeholder logic
+                      
+                    
+                        // Onboarding complete
+                        // TODO: Set PlayerClass (or maybe do that in step above) and save Player
+
+                        player.WriteLine(Name + ": Onboarding complete! ");
+                    player.WriteLine("============================================================================" +
+                        "\nYour stats are:" +
+                        "\nClass : " + WorkflowData["ChosenClass"] +
+                        $"\nDexterity : {player.Dexterity}" +
+                        "\n\tIncrease 'Dex' To Have A To Get The First Attack! " +
+                        "\n{player.EquippedArmor}" +
+                        $"\nHealth : {player.Health} out of {player.MaxHealth}" +
+                        "\n\tYour Health Is Limited; Make Sure To Choose Your Actions Wisely! " +
+                        $"\nConstitution : {player.Constitution}" +
+                        "\n \tI don't remember what this is." +
+                        $"\nGold : {player.Gold}" +
+                        "\n\tYour Currency In Our Totally Great Text RPG Game; Spend It Wisely!" +
+                        $"\nIntelligence : {player.Intelligence}" +
+                        "\n\tIf This Was Based Of Who Put Me In Charge Of This It Would Be 0." +
+                        $"\nLevel : {player.Level}" +
+                        "\n\tHow Many Levels Gained Through Getting XP!" +
+                        $"\nCurrent Playtime for user {player.Name}" +
+                        $"\n\t{player.PlayTime} "
+                        +
+                        "\n\tHow Many Hours, Minutes, Se- you get it." +
+                        $"\nCurrent Weapon : {player.PrimaryWeapon.Name}"
+                        +
+                        "\n\tThe Weapon You Pulled Out The Monster That Probably Has Some Type Of Diease You Don't Need To Be Getting Close To..." +
+                        $"\nStrength : {player.Strength}" +
+                        "\n\tHULK SMASHH, This Increases Your Damage... i think?" +
+                        $"\nXP : {player.XP}" +
+                        "\n\tThe Accumulated Souls Of The Innocent You've Aqquired." +
+                        $"\nWisdom : {player.Wisdom}" +
+                        "\n\tI've Heard This Increases With Age. Either they lied, or im still 5." +
+                        "\n============================================================================"
+                        );
+                    player.WriteLine("Type 'help' to see a list of available commands.");
+                    player.WriteLine("For Best Quality, Please Set Screen To Full Size!" + "\nReady? (type yes if ready to start game)");
+
+
                     CurrentStep++;
                     break;
-                default:
-                    // Onboarding complete
-                    // TODO: Set PlayerClass (or maybe do that in step above) and save Player
-                    player.WriteLine(Name + ": Onboarding complete! You are now ready to explore the game world.");
-                    player.WriteLine("Your class is: " + WorkflowData["ChosenClass"]);
-                    player.WriteLine("Type 'help' to see a list of available commands.");
-                    player.CurrentWorkflow = null;
+                case 5:
+
+                    
+                    
+                    
+                    
+                    if (player.Health <= 0)
+                    {
+                        player.Console!.Clear();
+                        player.WriteLine("Game Over..." + $"\nHope You Enjoyed {player.Name}");
+                    }
+                    else
+                    {
+                        player.Console!.Clear();
+                        string output =
+                           $"                                                 --Area : {player.AreaId}–-                   " +
+                            "\n========================================================================================================================" +
+                           $"\n                                             Room Level : {player.LocationId}" +
+                            "\n========================================================================================================================" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                           $"\n {player.Target} " +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n========================================================================================================================" +
+                            "\n" +
+                            "\n({action} Just :____!) <-- Player Action Goes Here! " +
+                            "\n" +
+                            "\n========================================================================================================================" +
+                            "\n" +
+                           $"\nPlayer Name: {player.Name}" +
+                           $"\nXP: {player.XP}" +
+                           $"\nLevel : {player.Level}" +
+                           $"\nHealth : {player.Health}/{player.MaxHealth}" + $"\tGold :{player.Gold}" +
+                           $"\nPlaytime : {player.PlayTime}" +
+                           //$"\n DMG Reduction:  " +
+                            "\n" +
+                            "\n========================================================================================================================" +
+                            "\n" +
+                            "\n--Equipment--";
+
+                        // Equipped Armor Name
+                        string helmetName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Head)?.Name ?? "None";
+                        string chestName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.Name ?? "None";
+                        string legName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.Name ?? "None";
+                        string backName = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.Name ?? "None";
+                        // Equipped Armor Mats
+                        string helmetMat = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Head)?.Material.ToString() ?? "None";
+                        string chestMat = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.Material.ToString() ?? "None";
+                        string legMat = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.Material.ToString() ?? "None";
+                        string backMat = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.Material.ToString() ?? "None";
+                        //Equipped Armor Type
+                        string helmetType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Head)?.Type.ToString() ?? "None";
+                        string chestType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.Type.ToString() ?? "None";
+                        string legType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.Type.ToString() ?? "None";
+                        string backType = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.Type.ToString() ?? "None";
+                        output +=
+                               $"\nHelmet: {helmetName}" +
+                               $"\n\tWeight Type : {helmetType}" +
+                               $"\n\tMaterial : {helmetMat}" +
+                                "\n" +
+                               $"\nChestplate: {chestName}" +
+                               $"\n\tWeight Type : {chestType}" +
+                               $"\n\tMaterial : {chestMat}" +
+                                "\n" +
+                               $"\nLeggings: {legName}" +
+                               $"\n\tWeight Type : {legType}" +
+                               $"\n\tMaterial : {legMat}" +
+                                "\n" +
+                               $"\nBack Piece: {backName}" +
+                               $"\n\tWeight Type : {backType}" +
+                               $"\n\tMaterial : {backMat}" +
+                                "\n" +
+                               $"\nWeapon :{player.PrimaryWeapon.Name}" +
+                               $"\n\tWeapon DMG : {player.PrimaryWeapon.Damage}" +
+                               $"\n\tWeapon Material : {player.PrimaryWeapon.Material}" +
+                               $"\n{player.PrimaryWeapon.DisplayText}" +
+                                "\n========================================================================================================================";
+
+                        player.WriteLine(output);
+
+
+
+
+                        player.CurrentWorkflow = null;
+
+                    }
                     break;
-            }
+            } 
             
         }    
     }

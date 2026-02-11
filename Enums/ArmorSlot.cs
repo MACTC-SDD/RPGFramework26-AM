@@ -1,4 +1,3 @@
-﻿
 namespace RPGFramework.Enums
 {
     internal enum ArmorSlot

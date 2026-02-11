@@ -4,6 +4,7 @@
     {
         Idle,
         Moving,
+        Aggressive,
         Attacking,
         InShop,
         Dead
