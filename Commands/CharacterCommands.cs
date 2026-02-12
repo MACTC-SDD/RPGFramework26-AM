@@ -97,6 +97,11 @@ namespace RPGFramework.Commands
                     {
                         break;
                     }
+                    if (parameters[2].Equals("check"))
+                    {
+                        player.WriteLine($"{npc.Name} is currently level {npc.Level}");
+                        break;
+                    }
                     int amount;
                     int.TryParse(parameters[3], out amount);
                     npc.LevelUp(amount);
@@ -300,6 +305,11 @@ namespace RPGFramework.Commands
                     NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
                     if(npc == null)
                     {
+                        break;
+                    }
+                    if (parameters[2].Equals("check"))
+                    {
+                        player.WriteLine($"{npc.Name} is currently level {npc.Level}");
                         break;
                     }
                     int amount;
