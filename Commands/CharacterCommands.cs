@@ -198,6 +198,11 @@ namespace RPGFramework.Commands
                     {
                         break;
                     }
+                    if (parameters[2].Equals("check"))
+                    {
+                        player.WriteLine($"{npc.Name} is currently level {npc.Level}");
+                        break;
+                    }
                     int amount;
                     int.TryParse(parameters[3], out amount);
                     npc.LevelUp(amount);
@@ -576,6 +581,7 @@ namespace RPGFramework.Commands
             player.WriteLine($"/{_entityName} remove armour '<name>' '<armourID>'");
             player.WriteLine($"/{_entityName} remove item '<name>' '<itemID>'");
             player.WriteLine($"/{_entityName} level '<name>' '<amount>'");
+            player.WriteLine($"/{_entityName} level check '<name>'");
             if (_entityName == "shopkeep" || _entityName == "npc")
             {
                 player.WriteLine($"/{_entityName} dialog list '<character>' '<category>'");
