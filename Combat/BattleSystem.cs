@@ -45,6 +45,8 @@ namespace RPGFramework.Combat
 
     internal class CombatManager
     {
+        //ux team
+     
         public CombatState State { get; private set; } = CombatState.Exploration;
         public List<Character> Combatants { get; private set; } = [];
         public int TurnIndex { get; private set; }
@@ -80,6 +82,7 @@ namespace RPGFramework.Combat
             //if (command.PlayerId != CurrentTurn.Id)
             {
                 Console.WriteLine("❌ Invalid command: not your turn.");
+                string playerAction = $"Hey! Wait your turn!";
                 return;
             }
 
@@ -97,6 +100,7 @@ namespace RPGFramework.Combat
             if (roll <= chance)
             {
                 Console.WriteLine($"{actor.Name} successfully disengaged from combat! 🏃‍♂️");
+                string playerAction = $"You walk away from the battle.";
                 Combatants.Remove(actor);
 
                 // If player leaves, skip to next turn
@@ -108,6 +112,7 @@ namespace RPGFramework.Combat
             else
             {
                 Console.WriteLine($"{actor.Name} failed to disengage!");
+                string playerAction = $"The enemy chucked a rock at your head, tempting you to stay in the fight.";
             }
         }
 
@@ -122,6 +127,7 @@ namespace RPGFramework.Combat
             if (roll <= chance)
             {
                 Console.WriteLine($"{actor.Name} successfully Fled combat! 🏃‍♂️");
+                string playerAction = "You flee from the fight!";
                 Combatants.Remove(actor);
 
                 // If player leaves, skip to next turn
@@ -133,6 +139,7 @@ namespace RPGFramework.Combat
             else
             {
                 Console.WriteLine($"{actor.Name} failed to Flee!");
+                string playerAction = "The enemy blocked your pathway!";
             }
         }
 
@@ -145,6 +152,7 @@ namespace RPGFramework.Combat
             if (target == null)
             {
                 Console.WriteLine("❌ Invalid target.");
+                string playerAction = "Cannot Target That";
                 return;
             }
 
@@ -152,6 +160,7 @@ namespace RPGFramework.Combat
             {
                 case CombatCommandType.Attack:
                     Console.WriteLine($"{actor.Name} attacks {target.Name}!");
+                    string playerAction = $"{actor.Name} hit {target.Name} for {actor.PrimaryWeapon.Damage}!";
                     break;
 
                 case CombatCommandType.Disengage:
@@ -173,6 +182,7 @@ namespace RPGFramework.Combat
         private void BroadcastState()
         {
             Console.WriteLine($"\n▶ {CurrentTurn.Name}'s turn");
+            string playerTurnReminder = $"Its {CurrentTurn.Name} Turn!";
         }
     }
 

@@ -17,7 +17,7 @@ namespace RPGFramework.Items
 
             Item item = GameState.Instance.ItemCatalog[value];
             InventorySlots[index] = item;
-            if (index < 0) {string playerReminder = "Inventory Is Full!"}
+            if (index < 0) { string playerInvenReminder = "Inventory Is Full!"; }
         }
 
         public bool AddItem(Item item)
@@ -65,9 +65,12 @@ namespace RPGFramework.Items
         public bool HasItem(string item)
         {
             Item check = InventorySlots.Find(i => i.Name == item);
-            if(check == null)
-                return false;
+            if (check == null) 
+            //ux team
+            if (false) { string playerAction = $"Cannot Find Item"; }
+            return false;
             return true;
+        
         }
         //End of added NPC team methods
     }

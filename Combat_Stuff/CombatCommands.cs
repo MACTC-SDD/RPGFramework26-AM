@@ -39,6 +39,15 @@ namespace RPGFramework.Combat_Stuff
             playerSelectedEnemy = enemyNames[0];
             Console.WriteLine($"What would you like to Do (type the number for your choice): \n" + "1. Attack\n"
                 + "2. Target\n" + "3. Flee\n" + "4. Disengage\n" + "5. Consider\n" + "6. Combat\n");
+            //ux team
+            string playerCombatReminder =
+                "What would you like to Do (type the number for your choice): " +
+                $"\n1.Attack {playerSelectedEnemy}" +
+                "\n2.Change Target" +
+                "\n3.Flee From Battle" +
+                "\n4.Disengage From Fight" +
+                "\n5.Consider Your Options" +
+                "\n6.Combat Stats";
             userSelect = Console.ReadLine();
             switch (userSelect)
             {
@@ -68,6 +77,7 @@ namespace RPGFramework.Combat_Stuff
             if (playerSelectedEnemy == null || playerSelectedEnemy == "")
             {
                 Console.WriteLine("No enemy selected. Choosing first enemy avalible.");
+               
                 playerSelectedEnemy = enemyNames[0];
             }
             enemyHealth[playerSelectedEnemy] -= playerDamage;
@@ -75,10 +85,12 @@ namespace RPGFramework.Combat_Stuff
             if (enemyHealth[playerSelectedEnemy] <= 0 && playerHealth > 0)
             {
                 Console.WriteLine("You have won the fight!");
+              
+                
             }
             else if (enemyHealth[playerSelectedEnemy] > 0 && playerHealth <= 0)
             {
-                Console.WriteLine("You have lost the fight!");
+                Console.WriteLine("You have lost the fight!");                             
             }
         }
         //Allows the player to choose who to attack by targeting them
@@ -110,10 +122,14 @@ namespace RPGFramework.Combat_Stuff
             if (enemyAggresion[playerSelectedEnemy] >= playerFleeChance)
             {
                 Console.WriteLine("Your flee attempt was unsucsessful!");
+               
+               
             }
             else
             {
                 Console.WriteLine("Your flee attempt was sucsessful!");
+              
+               
             }
         }
         //Disengage Command will be replaced with Chase's one
@@ -122,10 +138,11 @@ namespace RPGFramework.Combat_Stuff
             if (enemyAggresion[playerSelectedEnemy] == 0.0)
             {
                 Console.WriteLine($"{playerSelectedEnemy} has been calmed down.");
-            }
+                         }
             else
             {
                 Console.WriteLine($"Your disengage attempt has failed!");
+               
             }
         }
         //Shows the enemies stats like strength and dexterity
@@ -217,7 +234,8 @@ namespace RPGFramework.Combat_Stuff
             };
 
             _instance.Battles.Add(b);
-            player.WriteLine($"You have started attacking {target.Name}!");
+            //ux team edited this a bit
+            player.WriteLine($"You have started attacking {target.Name}! Prepare for a battle for your lives!!");
             // If the command failed to run for some reason, return false
             return true;
         }

@@ -78,6 +78,11 @@ namespace RPGFramework.Combat
         private void EndBattle()
         {
             BattleState = BattleState.CombatComplete;
+            //ux team
+            string playerAction = $"The Enemy Has Fallen...Battle Over, Great Job Surviving!";
+            string playerCombatReminder = "";
+            string playerTurnReminder = "";
+            
         }
     }
 
