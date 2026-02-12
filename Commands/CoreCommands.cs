@@ -82,32 +82,29 @@ namespace RPGFramework.Commands
             player.WriteLine($"[bold white]{room.Name}[/]");
             player.WriteLine(room.Description);
 
-            if (room.Items.Count > 0)
+        
+            foreach (var item in room.Items)
             {
-                foreach (var item in room.Items)
+                if (!string.IsNullOrWhiteSpace(item.Name))
                 {
-                    if (!string.IsNullOrWhiteSpace(item.Name))
-                    {
-                        string showText = item.DisplayText == "" ? item.Name : item.DisplayText;
-                        player.WriteLine($"[yellow]{showText}[/]");
-                    }
+                    string showText = item.DisplayText == "" ? item.Name : item.DisplayText;
+                    player.WriteLine($"[yellow]{showText}[/]");
                 }
-
-                player.WriteLine("\n\nMobs:");
-                foreach (Mob m in player.GetRoom().Mobs)
-                {
-                    player.WriteLine($"{m.Name} ");
-                }
-                return true;
             }
-            // For now, we'll ignore the command and just show the room description
 
+            player.WriteLine("\n\nMobs:");
+            foreach (Mob m in player.GetRoom().Mobs)
+            {
+                player.WriteLine($"{m.Name} ");
+            }
+
+            player.WriteLine("\n\nPlayers:");
             var people = Room.GetPlayersInRoom(player.GetRoom());
             foreach (Player p in people)
-            {
-                
-                player.WriteLine( p.Name);
-}
+            {                
+                player.WriteLine(p.Name);
+            }
+
             string content = "[red]Exits[/]\n";
             string title = " ";
 
