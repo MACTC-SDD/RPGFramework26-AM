@@ -92,6 +92,7 @@ namespace RPGFramework.Commands
                     }
                     break;
                 case "level":
+                    NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
                     if (npc == null)
                     {
                         break;
@@ -99,10 +100,11 @@ namespace RPGFramework.Commands
                     if (parameters[2].Equals("check"))
                     {
                         NonPlayer? npc2 = CheckForCatalogAndObject(player, parameters[3]);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                         player.WriteLine($"{npc2.Name} is currently level {npc2.Level}");
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                         break;
                     }
-                    NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
                     int amount;
                     int.TryParse(parameters[3], out amount);
                     npc.LevelUp(amount);
