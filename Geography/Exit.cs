@@ -8,6 +8,7 @@ namespace RPGFramework.Geography
         public int Id { get; set; } = 0;
         public Direction ExitDirection { get; set; }
         public ExitType ExitType { get; set; } = ExitType.Open;
+        public string? RequiredKeyId { get; set; } = null;
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
         public int SourceRoomId { get; set; }
@@ -33,6 +34,14 @@ namespace RPGFramework.Geography
             return GameState.Instance.Areas[areaId].Exits.Keys.Max() + 1;
             // Return one higher
         }
+
+        internal ExitResult TryUse(Player player)
+        {
+            throw new NotImplementedException();
+        }
     }
 
+    internal class ExitResult
+    {
+    }
 }

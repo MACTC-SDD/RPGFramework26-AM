@@ -1,4 +1,5 @@
-﻿using RPGFramework.Workflows;
+﻿using RPGFramework.Enums;
+using RPGFramework.Workflows;
 using Spectre.Console;
 using System.Net.Sockets;
 using System.Text.Json.Serialization;
@@ -15,8 +16,7 @@ namespace RPGFramework
 
         [JsonIgnore]
         public IAnsiConsole? Console { get; set; }
-        public object Equipment { get; internal set; }
-        public object Inventory { get; internal set; }
+        public int RoomId { get; internal set; }
 
         #region --- Constructors ---
         // Constructor (creates a new player)
@@ -31,6 +31,8 @@ namespace RPGFramework
                 .Rooms[GameState.Instance.StartRoomId]
                 .Id;
             Name = name;
+
+            Role = PlayerRole.Admin;
         }
 
         public Player()
