@@ -48,7 +48,6 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -129,7 +128,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -210,7 +209,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -291,7 +290,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -372,7 +371,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -453,7 +452,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -534,7 +533,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -615,7 +614,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -696,7 +695,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -777,7 +776,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -858,7 +857,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -939,7 +938,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,
@@ -1020,7 +1019,7 @@
         "HeavyAttack": 0,
         "LightAttack": 0,
         "Range": 0,
-        "Abilities": null,
+        
         "Type": 0,
         "Material": 0,
         "IsTwoHanded": false,

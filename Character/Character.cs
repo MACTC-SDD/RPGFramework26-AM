@@ -282,23 +282,17 @@ namespace RPGFramework
             {
                 Alive = false;
             }
-            //ux team
-      
-            healthBefore = Health;
-            Health = Math.Max(Health - damage, 0); //cannot have negative health
             
+            /*
             if (HasTakenDMG(damage)) 
             {         
              string playerAction = $"You Took {healthBefore - Health} Damage!";
             }
+            */
 
         }
 
-        private bool HasTakenDMG(int damage)
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
+   
         // Add some amount to health
         public void Heal(int heal)
         {
