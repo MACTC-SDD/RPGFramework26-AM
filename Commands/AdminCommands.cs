@@ -61,9 +61,10 @@ namespace RPGFramework.Commands
     }
     #endregion
 
+    #region ShutdownCommand Class
     internal class ShutdownCommand : ICommand
     {
-        public string Name => "shutdown";
+        public string Name => "/shutdown";
         public IEnumerable<string> Aliases => [];
         public string Help => "";
         public bool Execute(Character character, List<string> parameters)
@@ -75,11 +76,13 @@ namespace RPGFramework.Commands
             return true;
         }
     }
+    #endregion
 
+    #region GoToCommand Class
     internal class GoToCommand : ICommand
     {
-        public string Name => "GoTo";
-        public IEnumerable<string> Aliases => new List<string>() { };
+        public string Name => "/goto";
+        public IEnumerable<string> Aliases => [];
         public string Help => "Teleports an admin to a specific room using areaId and roomId.";
         public bool Execute(Character character, List<string> parameters)
         {
@@ -131,7 +134,9 @@ namespace RPGFramework.Commands
 
         }
     }
+    #endregion
 
+    #region FindRoomCommand Class
     internal class FindRoomCommand : ICommand
     {
         public string Name => "/findroom";
@@ -207,7 +212,11 @@ namespace RPGFramework.Commands
             return true;
         }
     }
+    #endregion
 
+    #region FindAreaCommand Class
+    // CODE REVIEW: If this actually and admin command we should check for permissions.
+    // otherwise this should maybe move to CoreCommands. No big deal.
     internal class FindAreaCommand : ICommand
     {
         public string Name => "findarea";
@@ -216,8 +225,7 @@ namespace RPGFramework.Commands
 
         public bool Execute(Character character, List<string> parameters)
         {
-            var player = character as Player;
-            if (player == null)
+            if (character is not Player player)
                 return false;
 
             if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
@@ -225,6 +233,7 @@ namespace RPGFramework.Commands
                 player.WriteLine("Area not found.");
                 return false;
             }
+
             player.WriteLine($"Area Id: {area.Id}");
             player.WriteLine($"Area name: {area.Id}");
             player.WriteLine($"Area description: {area.Description}");
@@ -238,7 +247,9 @@ namespace RPGFramework.Commands
             return true;
         }
     }
+    #endregion
 
+    #region FindExitCommand Class
     internal class FindExitCommand : ICommand
     {
         public string Name => "findexit";
@@ -274,6 +285,7 @@ namespace RPGFramework.Commands
                 );
             }
             return true;
-        }
+        }        
     }
+    #endregion
 }
