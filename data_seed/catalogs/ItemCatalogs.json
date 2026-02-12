@@ -389,7 +389,7 @@
       "DefenseBonus": 0
     },
     "bag_of_flour": {
-      "Id": 35,
+      "Id": 20,
       "Description": "A heavy burlap sack that leaks a fine white dust whenever it is moved.",
       "DisplayText": "You cough as a cloud of white dust puffs up. It needs water and heat to be useful.",
       "IsDroppable": true,
@@ -409,7 +409,7 @@
       "DefenseBonus": 0
     },
     "banana_sock": {
-      "Id": 38,
+      "Id": 21,
       "Description": "A stripey tube sock with a half-squashed banana stuffed inside the toe.",
       "DisplayText": "You swing the sock. It lands with a wet thud. The banana is now pudding.",
       "IsDroppable": true,
@@ -429,7 +429,7 @@
       "DefenseBonus": 0
     },
     "spark_bolt": {
-      "Id": 101,
+      "Id": 22,
       "Description": "A flickering mote of blue energy contained within a small glass vial.",
       "DisplayText": "You shatter the vial! A bolt of static leaps from your fingers, crackling as it flies.",
       "IsDroppable": true,
@@ -449,7 +449,7 @@
       "DefenseBonus": 0
     },
     "embershot": {
-      "Id": 105,
+      "Id": 23,
       "Description": "A scorched piece of charcoal that stays warm to the touch.",
       "DisplayText": "You hurl a spark that blooms into a fist-sized fireball. It smells like a campfire.",
       "IsDroppable": true,
@@ -469,7 +469,7 @@
       "DefenseBonus": 0
     },
     "mending_mist": {
-      "Id": 106,
+      "Id": 24,
       "Description": "A small silk pouch filled with dried lavender and glowing fairy dust.",
       "DisplayText": "You squeeze the pouch, releasing a fragrant green mist that knits your wounds back together.",
       "IsDroppable": true,
@@ -489,7 +489,7 @@
       "DefenseBonus": 0
     },
     "fire_ball": {
-      "Id": 108,
+      "Id": 25,
       "Description": "A heavy glass sphere filled with swirling, angry orange smoke and a single flickering wick.",
       "DisplayText": "You shatter the glass! A roaring sphere of flame erupts, engulfing everything in a searing blast.",
       "IsDroppable": true,
@@ -510,7 +510,7 @@
       "DefenseBonus": 0
     },
     "fire_bolt": {
-      "Id": 109,
+      "Id": 26,
       "Description": "A crystal splinter that glows with an inner, pulsing orange light.",
       "DisplayText": "You snap the crystal. A thin, concentrated needle of flame streaks toward your target.",
       "IsDroppable": true,
@@ -530,7 +530,7 @@
       "DefenseBonus": 0
     },
     "ice_bolt": {
-      "Id": 110,
+      "Id": 27,
       "Description": "A jagged icicle that never melts, even in direct sunlight.",
       "DisplayText": "You hurl the icicle. It shatters against the target, blooming into a flash of freezing frost.",
       "IsDroppable": true,
@@ -551,7 +551,7 @@
       "DefenseBonus": 0
     },
     "ice_wall": {
-      "Id": 111,
+      "Id": 28,
       "Description": "A heavy, pulsating blue core that emits a constant trail of freezing vapor.",
       "DisplayText": "You slam the core into the ground. A jagged barrier of thick ice surges upward, blocking the path.",
       "IsDroppable": true,
@@ -572,7 +572,7 @@
       "DefenseBonus": 0
     },
     "energy_shield": {
-      "Id": 112,
+      "Id": 29,
       "Description": "A humming silver ring that vibrates when held near metal.",
       "DisplayText": "You twist the ring. A translucent geometric barrier shimmers into existence around you.",
       "IsDroppable": true,
@@ -592,7 +592,7 @@
       "DefenseBonus": 0
     },
     "flash_bang": {
-      "Id": 113,
+      "Id": 30,
       "Description": "A pressurized brass canister filled with magnesium powder and concentrated sunlight.",
       "DisplayText": "You pull the pin and toss the canister. A deafening CRACK is followed by a blinding white light!",
       "IsDroppable": true,
