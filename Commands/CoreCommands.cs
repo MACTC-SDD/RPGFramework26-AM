@@ -74,6 +74,12 @@ namespace RPGFramework.Commands
                 {
                     player.WriteLine($"{exit.Description} to the {exit.ExitDirection}");
                 }
+
+                player.WriteLine("\n\nMobs:");
+                foreach (Mob m in player.GetRoom().Mobs)
+                {
+                    player.WriteLine($"{m.Name} ");
+                }
                 return true;
             }
             return false;
