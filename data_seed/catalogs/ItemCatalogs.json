@@ -611,6 +611,26 @@
       "Weight": 0.5,
       "StrengthBonus": 0,
       "DefenseBonus": 0
+    },
+    "bag_of_sugar": {
+      "Id": 31,
+      "Description": "Meth",
+      "DisplayText": "You consume the sugar! You feel a sudden burst of energy, followed by a slight headache.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Bag_of_Sugar",
+      "Tags": [
+        "Consumable",
+        "Food",
+        "Ingredient"
+      ],
+      "UsesRemaining": 1,
+      "Value": 2,
+      "Weight": 0.5,
+      "StrengthBonus": 1,
+      "DefenseBonus": 0
     }
   }
 }
