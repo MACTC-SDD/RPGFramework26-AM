@@ -27,6 +27,7 @@ namespace RPGFramework.Combat
             AttackTime = DateTime.Now;
             RollInitiative();
             Attacker.Target = Defender;
+            Defender.Target = Attacker;
         }
         
         public Battle()
