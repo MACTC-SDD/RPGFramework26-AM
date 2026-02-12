@@ -988,12 +988,16 @@ namespace RPGFramework.Commands
         #region CheckForCatalogAndObject Method
         protected static NonPlayer? CheckForCatalogAndObject(Player player, string key)
         {
-            var catalog = _catalog as Catalog<string, NonPlayer>;
-            if (!catalog!.TryGetValue(key, out NonPlayer? npc) || npc == null)
+
+
+            //var catalog = _catalog as Catalog<string, NonPlayer>;
+            //if (!catalog!.TryGetValue(key, out NonPlayer? npc) || npc == null)
+            if (!_catalog.ContainsKey(key))
             {
                 player.WriteLine($"{_entityName} '{key}' not found.");
                 return null;
             }
+            NonPlayer npc = (NonPlayer)_catalog[key];
 
             return npc;
         }
