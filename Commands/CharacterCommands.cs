@@ -92,16 +92,17 @@ namespace RPGFramework.Commands
                     }
                     break;
                 case "level":
-                    NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
                     if (npc == null)
                     {
                         break;
                     }
                     if (parameters[2].Equals("check"))
                     {
-                        player.WriteLine($"{npc.Name} is currently level {npc.Level}");
+                        NonPlayer? npc2 = CheckForCatalogAndObject(player, parameters[3]);
+                        player.WriteLine($"{npc2.Name} is currently level {npc2.Level}");
                         break;
                     }
+                    NonPlayer? npc = CheckForCatalogAndObject(player, parameters[2]);
                     int amount;
                     int.TryParse(parameters[3], out amount);
                     npc.LevelUp(amount);
