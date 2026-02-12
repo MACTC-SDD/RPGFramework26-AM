@@ -94,6 +94,12 @@ namespace RPGFramework.Commands
             }
             // For now, we'll ignore the command and just show the room description
 
+            var people = Room.GetPlayersInRoom(player.GetRoom());
+            foreach (Player p in people)
+            {
+                
+                player.WriteLine( p.Name);
+}
             string content = "[red]Exits[/]\n";
             string title = " ";
 
