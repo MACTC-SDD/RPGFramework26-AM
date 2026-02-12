@@ -63,6 +63,13 @@ namespace RPGFramework
             PrimaryWeapon = w;
         }
 
+        public int GetDamage()
+        {
+            int baseDamage = (int)(PrimaryWeapon?.Damage ?? 1);
+
+            int damage = baseDamage + Strength;
+            return damage;
+        }
         /// <summary>
         /// Get Room object of current location.
         /// </summary>
@@ -140,6 +147,10 @@ namespace RPGFramework
         public void TakeDamage(int damage)
         {
             SetHealth(Health - damage);
+            if (Health <= 0)
+            {
+                Alive = false;
+            }
         }
 
         // Add some amount to health

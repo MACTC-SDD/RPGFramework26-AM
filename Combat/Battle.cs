@@ -8,6 +8,137 @@ using System;
 
 namespace RPGFramework.Combat
 {
+    using RPGFramework;
+
+
+    namespace RPGFramework.Combat
+    {
+        internal class Battle
+        {
+            public Character Attacker { get; set; }
+            public Character Defender { get; set; }
+            public Character? Initiative { get; private set; }
+            public Character? NonInitiative { get; private set; }
+            public DateTime AttackTime { get; set; } = DateTime.Now;
+            public DateTime StartTime { get; private set; } = DateTime.Now;
+
+            public Area StartArea { get; set; }
+            public Room StartRoom { get; set; }
+            public BattleState BattleState { get; private set; } = BattleState.Combat;
+            
+            private int _timeoutSeconds = 120;
+
+
+
+            public Battle(Character attacker, Character defender, Area startArea, Room startRoom)
+            {
+                Attacker = attacker;
+                Defender = defender;
+                StartArea = startArea;
+                StartRoom = startRoom;
+                AttackTime = DateTime.Now;
+                RollInitiative();
+                Attacker.Target = Defender;
+                Defender.Target = Attacker;
+            }
+
+            /*public Battle()
+            {
+                AttackTime = DateTime.Now;
+                RollInitiative();
+                Attacker?.Target = Defender;
+            }
+            */
+
+            private void RollInitiative()
+            {
+                Random random = new Random();
+                int p1 = random.Next(1, 21) + Attacker.Dexterity;
+                int p2 = random.Next(1, 21) + Defender.Dexterity;
+                if (p1 >= p2)
+                {
+                    Initiative = Attacker;
+                    NonInitiative = Defender;
+                }
+                else
+                {
+                    Initiative = Defender;
+                    NonInitiative = Attacker;
+                }
+            }
+            public void ProcessTurn()
+            {
+                GameState.Log(DebugLevel.Debug, $"Processing turn for battle between {Attacker.Name} and {Defender.Name}");
+                //if (BattleState != BattleState.Combat) { return; }
+
+                // Check if both alive
+                if (Attacker.Alive == false || Defender.Alive == false)
+                {
+                    EndBattle();
+                }
+
+                if (Attacker.GetRoom() != Defender.GetRoom()) 
+                {
+                    // Can't attack because in different rooms, battle goes on
+                    return;
+                }
+                    
+                if (CheckForTimeout())
+                {
+                    EndBattle();
+                    return;
+                }
+
+                AttackTime = DateTime.Now;
+                Room r = Initiative!.GetRoom();
+
+                int damage = Initiative!.GetDamage();
+                NonInitiative!.TakeDamage(damage);
+                
+                Comm.SendToRoom(r, $"{Initiative.Name} hits {NonInitiative.Name} for {damage} damage!");
+                
+                // Is non init player still alive?
+                if (!NonInitiative.Alive)
+                {
+                    Comm.SendToRoom(r, $"{Initiative.Name} just killed {NonInitiative.Name}");
+                    EndBattle();
+                    return;
+                }
+
+                damage = NonInitiative.GetDamage();
+                Comm.SendToRoom(r, $"{NonInitiative.Name} hits {Attacker.Name} for {damage} damage!");
+
+                // Is defender player still alive?
+                if (!Initiative.Alive)
+                {
+                    Comm.SendToRoom(r,$"{NonInitiative.Name} just killed {Initiative.Name}");
+                    EndBattle();
+                    return;
+                }
+            }
+
+            private void EndBattle()
+            {
+                BattleState = BattleState.CombatComplete;
+            }
+
+            private bool CheckForTimeout()
+            {
+                // Check if current time - attackTime > timeoutSeconds
+                TimeSpan t = DateTime.Now - AttackTime;
+                if (t.TotalSeconds > _timeoutSeconds)
+                    return true;
+
+                return false;
+            }
+
+        }
+
+
+    }
+
+
+    /*
     internal class Battle
     {
         public Character Player { get; private set; }
@@ -170,5 +301,6 @@ namespace RPGFramework.Combat
             }
         }
     }
+    */
 }
 
