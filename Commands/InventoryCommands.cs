@@ -1,6 +1,7 @@
 ﻿
 using RPGFramework.Enums;
 using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace RPGFramework.Commands
 {
@@ -11,16 +12,65 @@ namespace RPGFramework.Commands
             return
             [
                 new InventoryCommand(),
+                new UseCommand(),
                 new AdminGetCommand(),
                 new AdminRemoveCommand(),
                 new GetCommand(),
                 new DropCommand(),
-                new AdminGetCommand(),
                 new GiveCommand(),
                 // Add other communication commands here as they are implemented
             ];
         }
     }
+
+    internal class UseCommand : ICommand
+    {
+        public string Name => "use";
+        public IEnumerable<string> Aliases => new List<string> { "consume", "eat", "drink" };
+        public string Help => "Usage: use [Item Name]\nUses a consumable item to restore health.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player) return false;
+
+            if (parameters.Count < 2)
+            {
+                player.WriteLine("Use what?");
+                return true;
+            }
+
+            string itemName = string.Join(" ", parameters.Skip(1));
+            var item = player.PlayerInventory.Items
+                .FirstOrDefault(i => i.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase));
+
+            if (item == null)
+            {
+                player.WriteLine($"You don't have a '{itemName}'.");
+                return true;
+            }
+
+            if (!item.IsConsumable)
+            {
+                player.WriteLine($"You can't use the {item.Name}.");
+                return true;
+            }
+
+            // --- UPDATED HEALING LOGIC ---
+
+            // We use the .Heal() method because 'Health' is protected.
+            // This also automatically ensures we don't go over MaxHealth!
+            player.Heal(item.HealAmount);
+
+            player.WriteLine($"You used the [cyan]{item.Name}[/] and healed for [green]{item.HealAmount}[/] health!");
+            player.WriteLine($"Current Health: [green]{player.Health}/{player.MaxHealth}[/]");
+
+            // -----------------------------
+
+            player.PlayerInventory.RemoveItem(item);
+            return true;
+        }
+    }
+
     internal class GetCommand : ICommand
     {
         public string Name => "get";

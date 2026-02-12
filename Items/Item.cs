@@ -16,6 +16,8 @@ namespace RPGFramework
         public int UsesRemaining { get; set; } = -1; // -1 means unlimited uses
         public double Value { get; set; } = 0;
         public double Weight { get; set; } = 0;
+        public bool IsConsumable { get; set; } = false;
+        public int HealAmount { get; set; } = 0;
 
         public virtual Item Clone()
         {
