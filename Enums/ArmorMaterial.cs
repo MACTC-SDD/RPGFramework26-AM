@@ -3,21 +3,24 @@ namespace RPGFramework.Enums
     internal enum ArmorMaterial
     {
         Cloth,
+        Leather,
         Bronze,
+        Iron,
         Bone,
         Rusty,
         DragonScale,
+        DragonBone,
+        Copper,
+        Gold,
         EnchantedSteel,
         Crystal,
-        Leather,
-        Iron,
         Steel,
         Mythril,
         Obsidian,
         Tungsten,
         StarMetal,
         MeteorSteel,
-        VoidStone,
+        VoidMetal,
         MoonSilver
     }
 }

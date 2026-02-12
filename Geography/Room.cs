@@ -1,5 +1,6 @@
 ﻿using RPGFramework.Display;
 using RPGFramework.Enums;
+using System.Security.Cryptography.X509Certificates;
 
 namespace RPGFramework.Geography
 {
@@ -14,6 +15,8 @@ namespace RPGFramework.Geography
 
         // Description of the room
         public string Description { get; set; } = "";
+        //Items in the room
+        public List<Item> Items { get; set; } = [];
 
         // Icon to display on map
         public string MapIcon { get; set; } = DisplaySettings.RoomMapIcon;
@@ -28,12 +31,17 @@ namespace RPGFramework.Geography
         public List<NonPlayer> Npcs{ get; set; } = [];
         public int MaxSpawnedAllowed { get; set; } = 3;
         public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        public List<Player> Players { get; set; } = [];
-        // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
+        public object Exits { get; internal set; }
+
         #endregion --- Properties ---
 
+        // Items in the room
+        List<Item> RoomItems = new List<Item>();
+
         #region --- Methods ---
+
+        #region AddExits Method
         /// <summary>
         /// This is for creating a new exit (and return exit), not linking existing exit items.
         /// </summary>
@@ -86,7 +94,9 @@ namespace RPGFramework.Geography
                 GameState.Instance.Areas[destinationRoom.AreaId].Exits.Add(exit1.Id, exit1);
             }
         }
+        #endregion
 
+        #region CreateRoom Methods
         /// <summary>
         /// Create a new room object in specified area and add it to GameState Area
         /// </summary>
@@ -110,6 +120,7 @@ namespace RPGFramework.Geography
         {
             return CreateRoom(area.Id, name, description);
         }
+        #endregion
 
         /// <summary>
         /// Create a copy of this room without copying exits.
@@ -153,6 +164,10 @@ namespace RPGFramework.Geography
         public static void DeleteRoom(Room room)
         {
             DeleteRoom(room.AreaId, room.Id);
+        }
+         public Item? FindItem(string itemName)
+        {
+            return Items.Find(x => x.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase));
         }
 
         public static Mob? FindMob(string name, Room room)
@@ -218,7 +233,7 @@ namespace RPGFramework.Geography
         }
 
         /// <summary>
-        /// Return a list of player objects that are in the specified room
+        /// Return a list of online player objects that are in the specified room
         /// </summary>
         /// <param name="room"></param>
         /// <returns></returns>
@@ -238,6 +253,25 @@ namespace RPGFramework.Geography
 
             return playersInRoom;
         }
+
+        #region GetPopulatedRooms Method
+        public static List<Room> GetPopulatedRooms()
+        {
+            List<Room> output = [];
+
+            foreach (Area area in GameState.Instance.Areas.Values)
+            {
+                foreach (Room room in area.Rooms.Values)
+                {
+                    if (GetPlayersInRoom(room).Count > 0)
+                        output.Add(room);                    
+                }
+            }
+
+            return output;
+        }
+        #endregion 
+
         #endregion --- Methods ---
 
         #region --- Methods (Events) ---
@@ -253,18 +287,33 @@ namespace RPGFramework.Geography
 
             // Send a message to all players in the room
             Comm.SendToRoomExcept(this, $"{character.Name} enters the room.", character);
-            if(character is NonPlayer npc){ 
+            if (character is NonPlayer npc) {
                 Npcs.Add(npc);
-            }
-            else if(character is Player player)
-            {
-                Players.Add(player);
             }
             else if (character is Mob mob)
             {
                 Mobs.Add(mob);
             }
         }
+
+        //EngagementRules
+        public void SafeZone()
+        {
+            
+        }
+        public void AgroRoom() 
+        { 
+        
+        }
+        public void SameRoom() 
+        { 
+        
+        }
+        public void TrapRoom() 
+        { 
+        
+        }
+        //end EngagementRules
 
         /// <summary>
         /// When a character leaves a room, do this.
@@ -278,10 +327,6 @@ namespace RPGFramework.Geography
             if (character is NonPlayer npc)
             {
                 Npcs.Remove(npc);
-            }
-            else if (character is Player player)
-            {
-                Players.Remove(player);
             }
             else if (character is Mob mob)
             {
@@ -297,7 +342,7 @@ namespace RPGFramework.Geography
         /// </summary>
         public void SpawnMobsInRoom()
         {
-            if(Players.Count <= 0)
+            if(this.GetPlayers().Count <= 0)
             {
                 // Don't spawn mobs if players aren't present
                 return;
@@ -328,7 +373,7 @@ namespace RPGFramework.Geography
 
         public void AddToSpawnable(string npcName, int spawnChance, Player player, string type)
         {
-            if (type.ToLower() == "mob")
+            if (type.ToLower().Equals("mob"))
             {
                 if (!SpawnableMobs.ContainsKey(npcName))
                 {
@@ -340,7 +385,7 @@ namespace RPGFramework.Geography
                     player.WriteLine($"{npcName} is already in the spawnable mobs list.");
                 }
             }
-            else if (type.ToLower() == "npc")
+            else if (type.ToLower().Equals("npc"))
             {
                 if (!SpawnableNpcs.ContainsKey(npcName))
                 {
@@ -357,7 +402,7 @@ namespace RPGFramework.Geography
 
         public void RemoveFromSpawnable(string npcName, Player player, string type)
         {
-            if (type.ToLower() == "mob")
+            if (type.ToLower().Equals("mob"))
             {
                 if (SpawnableMobs.ContainsKey(npcName))
                 {
@@ -369,7 +414,7 @@ namespace RPGFramework.Geography
                     player.WriteLine($"{npcName} is not in the spawnable mobs list.");
                 }
             }
-            else if (type.ToLower() == "npc")
+            else if (type.ToLower().Equals("npc"))
             {
                 if (SpawnableNpcs.ContainsKey(npcName))
                 {
@@ -385,7 +430,7 @@ namespace RPGFramework.Geography
         }
         public void ModifyChance(string npcName, Player player, string type, int chance)
         {
-            if (type.ToLower() == "mob")
+            if (type.ToLower().Equals("mob"))
             {
                 if (SpawnableMobs.ContainsKey(npcName))
                 {
@@ -397,7 +442,7 @@ namespace RPGFramework.Geography
                     player.WriteLine($"{npcName} is not in the spawnable mobs list.");
                 }
             }
-            else if( type.ToLower() == "npc")
+            else if( type.ToLower().Equals("npc"))
             {
                 if (SpawnableNpcs.ContainsKey(npcName))
                 {
@@ -413,7 +458,7 @@ namespace RPGFramework.Geography
 
         public void ListSpawnables(Player player, string type)
         {
-            if (type.ToLower() == "mob")
+            if (type.ToLower().Equals("mob"))
             {
                 player.WriteLine("Spawnable Mobs:");
                 foreach (var kvp in SpawnableMobs)
@@ -421,7 +466,7 @@ namespace RPGFramework.Geography
                     player.WriteLine($"- {kvp.Key}: Spawn Chance {kvp.Value}");
                 }
             }
-            else if (type.ToLower() == "npc")
+            else if (type.ToLower().Equals("npc"))
             {
                 player.WriteLine("Spawnable NPCs:");
                 foreach (var kvp in SpawnableNpcs)
@@ -443,7 +488,7 @@ namespace RPGFramework.Geography
 
         public void SpawnNpcsInRoom()
         {
-            if (Players.Count <= 0)
+            if (this.GetPlayers().Count <= 0)
             {
                 // Don't spawn npcs if players aren't present
                 return;
@@ -503,7 +548,7 @@ namespace RPGFramework.Geography
         }
         public void DespawnEntity(string mobName, string type)
         {
-            if (type.ToLower() == "mob")
+            if (type.ToLower().Equals("mob"))
             {
                 Mob? mobToRemove = Mobs.Find(m => m.Name.Equals(mobName, StringComparison.OrdinalIgnoreCase));
                 if (mobToRemove != null)
@@ -513,7 +558,7 @@ namespace RPGFramework.Geography
                     Comm.SendToRoom(this, $"{mobName} has been despawned from the room.");
                 }
             }
-            else if(type.ToLower() == "npc")
+            else if(type.ToLower().Equals("npc"))
             {
                 NonPlayer? npcToRemove = Npcs.Find(m => m.Name.Equals(mobName, StringComparison.OrdinalIgnoreCase));
                 if (npcToRemove != null)
@@ -524,6 +569,10 @@ namespace RPGFramework.Geography
                 }
             }
                 return;
+        }
+
+        public NonPlayer GetNpcByName(string name) {
+            return Npcs.Find(npc => npc.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
         #endregion
     }

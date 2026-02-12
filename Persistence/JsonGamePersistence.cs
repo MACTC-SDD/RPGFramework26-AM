@@ -83,7 +83,7 @@ namespace RPGFramework.Persistence
                 if (Directory.Exists(seedDataDir) &&
                     !PathsReferToSameDirectory(seedDataDir, runtimeDataDir))
                 {
-                    CopyDirectoryIfMissing(seedDataDir, runtimeDataDir);
+                    CopyDirectoryIfMissing(seedDataDir, runtimeDataDir, options.OverwriteFromDataSeedToRuntimeData);
                 }
             }
 
@@ -97,7 +97,7 @@ namespace RPGFramework.Persistence
             }
 
             // If CopyFilesFromDataSeed was set, copy all files from seed directories to runtime directories.
-            if (options.CopyFilesFromDataSeedToRuntimeData)
+            if (options.OverwriteFromDataSeedToRuntimeData)
             {                 
                 if (!string.IsNullOrWhiteSpace(options.SeedDataRelativePath))
                 {
@@ -106,7 +106,7 @@ namespace RPGFramework.Persistence
                     if (Directory.Exists(seedDataDir) &&
                         !PathsReferToSameDirectory(seedDataDir, runtimeDataDir))
                     {
-                        CopyDirectoryIfMissing(seedDataDir, runtimeDataDir, options.CopyFilesFromDataSeedToRuntimeData);
+                        CopyDirectoryIfMissing(seedDataDir, runtimeDataDir, options.OverwriteFromDataSeedToRuntimeData);
                     }
                 }
             }

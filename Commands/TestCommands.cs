@@ -30,19 +30,19 @@ namespace RPGFramework.Commands
         public string Name => "example";
 
         // These are the aliases that can also be used to execute this command. This can be empty.
-        public IEnumerable<string> Aliases => new List<string>() { "ex" };
+        public IEnumerable<string> Aliases => [];
         public string Help => "";
 
         // What will happen when the command is executed
         public bool Execute(Character character, List<string> parameters)
         {
             // A lot of times we want to make sure it's a Player issuing the command, but not always
-            if (character is Player player)
-            {
-                player.WriteLine("This is an example command.");
-            }
+            if (character is not Player player)
+                return false;
 
             // If the command failed to run for some reason, return false
+            player.WriteLine("This is an example command.");
+
             return true;
         }
     }
@@ -53,16 +53,20 @@ namespace RPGFramework.Commands
         public string Name => "tb";
 
         // These are the aliases that can also be used to execute this command. This can be empty.
-        public IEnumerable<string> Aliases => new List<string>() {  };
-        public string Help => "";
+        public IEnumerable<string> Aliases => [];
+        public string Help => "Start a test battle.";
 
         // What will happen when the command is executed
         public bool Execute(Character character, List<string> parameters)
         {
-            // A lot of times we want to make sure it's a Player issuing the command, but not always
-            if (character is Player player)
-            {
-                player.WriteLine("This is an example command.");
+            if (character is not Player player)
+                return false;
+
+            player.WriteLine("This is an example command.");
+
+            Mob m = new Mob() { Name = "Test Mob", Description = "A mob for testing" };
+            Battle b = new Battle(player, m, player.GetArea(), player.GetRoom());
+            GameState.Instance.Battles.Add(b);
 
                 Mob m = new Mob() {  Name="Test Mob", Description = "A mob for testing" };
                 m.LocationId = player.LocationId;
@@ -148,6 +152,32 @@ namespace RPGFramework.Commands
                 player.WriteLine($"Average per item: {(endMem - startMem) / (double)items.Count} bytes.");
             }
             return true;
+        }
+        internal class JoeCommand : ICommand
+        {
+            // This is the command a player would type to execute this command
+            public string Name => "/joe";
+            public string Help => "A test command for Joe to mess around with his inventory.";
+
+            // These are the aliases that can also be used to execute this command. This can be empty.
+            public IEnumerable<string> Aliases => new List<string>() {};
+
+            // What will happen when the command is executed
+            public bool Execute(Character character, List<string> parameters)
+            {
+                // A lot of times we want to make sure it's a Player issuing the command, but not always
+                if (character is Player player)
+                {
+                    player.WriteLine($"{player.PrimaryWeapon.Name}");
+                    Weapon w = new StarterBow();
+                    player.PrimaryWeapon = StarterBow.Create();
+                    player.WriteLine($"{player.PrimaryWeapon.Name}");
+                    //player.WriteLine("/joe equipment <item> | /joe unequipment <slot>");
+                }
+                
+                // If the command failed to run for some reason, return false
+                return true;
+            }
         }
     }
 }

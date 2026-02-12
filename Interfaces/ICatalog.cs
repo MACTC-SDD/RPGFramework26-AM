@@ -14,6 +14,7 @@ namespace RPGFramework.Interfaces
         Task LoadCatalogAsync();
 
         Task SaveCatalogAsync();
+        //bool TryGetValue(string keyString, out object value);
 
         bool Remove(object key);
 

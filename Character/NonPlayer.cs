@@ -1,11 +1,8 @@
-﻿
-using RPGFramework.Commands;
+﻿using RPGFramework.Commands;
 using RPGFramework.Enums;
 using RPGFramework.Geography;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.InteropServices.Swift;
-using System.Transactions;
+using System.Diagnostics.Contracts;
+using System.Text.Json.Serialization;
 
 namespace RPGFramework
 {
@@ -17,10 +14,10 @@ namespace RPGFramework
     internal class NonPlayer : Character
     {
         //additional variables from NPCs
-        public List<DialogGroup> DialogGroups { get; protected set; } = new List<DialogGroup>();
+        [JsonInclude] public List<DialogGroup> DialogGroups { get; protected set; } = [];
         public int CurrentAggressionLevel { get; protected set; } = 0;
-        public int MaxAggressionLevel { get; protected set; } = 10;
-        public int MinAgressionLevel { get; protected set; } = 0;
+        [JsonInclude] public int MaxAggressionLevel { get; protected set; } = 10;
+        [JsonInclude] public int MinAgressionLevel { get; protected set; } = 0;
         public bool Spawned { get; set; } = false;
         public NonPlayerType NpcType { get; protected set; } = NonPlayerType.Default;
         public CharacterState CurrentState { get; protected set; } = CharacterState.Idle;
@@ -45,6 +42,69 @@ namespace RPGFramework
 
         #region ---- Behavior Methods ----
 
+        public void PerformBehavior()
+        {
+            CheckAggressionLevel();
+            switch (CurrentState)
+            {
+                case CharacterState.Idle:
+                    PerformIdleBehavior();
+                    break;
+                case CharacterState.Aggressive:
+                    PerformAggressiveBehavior();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void CheckPlayerDialogue(string playerDialogue)
+        {
+            foreach(var group in DialogGroups)
+            {
+                if(group.CheckKeywordsInText(playerDialogue))
+                {
+                    if(group.Category == DialogGroupCategory.Aggressive)
+                    {
+                        CheckAggressionTags();
+                    }
+                    string response = group.GetRandomDialogLine();
+                    Comm.SendToRoomExcept(GetRoom(), $"{Name} says: \"{response}\"", this);
+                    return;
+                }
+            }
+            CheckAggressionLevel();
+        }
+
+        public void CheckAggressionTags()
+        {
+            if (Tags.Contains(NPCTag.Hostile))
+            {
+                IncrementAgressionLevel(3);
+            }
+            else if (Tags.Contains(NPCTag.Peaceful))
+            {
+                IncrementAgressionLevel(1);
+            }
+            else
+            {
+                IncrementAgressionLevel(2);
+            }
+            CheckAggressionLevel();
+
+        }
+        protected void CheckAggressionLevel()
+        {
+            if(CurrentAggressionLevel >= MaxAggressionLevel * 0.7)
+            {
+                CurrentState = CharacterState.Aggressive;
+            }
+            else
+            {
+                CurrentState = CharacterState.Idle;
+            }
+        }
+
         //npc leaves the room into a random room.
         private void NpcLeaveRoom(Character npc)
         {
@@ -59,7 +119,7 @@ namespace RPGFramework
         }
 
         //Plays when the npc is in an idle state
-        public void PerformIdleBehavior()
+        protected void PerformIdleBehavior()
         {
             // Implement idle behavior logic here
             int speakingChance = random.Next(1, 20);
@@ -69,10 +129,29 @@ namespace RPGFramework
             NpcMovementChance(LeavingChance);
         }
 
+        //Plays when the npc is in an aggressive state
+        protected void PerformAggressiveBehavior()
+        {
+            int number = random.Next(1, 20);
+            if (Tags.Contains(NPCTag.Talkative) || Tags.Contains(NPCTag.Hostile))
+            {
+                number += 2;
+            }
+            if(number >= 18)
+            {
+                //Implement Attack Logic later
+            }
+            if (number >= 12)
+            {
+                NpcSpeakRandomly("aggresive");
+            }
+                return;
+        }
+
         //moves if the npc gets a high enough random number.
         private void NpcMovementChance(int number)
         {
-            if (Tags.Contains("Wanderer"))
+            if (Tags.Contains(NPCTag.Wanderer))
             {
                 number += 2;
             }
@@ -86,25 +165,32 @@ namespace RPGFramework
 
         private void NpcSpeakingChance(int number)
         {
-            if (Tags.Contains("Talkative"))
+            if (Tags.Contains(NPCTag.Talkative))
             {
                 number += 2;
             }
             if (number >= 15)
             {
-                NpcSpeakRandomly();
+                NpcSpeakRandomly("Idle");
             }
             return;
         }
 
-        private void NpcSpeakRandomly()
+        private void NpcSpeakRandomly(string type)
         {
             if (DialogGroups.Count == 0)
             {
                 return;
             }
-            int index = random.Next(DialogGroups.Count);
-            string selectedLine = DialogGroups[index].GetRandomDialogLine();
+
+            DialogGroup? typeGroup = GetDialogGroup(type);
+
+            if(typeGroup == null || typeGroup.DialogLines.Count == 0)
+            {
+                return;
+            }
+
+            string selectedLine = typeGroup.GetRandomDialogLine();
             Comm.SendToRoom(GetRoom(), $"{Name} says: \"{selectedLine}\"");
         }
         public void AddDialogGroup(DialogGroup group)
@@ -115,13 +201,23 @@ namespace RPGFramework
         {
             DialogGroups.Remove(group);
         }
-        public bool HasDialogGroup(string groupName)
+        public bool HasDialogGroup(DialogGroupCategory groupCategory)
         {
-            return DialogGroups.Any(g => string.Equals(g.GroupName, groupName, StringComparison.OrdinalIgnoreCase));
+            return DialogGroups.Any(o => o.Category == groupCategory);
         }
+
         public DialogGroup GetDialogGroup(string groupName)
         {
-            return DialogGroups.FirstOrDefault(g => string.Equals(g.GroupName, groupName, StringComparison.OrdinalIgnoreCase));
+            DialogGroupCategory category;
+            Enum.TryParse<DialogGroupCategory>(groupName, true, out category);
+            foreach (var group in DialogGroups)
+            {
+                if (group.Category == category)
+                {
+                    return group;
+                }
+            }
+            return null;
         }
         #endregion
     }

@@ -14,6 +14,11 @@ namespace RPGFramework
         /// <param name="player"></param>
         /// <param name="role"></param>
         /// <returns></returns>
+        
+        public static int GetNextGlobalId()
+        {
+            return Guid.NewGuid().GetHashCode();
+        }
         public static bool CheckPermission(Player player, PlayerRole role)
         {
             return player.Role >= role;
