@@ -286,9 +286,9 @@ namespace RPGFramework
         }
 
     
-        public void WeaponStrengthDamage(int strength)
+        public void WeaponStrengthDamage(Weapon test)
         {
-            RPGFramework.Weapon test = new RPGFramework.Weapon();
+            
      
             Double Damage = Strength + test.Damage;
         }
@@ -304,17 +304,6 @@ namespace RPGFramework
             return dodgedroll;
         }
         //End Attack Resolution
-        //Stored Actions 
-
-        /* public void Task StoredActions()
-         {
-            if //(Enemy attacking)
-               {
-                 (Actions) await (EnemyAttack);
-             }
-         }*/
-
-        //End Stored Actions
 
         //Critical hit based on level
         private void CritOnLevel()
@@ -323,38 +312,88 @@ namespace RPGFramework
             CritChance = Math.Clamp(CritChance, 0.0, 0.10);
         }
         //Mythril critical hit 
-        private void MythrilCrit()
+        private void MythrilCrit(Armor equiped)
         {
-            Armor equiped = new Armor();
-
-
+        
             if (Armor.WearingMythril(equiped))
+            {
                 CritChance += 0.13;
-                CritDamage = 2;
-            string ResultP = Player.CritChance.ToString("P");
+                CritDamage += 2;
+                string ResultP = Player.CritChance.ToString("P");
+            }
 
         }
 
         //Mythril end critical hit
-        //armor type crits
-        private void ArmorTypeCrit()
-        {
-            Armor type = new Armor();
 
-            if (Armor.WearingLight(type))
+        //armor type crits
+        private void ArmorTypeCrit(Armor Type)
+        {
+            
+            foreach ( Armor armor in EquippedArmor) {
+            if (Type.WearingType(armor , ArmorType.Light))
             {
                 CritChance += 0.05;
             }
-            if (Armor.WearingMedium(type))
-            {
+                if (Type.WearingType(armor, ArmorType.Medium))
+                {
                 CritChance += 0.1;
             }
-            if (Armor.WearingHeavy(type))
-            {
+                if (Type.WearingType(armor, ArmorType.Heavy))
+                {
                 CritChance += 0.2;
+            }
             }
         }
         //end armor type crits
+        
+        //class crits
+         private void ClassCrit(CharacterClass Class)
+        {
+           
+            
+            if (Class.IsKnight())
+            {
+                CritDamage += 2;
+                CritChance += 0.1;
+            }
+            if (Class.IsHealer())
+            {
+                CritDamage += 0;
+                CritChance += 0.05;
+            }
+            if (Class.IsThief())
+            {
+                CritDamage += 2;
+                CritChance += 0.5;
+            }
+            if (Class.IsMage())
+            {
+                CritDamage += 1;
+                CritChance += 0.5;
+            }
+            if (Class.IsArcher())
+            {
+                CritDamage += 0;
+                CritChance += 0.5;
+            }
+        }
+        //end class crits
+
+        //weapon crits
+        private void WeaponCrit(Weapon weapon)
+        {
+           ;
+
+            CritChance += (weapon.Damage / 70.0) * 0.10;
+            if(weapon.Durability < 50)
+            {
+                CritDamage -= 20;
+            }
+            CritDamage += (weapon.HeavyAttack / 2);
+        }
+        //end weapon crits
+
         //End critical hit
         public List<string> GetTags()
         {

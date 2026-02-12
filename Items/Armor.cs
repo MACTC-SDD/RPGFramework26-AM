@@ -72,9 +72,9 @@ namespace RPGFramework
             return false;
               
             }
-         //Mythril wearing check end
-         //armor type check
-         public static bool WearingLight(Armor type)
+        //Mythril wearing check end
+        //armor type check
+        /* public static bool WearingLight(Armor type)
         {
             if (type.Type == ArmorType.Light)
             {
@@ -100,6 +100,10 @@ namespace RPGFramework
             }
             return false;
 
+        }*/
+        public  bool WearingType(Armor armor, ArmorType type)
+        {
+            return armor.Type == type;
         }
         //amror type cheek end
     }

@@ -274,7 +274,7 @@ namespace RPGFramework.Geography
             }
         }
 
-        //EngagementRules
+       /* //EngagementRules
         public void SafeZone()
         {
             
@@ -291,7 +291,7 @@ namespace RPGFramework.Geography
         { 
         
         }
-        //end EngagementRules
+        //end EngagementRules*/
 
         /// <summary>
         /// When a character leaves a room, do this.

@@ -1,4 +1,5 @@
 ﻿
+using RPGFramework.Enums;
 using System.Net.Security;
 using System.Reflection.PortableExecutable;
 using System.Xml.Linq;
@@ -30,5 +31,36 @@ namespace RPGFramework
             }
 
         }
+        //class crits
+        public  bool IsKnight()
+        {
+            //CharacterClass Type = new CharacterClass();
+            //if (Type.ClassType == Classes.Knight)
+            //{
+            //    return true;
+            //}
+            //return false;
+            return ClassType == Classes.Knight;          
+        }
+        public  bool IsHealer()
+        {
+            return ClassType == Classes.Healer; ;
+        }
+        public  bool IsThief()
+        {
+            return ClassType == Classes.Thief;
+        }
+        public  bool IsMage()
+        {
+            
+            return ClassType == Classes.Mage;
+        }
+        public  bool IsArcher()
+        {
+            return ClassType == Classes.Archer;
+           
+
+        }
     }
+
 }
