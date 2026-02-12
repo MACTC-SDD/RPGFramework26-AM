@@ -1,0 +1,616 @@
+{
+  "Items": {
+    "roast pork": {
+      "Id": 0,
+      "Description": "",
+      "DisplayText": "",
+      "IsDroppable": false,
+      "IsGettable": false,
+      "IsStackable": false,
+      "Level": 0,
+      "Name": "",
+      "Tags": [],
+      "UsesRemaining": -1,
+      "Value": 0,
+      "Weight": 0,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "honey glazed ham": {
+      "Id": 1,
+      "Description": "A thick slice of ham glazed with sweet honey and cloves.",
+      "DisplayText": "You consume the honey glazed ham. You feel revitalized and sturdy.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 3,
+      "Name": "Honey Glazed Ham",
+      "Tags": [
+        "food",
+        "meal"
+      ],
+      "UsesRemaining": 1,
+      "Value": 25,
+      "Weight": 2,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "berserker brew": {
+      "Id": 2,
+      "Description": "A bubbling red liquid that steams when uncorked.",
+      "DisplayText": "You chug the brew. A roar builds in your throat as your muscles expand!",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 8,
+      "Name": "Berserker Brew",
+      "Tags": [
+        "potion",
+        "buff",
+        "combat"
+      ],
+      "UsesRemaining": 1,
+      "Value": 75,
+      "Weight": 0.5,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "stale bread": {
+      "Id": 3,
+      "Description": "Hard as a rock and slightly moldy on one side.",
+      "DisplayText": "You gnaw on the stale bread. It\u0027s better than starving... barely.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 0,
+      "Name": "Stale Bread",
+      "Tags": [
+        "food",
+        "trash"
+      ],
+      "UsesRemaining": 1,
+      "Value": 1,
+      "Weight": 0.2,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "essence of turtle": {
+      "Id": 4,
+      "Description": "A thick, green syrup that moves slowly inside the bottle.",
+      "DisplayText": "You drink the essence. You feel slow, but incredibly tough.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 4,
+      "Name": "Essence of Turtle",
+      "Tags": [
+        "potion",
+        "buff"
+      ],
+      "UsesRemaining": 1,
+      "Value": 40,
+      "Weight": 1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "essence_of_bear": {
+      "Id": 5,
+      "Description": "A bubbling, dark brown liquid that smells faintly of pine and old fur.",
+      "DisplayText": "You drink the essence. A primal roar escapes your throat. You feel unstoppable.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 4,
+      "Name": "Essence of Bear",
+      "Tags": [
+        "potion",
+        "buff"
+      ],
+      "UsesRemaining": 1,
+      "Value": 45,
+      "Weight": 1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "essence_of_cheetah": {
+      "Id": 6,
+      "Description": "A vibrant orange fluid that seems to vibrate inside the glass.",
+      "DisplayText": "You drink the essence. The world seems to slow down around you. You feel the need to run.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 5,
+      "Name": "Essence of Cheetah",
+      "Tags": [
+        "potion",
+        "buff",
+        "speed"
+      ],
+      "UsesRemaining": 1,
+      "Value": 50,
+      "Weight": 0.5,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "essence_of_chameleon": {
+      "Id": 7,
+      "Description": "A strange clear syrup that takes on the color of whatever is behind it.",
+      "DisplayText": "You drink the essence. You look down at your hands and can barely see them.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 6,
+      "Name": "Essence of Chameleon",
+      "Tags": [
+        "potion",
+        "buff",
+        "stealth"
+      ],
+      "UsesRemaining": 1,
+      "Value": 60,
+      "Weight": 1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "essence_of_owl": {
+      "Id": 8,
+      "Description": "A dark blue liquid with suspended silver specks that look like stars.",
+      "DisplayText": "You drink the essence. Your eyes widen and you can see clearly in the shadows.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 3,
+      "Name": "Essence of Owl",
+      "Tags": [
+        "potion",
+        "buff",
+        "vision"
+      ],
+      "UsesRemaining": 1,
+      "Value": 35,
+      "Weight": 1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "essence_of_armadillo": {
+      "Id": 9,
+      "Description": "A gray, chalky mixture that is difficult to swallow.",
+      "DisplayText": "You drink the essence. Your skin hardens and feels like plate mail.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 4,
+      "Name": "Essence of Armadillo",
+      "Tags": [
+        "potion",
+        "buff"
+      ],
+      "UsesRemaining": 1,
+      "Value": 40,
+      "Weight": 2,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "moldy_cheese": {
+      "Id": 10,
+      "Description": "A wedge of yellow cheese covered in fuzzy blue spots. It smells sharp.",
+      "DisplayText": "You hold your nose and swallow. It tastes awful, but it is calories.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 0,
+      "Name": "Moldy Cheese",
+      "Tags": [
+        "food",
+        "trash",
+        "risk"
+      ],
+      "UsesRemaining": 1,
+      "Value": 2,
+      "Weight": 0.1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "dried_venison": {
+      "Id": 11,
+      "Description": "A strip of cured meat, tough as leather and very salty.",
+      "DisplayText": "You chew for several minutes. It is tough, but makes you feel stronger.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Dried Venison",
+      "Tags": [
+        "food",
+        "ration"
+      ],
+      "UsesRemaining": 1,
+      "Value": 15,
+      "Weight": 0.3,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "crisp_apple": {
+      "Id": 12,
+      "Description": "A bright red fruit, shiny and free of blemishes.",
+      "DisplayText": "Crunchy, sweet, and refreshing. A simple delight.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Crisp Apple",
+      "Tags": [
+        "food",
+        "produce"
+      ],
+      "UsesRemaining": 1,
+      "Value": 5,
+      "Weight": 0.2,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "iron_ration": {
+      "Id": 13,
+      "Description": "A dense block of hardtack and dried fruit wrapped in wax paper.",
+      "DisplayText": "It is dry and tasteless, but it sits heavy in your stomach.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 2,
+      "Name": "Iron Ration",
+      "Tags": [
+        "food",
+        "survival"
+      ],
+      "UsesRemaining": 1,
+      "Value": 10,
+      "Weight": 0.5,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "grandmothers_stew": {
+      "Id": 14,
+      "Description": "A sealed jar of thick broth containing root vegetables and tender beef.",
+      "DisplayText": "Warmth spreads through your limbs as you eat. You feel ready for anything.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": false,
+      "Level": 5,
+      "Name": "Grandmother\u0027s Stew",
+      "Tags": [
+        "food",
+        "meal",
+        "rare"
+      ],
+      "UsesRemaining": 1,
+      "Value": 75,
+      "Weight": 0.8,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "hard_boiled_egg": {
+      "Id": 15,
+      "Description": "A chicken egg boiled until solid. The shell is cracked slightly.",
+      "DisplayText": "A bit dry and chalky, but it is reliable protein.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Hard Boiled Egg",
+      "Tags": [
+        "food",
+        "snack",
+        "common"
+      ],
+      "UsesRemaining": 1,
+      "Value": 2,
+      "Weight": 0.1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "rustic_bread_loaf": {
+      "Id": 16,
+      "Description": "A round loaf of dark bread with a thick, flour-dusted crust.",
+      "DisplayText": "Chewy and dense. It takes a lot of water to wash it down.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Rustic Bread Loaf",
+      "Tags": [
+        "food",
+        "staple",
+        "common"
+      ],
+      "UsesRemaining": 2,
+      "Value": 4,
+      "Weight": 1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "smoked_sausage": {
+      "Id": 17,
+      "Description": "A loop of cured meat in a casing. It smells of hickory smoke.",
+      "DisplayText": "Greasy and savory. A favorite among soldiers.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 2,
+      "Name": "Smoked Sausage",
+      "Tags": [
+        "food",
+        "meat",
+        "common"
+      ],
+      "UsesRemaining": 1,
+      "Value": 8,
+      "Weight": 0.5,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "raw_potato": {
+      "Id": 18,
+      "Description": "A lumpy, brown tuber covered in dirt.",
+      "DisplayText": "Crunchy, starchy, and bland. Better than starving, but only just.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 0,
+      "Name": "Raw Potato",
+      "Tags": [
+        "food",
+        "ingredient",
+        "vegetable"
+      ],
+      "UsesRemaining": 1,
+      "Value": 1,
+      "Weight": 0.3,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "bottle_of_milk": {
+      "Id": 19,
+      "Description": "A glass bottle filled with fresh cow\u0027s milk.",
+      "DisplayText": "Cool and creamy. It coats your stomach pleasantly.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Bottle of Milk",
+      "Tags": [
+        "drink",
+        "dairy",
+        "common"
+      ],
+      "UsesRemaining": 1,
+      "Value": 5,
+      "Weight": 1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "bag_of_flour": {
+      "Id": 35,
+      "Description": "A heavy burlap sack that leaks a fine white dust whenever it is moved.",
+      "DisplayText": "You cough as a cloud of white dust puffs up. It needs water and heat to be useful.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 0,
+      "Name": "Bag of Flour",
+      "Tags": [
+        "ingredient",
+        "crafting",
+        "common"
+      ],
+      "UsesRemaining": 5,
+      "Value": 3,
+      "Weight": 2.5,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "banana_sock": {
+      "Id": 38,
+      "Description": "A stripey tube sock with a half-squashed banana stuffed inside the toe.",
+      "DisplayText": "You swing the sock. It lands with a wet thud. The banana is now pudding.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": false,
+      "Level": 1,
+      "Name": "Banana Sock",
+      "Tags": [
+        "weapon",
+        "blunt",
+        "improvised"
+      ],
+      "UsesRemaining": 5,
+      "Value": 0,
+      "Weight": 0.3,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "spark_bolt": {
+      "Id": 101,
+      "Description": "A flickering mote of blue energy contained within a small glass vial.",
+      "DisplayText": "You shatter the vial! A bolt of static leaps from your fingers, crackling as it flies.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Spark Bolt",
+      "Tags": [
+        "spell",
+        "ranged",
+        "arcane"
+      ],
+      "UsesRemaining": 10,
+      "Value": 15,
+      "Weight": 0.1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "embershot": {
+      "Id": 105,
+      "Description": "A scorched piece of charcoal that stays warm to the touch.",
+      "DisplayText": "You hurl a spark that blooms into a fist-sized fireball. It smells like a campfire.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Embershot",
+      "Tags": [
+        "spell",
+        "fire",
+        "projectile"
+      ],
+      "UsesRemaining": 8,
+      "Value": 12,
+      "Weight": 0.1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "mending_mist": {
+      "Id": 106,
+      "Description": "A small silk pouch filled with dried lavender and glowing fairy dust.",
+      "DisplayText": "You squeeze the pouch, releasing a fragrant green mist that knits your wounds back together.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Mending Mist",
+      "Tags": [
+        "spell",
+        "healing",
+        "restoration"
+      ],
+      "UsesRemaining": 3,
+      "Value": 30,
+      "Weight": 0.1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "fire_ball": {
+      "Id": 108,
+      "Description": "A heavy glass sphere filled with swirling, angry orange smoke and a single flickering wick.",
+      "DisplayText": "You shatter the glass! A roaring sphere of flame erupts, engulfing everything in a searing blast.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": false,
+      "Level": 1,
+      "Name": "Fireball",
+      "Tags": [
+        "spell",
+        "fire",
+        "aoe",
+        "explosive"
+      ],
+      "UsesRemaining": 1,
+      "Value": 50,
+      "Weight": 1.5,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "fire_bolt": {
+      "Id": 109,
+      "Description": "A crystal splinter that glows with an inner, pulsing orange light.",
+      "DisplayText": "You snap the crystal. A thin, concentrated needle of flame streaks toward your target.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Fire Bolt",
+      "Tags": [
+        "spell",
+        "fire",
+        "ranged"
+      ],
+      "UsesRemaining": 15,
+      "Value": 20,
+      "Weight": 0.1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "ice_bolt": {
+      "Id": 110,
+      "Description": "A jagged icicle that never melts, even in direct sunlight.",
+      "DisplayText": "You hurl the icicle. It shatters against the target, blooming into a flash of freezing frost.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Ice Bolt",
+      "Tags": [
+        "spell",
+        "ice",
+        "ranged",
+        "cold"
+      ],
+      "UsesRemaining": 12,
+      "Value": 22,
+      "Weight": 0.2,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "ice_wall": {
+      "Id": 111,
+      "Description": "A heavy, pulsating blue core that emits a constant trail of freezing vapor.",
+      "DisplayText": "You slam the core into the ground. A jagged barrier of thick ice surges upward, blocking the path.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": false,
+      "Level": 1,
+      "Name": "Ice Wall",
+      "Tags": [
+        "spell",
+        "ice",
+        "defense",
+        "barrier"
+      ],
+      "UsesRemaining": 2,
+      "Value": 45,
+      "Weight": 2,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "energy_shield": {
+      "Id": 112,
+      "Description": "A humming silver ring that vibrates when held near metal.",
+      "DisplayText": "You twist the ring. A translucent geometric barrier shimmers into existence around you.",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Energy Shield",
+      "Tags": [
+        "spell",
+        "defense",
+        "protection"
+      ],
+      "UsesRemaining": 10,
+      "Value": 35,
+      "Weight": 0.1,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    },
+    "flash_bang": {
+      "Id": 113,
+      "Description": "A pressurized brass canister filled with magnesium powder and concentrated sunlight.",
+      "DisplayText": "You pull the pin and toss the canister. A deafening CRACK is followed by a blinding white light!",
+      "IsDroppable": true,
+      "IsGettable": true,
+      "IsStackable": true,
+      "Level": 1,
+      "Name": "Flashbang",
+      "Tags": [
+        "spell",
+        "utility",
+        "consumable",
+        "stun"
+      ],
+      "UsesRemaining": 1,
+      "Value": 40,
+      "Weight": 0.5,
+      "StrengthBonus": 0,
+      "DefenseBonus": 0
+    }
+  }
+}
