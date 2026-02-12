@@ -70,6 +70,13 @@ namespace RPGFramework
             PrimaryWeapon = w;
         }
 
+        public int GetDamage()
+        {
+            int baseDamage = (int)(PrimaryWeapon?.Damage ?? 1);
+
+            int damage = baseDamage + Strength;
+            return damage;
+        }
         /// <summary>
         /// Get Room object of current location.
         /// </summary>
@@ -271,8 +278,12 @@ namespace RPGFramework
         {
           
             SetHealth(Health - damage);
+            if (Health <= 0)
+            {
+                Alive = false;
+            }
             //ux team
-            #region
+      
             healthBefore = Health;
             Health = Math.Max(Health - damage, 0); //cannot have negative health
             
@@ -433,6 +444,13 @@ namespace RPGFramework
             return [.. this.Tags.Select(t => t.ToString()).OrderBy(t => t.ToString())];
 
         }
+
+        public static implicit operator Character(bool v)
+        {
+            throw new NotImplementedException();
+        }
+
+        
     }
 }
         

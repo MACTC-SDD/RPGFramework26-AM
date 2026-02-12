@@ -92,6 +92,13 @@ namespace RPGFramework.Commands
                         player.WriteLine($"[yellow]{showText}[/]");
                     }
                 }
+
+                player.WriteLine("\n\nMobs:");
+                foreach (Mob m in player.GetRoom().Mobs)
+                {
+                    player.WriteLine($"{m.Name} ");
+                }
+                return true;
             }
             // For now, we'll ignore the command and just show the room description
 

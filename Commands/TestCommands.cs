@@ -1,6 +1,4 @@
-﻿using RPGFramework.Combat;
-using RPGFramework.Items;
-
+﻿
 namespace RPGFramework.Commands
 {
     internal class TestCommands
@@ -70,6 +68,14 @@ namespace RPGFramework.Commands
             Battle b = new Battle(player, m, player.GetArea(), player.GetRoom());
             GameState.Instance.Battles.Add(b);
 
+                Mob m = new Mob() {  Name="Test Mob", Description = "A mob for testing" };
+                m.LocationId = player.LocationId;
+                m.AreaId = player.AreaId;
+                m.SetMaxHealth(10); m.SetHealth(10);
+
+                Battle b = new Battle(player, m, player.GetArea(), player.GetRoom());
+                GameState.Instance.Battles.Add(b);
+            }
 
             // If the command failed to run for some reason, return false
             return true;
