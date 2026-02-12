@@ -31,6 +31,7 @@ namespace RPGFramework.Persistence
                 // Never overwrite runtime data unless explicitly told to.
                 if (!File.Exists(destPath) || overwrite)
                 {
+                    GameState.Log(Enums.DebugLevel.Debug, $"Creating/overwriting data file {destPath}");
                     File.Copy(sourcePath, destPath, overwrite);
                 }
             }
@@ -96,6 +97,7 @@ namespace RPGFramework.Persistence
                 }
             }
 
+            /* Same as above
             // If CopyFilesFromDataSeed was set, copy all files from seed directories to runtime directories.
             if (options.OverwriteFromDataSeedToRuntimeData)
             {                 
@@ -110,6 +112,7 @@ namespace RPGFramework.Persistence
                     }
                 }
             }
+            */
 
             return Task.CompletedTask;
         }
