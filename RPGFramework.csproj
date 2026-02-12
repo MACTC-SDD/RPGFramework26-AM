@@ -30,6 +30,11 @@
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</Content>
   </ItemGroup>
+	
+  <ItemGroup>
+    <Folder Include="Combat\" />
+    <Folder Include="data_seed\catalogs\" />
+  </ItemGroup>
 
 
 </Project>

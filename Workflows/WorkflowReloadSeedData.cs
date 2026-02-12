@@ -20,13 +20,14 @@ namespace RPGFramework.Workflows
             {
                 if (parameters.Count == 0 || parameters[0] != "YES!")
                 {
-                    player.WriteLine("You must confirm that you want to reload seed data by typing 'YES!'. If that's really what you wanted to do, try again.");
+                    player.WriteLine("You must confirm that you want to reload seed data by typing 'YES!'. If that's really what you wanted to do, re-run the command and try again.");
+                    player.CurrentWorkflow = null;
                     return;
                 }
 
                 GameState.Persistence.EnsureInitializedAsync(new GamePersistenceInitializationOptions()
                 {
-                    CopyFilesFromDataSeedToRuntimeData = true
+                    OverwriteFromDataSeedToRuntimeData = true
                 });
 
                 _ = GameState.Instance.LoadAllAreas();

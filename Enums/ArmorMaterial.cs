@@ -1,10 +1,11 @@
-﻿
 namespace RPGFramework.Enums
 {
     internal enum ArmorMaterial
     {
         Cloth,
+        Leather,
         Bronze,
+        Iron,
         Bone,
         Rusty,
         Stone,
@@ -16,8 +17,6 @@ namespace RPGFramework.Enums
         Wood,
         EnchantedSteel,
         Crystal,
-        Leather,
-        Iron,
         Steel,
         Mythril,
         Obsidian,

@@ -13,7 +13,7 @@ namespace RPGFramework
         public static void Broadcast(string message)
         {
             // Loop through all online players
-            foreach (Player p in GameState.Instance.Players.Values.Where(p => p.IsOnline))
+            foreach (Player p in Player.GetOnlinePlayers(GameState.Instance.Players))
             {
                 p.WriteLine(message);
             }
@@ -26,10 +26,7 @@ namespace RPGFramework
         /// <param name="message"></param>
         public static void SendToRoom(Room room, string message)
         {
-            foreach (Player player in Room.GetPlayersInRoom(room))
-            {
-                player.WriteLine(message);
-            }
+            SendToRoomExcept(room, message, null);
         }
 
         /// <summary>
@@ -39,13 +36,20 @@ namespace RPGFramework
         /// <param name="room"></param>
         /// <param name="message"></param>
         /// <param name="except"></param>
-        public static void SendToRoomExcept(Room room, string message, Character except)
+        public static void SendToRoomExcept(Room room, string message, Character? except)
         {
             foreach (Player player in Room.GetPlayersInRoom(room))
             {
-                if (except is Player && player != except)
+                if (except == null || player != except)
                 {
                     player.WriteLine(message);
+                }
+            }
+            foreach (NonPlayer npc in room.Npcs)
+            {
+                if (except == null || npc != except)
+                {
+                    npc.CheckPlayerDialogue(message);
                 }
             }
         }

@@ -61,15 +61,12 @@ internal class TelnetServer
                 pn.Writer.WriteLine("Username: ");
                 playerName = pn.TelnetConnection.ReadLine();
             }
-
             GameState.Log(DebugLevel.Debug, $"Player '{playerName}' is connecting...");
-            Player player;
 
             // If existing player
-            if (GameState.Instance.Players.TryGetValue(playerName, out Player? value))
+            if (GameState.Instance.Players.TryGetValue(playerName, out Player? player))
             {
                 GameState.Log(DebugLevel.Debug, $"Existing player '{playerName}' found, loading data...");
-                player = value;
             }
             else
             {
@@ -87,7 +84,13 @@ internal class TelnetServer
             player.Login();
 
             // MOTD Should Be Settable in Game Settings
-            player.Write(RPGPanel.GetPanel("Welcome to the game!", "Welcome!"));
+            player.Write(
+        $"\n                          Welcome {playerName}                         " +         
+        "\n========================================================================" +
+        "\n                              RPG WORLD                                 " +
+        "\n                             TYPE : START                               " +
+        "\n========================================================================" +
+        "\r\n");
             MapRenderer.RenderLocalMap(player);
 
             GameState.Log(DebugLevel.Alert, $"Player '{playerName}' has connected successfully.");
@@ -110,7 +113,9 @@ internal class TelnetServer
             catch (Exception ex)
             {
                 // Should this use GameState.Log instead?
-                AnsiConsole.WriteException(ex);
+                player.Logout();
+                GameState.Log(DebugLevel.Error,
+                    $"Player Exception ({player.Name})\n{ex.Message}\n{ex.StackTrace}");                    
             }
             finally
             {
