@@ -214,6 +214,34 @@ namespace RPGFramework
 
         #endregion
 
+        public void RemoveArmor(ArmorSlot slot)
+        {
+            // 1. Find the armor currently equipped in this slot (e.g., Head)
+            Armor? armorToRemove = EquippedArmor.FirstOrDefault(a => a.Slot == slot);
+
+            // 2. If we found something, remove it
+            if (armorToRemove != null)
+            {
+                EquippedArmor.Remove(armorToRemove);       // Remove from body
+                PlayerInventory.Items.Add(armorToRemove);  // Add back to backpack
+
+                // Optional: specific message
+                this.WriteLine($"You unequipped the [cyan]{armorToRemove.Name}[/].");
+            }
+        }
+        public void RemoveWeapon()
+        {
+            if (PrimaryWeapon != null)
+            {
+                PlayerInventory.Items.Add(PrimaryWeapon);
+                this.WriteLine($"You put away your [cyan]{PrimaryWeapon.Name}[/].");
+                PrimaryWeapon = null;
+            }
+            else
+            {
+                this.WriteLine("You are not holding a weapon.");
+            }
+        }
     }
 
 

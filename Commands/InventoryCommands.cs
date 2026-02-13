@@ -17,6 +17,8 @@ namespace RPGFramework.Commands
                 new DropCommand(),
                 new AdminGetCommand(),
                 new GiveCommand(),
+                new EquipCommand(),
+                new UnequipCommand(),
                 // Add other communication commands here as they are implemented
             ];
         }
@@ -296,7 +298,7 @@ namespace RPGFramework.Commands
     internal class GiveCommand : ICommand
     {
         public string Name => "give";
-        public IEnumerable<string> Aliases => new List<string> { "transfer", "send" };
+        public IEnumerable<string> Aliases => new List<string> { "send" };
         public string Help => "Usage: give [Player Name] [Item Name]\nTransfers an item from your inventory to another player.";
 
         public bool Execute(Character character, List<string> parameters)
@@ -366,6 +368,117 @@ namespace RPGFramework.Commands
                 sourcePlayer.WriteLine("[red]An error occurred while trying to transfer the item.[/]");
             }
 
+            return true;
+        }
+    }
+    internal class EquipCommand : ICommand
+    {
+        public string Name => "Equip";
+        public IEnumerable<string> Aliases => new List<string> { "eq", "wear", "wield" };
+        public string Help => "Usage: Equip [Item Name]\nEquips an item from your inventory.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player) return false;
+
+            // 1. Input Validation
+            if (parameters.Count < 2)
+            {
+                player.WriteLine("Equip what?");
+                return true;
+            }
+
+            // 2. Find the item in the Player's Inventory
+            string itemName = string.Join(" ", parameters.Skip(1));
+
+            Item? itemToEquip = player.PlayerInventory.Items
+                .FirstOrDefault(i => i.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase));
+
+            // 3. Item Not Found Check
+            if (itemToEquip == null)
+            {
+                player.WriteLine($"You do not have '{itemName}'.");
+                return true;
+            }
+
+            // 4. Handle Weapon Logic (The Fix)
+            if (itemToEquip is Weapon weapon)
+            {
+                // Step A: Clear the slot and save the old weapon
+                // We call the method in Player.cs. It handles checking for null
+                // and putting the old weapon back in the bag automatically.
+                player.RemoveWeapon();
+
+                // Step B: Equip the new weapon
+                player.PrimaryWeapon = weapon;
+                player.WriteLine($"You wield the [green]{weapon.Name}[/].");
+
+                // Step C: Remove the new weapon from the bag so it isn't duplicated
+                player.PlayerInventory.RemoveItem(weapon);
+                return true;
+            }
+
+            // 5. Handle Armor Logic
+            else if (itemToEquip is Armor armor)
+            {
+                // Step A: Clear the slot and save the old armor
+                // We call the method in Player.cs to clear the specific slot
+                player.RemoveArmor(armor.Slot);
+
+                // Step B: Equip the new armor
+                player.EquippedArmor.Add(armor);
+                player.WriteLine($"You equipped the [green]{armor.Name}[/].");
+
+                // Step C: Remove the new armor from the bag so it isn't duplicated
+                player.PlayerInventory.RemoveItem(armor);
+                return true;
+            }
+
+            // 6. Handle Invalid Items (Potions, junk, etc.)
+            else
+            {
+                player.WriteLine("You cannot equip that.");
+                return true;
+            }
+        }
+    }
+    internal class UnequipCommand : ICommand
+    {
+        public string Name => "Unequip";
+        public IEnumerable<string> Aliases => new List<string> { "remove", "takeoff" };
+        public string Help => "Usage: Unequip [Head/Chest/Legs/Back/Weapon]\nRemoves equipped gear.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player) return false;
+
+            if (parameters.Count < 2)
+            {
+                player.WriteLine("Unequip which slot? (Head, Chest, Legs, Back, Weapon)");
+                return true;
+            }
+
+            string input = parameters[1];
+
+            // 1. CHECK FOR WEAPON FIRST
+            // We look for "Weapon" or "Hand" explicitly
+            if (input.Equals("Weapon", StringComparison.OrdinalIgnoreCase) ||
+                input.Equals("Hand", StringComparison.OrdinalIgnoreCase))
+            {
+                player.RemoveWeapon(); // This calls the specific weapon method
+                return true;
+            }
+
+            // 2. CHECK FOR ARMOR SLOTS
+            // If it wasn't a weapon, we check if it matches an ArmorSlot enum
+            if (Enum.TryParse(input, true, out ArmorSlot slot))
+            {
+                player.RemoveArmor(slot); // This calls the specific armor method
+                return true;
+            }
+
+            // 3. INVALID INPUT
+            player.WriteLine($"'{input}' is not a valid equipment slot.");
             return true;
         }
     }
