@@ -38,6 +38,7 @@ namespace RPGFramework.Commands
         }
     }
 
+    #region AddminCommand Class
     internal class AdminCommand : ICommand
     {
         public string Name => "/admin";
@@ -71,6 +72,7 @@ namespace RPGFramework.Commands
             return true;
         }
     }
+    #endregion
 
     #region ReloadSeedDataCommand Class
     internal class ReloadSeedDataCommand : ICommand
