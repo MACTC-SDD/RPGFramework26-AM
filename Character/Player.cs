@@ -133,18 +133,36 @@ namespace RPGFramework
         }
         public void Write(string message)
         {
-            WriteNewLineIfNeeded();
-            Console?.Write(message);
-            var line = Network?.TelnetConnection?.CurrentLineText;
-            Console?.Write(line ?? String.Empty); // Re-write current input line
+            try
+            {
+                WriteNewLineIfNeeded();
+                Console?.Write(message);
+                var line = Network?.TelnetConnection?.CurrentLineText;
+                Console?.Write(line ?? String.Empty); // Re-write current input line
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                GameState.Log(Enums.DebugLevel.Error, $"Error sending message to player {Name}: {ex.Message}");
+
+            }
         }
 
         public void Write(IRenderable renderable)
         {
-            WriteNewLineIfNeeded();
-            Console?.Write(renderable);
-            var line = Network?.TelnetConnection?.CurrentLineText;
-            Console?.Write(line ?? String.Empty); // Re-write current input line
+            try
+            {
+                WriteNewLineIfNeeded();
+                Console?.Write(renderable);
+                var line = Network?.TelnetConnection?.CurrentLineText;
+                Console?.Write(line ?? String.Empty); // Re-write current input line
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                GameState.Log(Enums.DebugLevel.Error, $"Error sending message to player {Name}: {ex.Message}");
+
+            }
         }
 
 
@@ -155,10 +173,19 @@ namespace RPGFramework
         /// p formatting supported by the output system.</param>
         public void WriteLine(string message)
         {
-            WriteNewLineIfNeeded();
-            Console?.MarkupLine(message);
-            var line = Network?.TelnetConnection?.CurrentLineText;
-            Console?.Write(line ?? String.Empty); // Re-write current input line
+            try
+            {
+                WriteNewLineIfNeeded();
+                Console?.MarkupLine(message);
+                var line = Network?.TelnetConnection?.CurrentLineText;
+                Console?.Write(line ?? String.Empty); // Re-write current input line
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                GameState.Log(Enums.DebugLevel.Error, $"Error sending message to player {Name}: {ex.Message}");
+
+            }
         }
         private void WriteNewLineIfNeeded()
         {

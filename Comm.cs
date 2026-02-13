@@ -15,7 +15,8 @@ namespace RPGFramework
             // Loop through all online players
             foreach (Player p in Player.GetOnlinePlayers(GameState.Instance.Players))
             {
-                p.WriteLine(message);
+
+                    p.WriteLine(message);
             }
         }
     
