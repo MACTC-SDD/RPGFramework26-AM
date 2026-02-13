@@ -13,8 +13,8 @@ namespace RPGFramework.Commands
             [
                 new InventoryCommand(),
                 new UseCommand(),
-                new AdminGetCommand(),
-                new AdminRemoveCommand(),
+                new ItemGetCommand(),
+                new ItemRemoveCommand(),
                 new GetCommand(),
                 new DropCommand(),
                 new GiveCommand(),
@@ -200,9 +200,9 @@ namespace RPGFramework.Commands
             return true;
         }
     }
-    internal class AdminGetCommand : ICommand
+    internal class ItemGetCommand : ICommand
     {
-        public string Name => "/Admin get";
+        public string Name => "/itemget";
         public IEnumerable<string> Aliases => new List<string> { "Ag" };
         public string Help => "Usage: Ag [Item Name]\nAdds the specified item to your inventory. The item name is case-insensitive and can be found in the Item, Weapon, or Armor Catalogs.";
 
@@ -288,9 +288,9 @@ namespace RPGFramework.Commands
         }
 
     }
-    internal class AdminRemoveCommand : ICommand
+    internal class ItemRemoveCommand : ICommand
     {
-        public string Name => "/Admin remove";
+        public string Name => "/itemremove";
         public IEnumerable<string> Aliases => new List<string> { "Ar", "rm" };
         public string Help => "Usage: Ar [Item Name]\nTrashes an item from your inventory. Does not affect the global catalog.";
 
