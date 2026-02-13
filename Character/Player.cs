@@ -231,16 +231,16 @@ namespace RPGFramework
         }
         public void RemoveWeapon()
         {
-            if (PrimaryWeapon != null)
+            if (PrimaryWeapon.Name == "Fists")
             {
-                PlayerInventory.Items.Add(PrimaryWeapon);
-                this.WriteLine($"You put away your [cyan]{PrimaryWeapon.Name}[/].");
-                PrimaryWeapon = null;
+                WriteLine("You aren't holding anything to unequip.");
+                return;
             }
-            else
-            {
-                this.WriteLine("You are not holding a weapon.");
-            }
+
+            PlayerInventory.Items.Add(PrimaryWeapon);
+            WriteLine($"You put away the {PrimaryWeapon.Name}.");
+
+            AddFists();
         }
     }
 

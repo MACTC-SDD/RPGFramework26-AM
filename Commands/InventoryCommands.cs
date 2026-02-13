@@ -446,7 +446,7 @@ namespace RPGFramework.Commands
     {
         public string Name => "Unequip";
         public IEnumerable<string> Aliases => new List<string> { "remove", "takeoff" };
-        public string Help => "Usage: Unequip [Head/Chest/Legs/Back/Weapon]\nRemoves equipped gear.";
+        public string Help => "Usage: Unequip [Item Name]\nRemoves a specific equipped item.";
 
         public bool Execute(Character character, List<string> parameters)
         {
@@ -454,31 +454,36 @@ namespace RPGFramework.Commands
 
             if (parameters.Count < 2)
             {
-                player.WriteLine("Unequip which slot? (Head, Chest, Legs, Back, Weapon)");
+                player.WriteLine("Unequip which slot? (Type the name of the item)");
                 return true;
             }
 
-            string input = parameters[1];
+            string targetName = string.Join(" ", parameters.Skip(1));
 
             // 1. CHECK FOR WEAPON FIRST
             // We look for "Weapon" or "Hand" explicitly
-            if (input.Equals("Weapon", StringComparison.OrdinalIgnoreCase) ||
-                input.Equals("Hand", StringComparison.OrdinalIgnoreCase))
+            if (!player.PrimaryWeapon.Name.Equals("Fists", StringComparison.OrdinalIgnoreCase) &&
+                player.PrimaryWeapon.Name.Equals(targetName, StringComparison.OrdinalIgnoreCase))
             {
                 player.RemoveWeapon(); // This calls the specific weapon method
+                return true;
+            }
+            Armor? armorToRemove = player.EquippedArmor.FirstOrDefault(a => a.Name.Equals(targetName, StringComparison.OrdinalIgnoreCase));
+            if (armorToRemove != null) {
+                player.RemoveArmor(armorToRemove.Slot);
                 return true;
             }
 
             // 2. CHECK FOR ARMOR SLOTS
             // If it wasn't a weapon, we check if it matches an ArmorSlot enum
-            if (Enum.TryParse(input, true, out ArmorSlot slot))
+            if (Enum.TryParse(targetName, true, out ArmorSlot slot))
             {
                 player.RemoveArmor(slot); // This calls the specific armor method
                 return true;
             }
 
             // 3. INVALID INPUT
-            player.WriteLine($"'{input}' is not a valid equipment slot.");
+            player.WriteLine($"You are not wearing '{targetName}'.");
             return true;
         }
     }
