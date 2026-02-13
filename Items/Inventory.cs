@@ -69,9 +69,12 @@ namespace RPGFramework.Items
         public bool HasItem(string item)
         {
             Item check = InventorySlots.Find(i => i.Name == item);
-            if(check == null)
-                return false;
+            if (check == null) 
+            //ux team
+            if (false) { string playerAction = $"Cannot Find Item"; }
+            return false;
             return true;
+        
         }
 
         //End of added NPC team methods

@@ -1,4 +1,5 @@
-﻿using RPGFramework.Commands;
+﻿using RPGFramework.Combat;
+using RPGFramework.Commands;
 using RPGFramework.Enums;
 using RPGFramework.Geography;
 using Spectre.Console;
@@ -11,6 +12,9 @@ namespace RPGFramework.Workflows
 {
     internal class WorkflowOnboarding : IWorkflow
     {
+        public string playerTurnReminder { get; set; } = "";
+        public string playerCombatReminder { get; set; } = "";
+        public string playerInvenReminder { get; set; } = "";
         public string playerReminder { get; set; } = "";
         public string playerAction { get; set; } = "";
         public string playerStatus { get; set; } = "";
@@ -145,7 +149,7 @@ namespace RPGFramework.Workflows
                     CurrentStep++;
                     break;
                 case 5:
-
+                    
 
 
 
@@ -153,13 +157,13 @@ namespace RPGFramework.Workflows
 
 
                     player.Console!.Clear();
-                    if (player.Health <= 0)
-                    {
-                        player.Console!.Clear();
-                        player.WriteLine("Game Over..." + $"\nHope You Enjoyed {player.Name}");
-                    }
-                    else
-                    {
+                   // if (player.Health <= 0)
+                  //  {
+                  //      player.Console!.Clear();
+                  //      player.WriteLine("Game Over..." + $"\nHope You Enjoyed Our Game! {player.Name} :)");
+                 //   }
+                 //   else
+                  //  {
                         string output =
 
                     $"                                                 --Area : {player.AreaId}–-                   " +
@@ -172,7 +176,7 @@ namespace RPGFramework.Workflows
                         "\n" +
                         "\n" +
                         "\n" +
-
+                        $"\n"+
                         "\n" +
                         "\n" +
                         "\n" +
@@ -181,11 +185,13 @@ namespace RPGFramework.Workflows
                         "\n" +
                         "\n" +
                         "\n========================================================================================================================" +
-                        "\n" +
-
+                        "\n"+
                         $"\n{playerAction}" +
-
-                        "\n" +
+                        $"\n"+
+                        $"\n {playerCombatReminder}" +
+                        "\n"+
+                        $"\n {playerTurnReminder}"+
+                        "\n"+
                         "\n========================================================================================================================" +
                         "\n" +
                        $"\nPlayer Name: {player.Name}" +
@@ -194,6 +200,7 @@ namespace RPGFramework.Workflows
                        $"\nHealth : {player.Health}/{player.MaxHealth}" + $"\tGold :{player.Gold}" +
                        $"\nPlaytime : {player.PlayTime}" +
                        $"\nStatus : {playerStatus}  " +
+                       $"\n{playerReminder}"+
                         "\n" +
                         "\n========================================================================================================================" +
                         "\n" +
@@ -221,7 +228,8 @@ namespace RPGFramework.Workflows
                         string helmetMAXDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Head)?.MaxDurability.ToString() ?? "0";
                         string chestMAXDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Chest)?.MaxDurability.ToString() ?? "0";
                         string legMAXDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Legs)?.MaxDurability.ToString() ?? "0";
-                        string backMAXDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.MaxDurability.ToString() ?? "0"; output +=
+                        string backMAXDURA = player.EquippedArmor.Find(o => o.Slot == ArmorSlot.Back)?.MaxDurability.ToString() ?? "0"; 
+                        output +=
                                    $"\nHelmet : {helmetName}" +
                                    $"\n\tWeight Type : {helmetType}" +
                                    $"\n\tMaterial : {helmetMat}" +
@@ -248,8 +256,9 @@ namespace RPGFramework.Workflows
                                    $"\n\tWeapon Material : {player.PrimaryWeapon.Material}" +
                                   $"\n\tCrit Chance : {Character.CritChance}" +
                                   $"\n\tCrit DMG : {Character.CritDamage}" +
-                              $"\nRemaining Inventory Slots : {player.PlayerInventory.InventorySlots.Count} {playerReminder}" +
-                                    "\n========================================================================================================================";
+                                  "\n"+
+                              $"\nRemaining Inventory Slots : {player.PlayerInventory.InventorySlots.Count} {playerInvenReminder}" +
+                              "\n========================================================================================================================";
 
                        
                     
@@ -260,7 +269,7 @@ namespace RPGFramework.Workflows
 
                         player.CurrentWorkflow = null;
 
-                    }
+               //     }
                     break;
             } 
             

@@ -311,7 +311,8 @@ namespace RPGFramework
             #region
             if (bleedDuration >= 0)
             {
-                string playerStatus = $"You're Taking {bleedDamagePerSecond}  Bleed Damage!";
+                string playerStatus = $"Bleed";
+                string playerReminder = $"You're Taking {bleedDamagePerSecond} per second, for {bleedDuration}";
             }
             #endregion
         }
