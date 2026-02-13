@@ -19,6 +19,7 @@ namespace RPGFramework.Commands
                 new FindRoomCommand(),
                 new FindAreaCommand(),
                 new FindExitCommand(),
+                new AdminCommand(),
                 // Add more builder commands here as needed
             ];
         }
