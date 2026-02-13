@@ -1,8 +1,8 @@
 ﻿using RPGFramework.Enums;
 
-namespace RPGFramework.Items.ItemDefinitions
+namespace RPGFramework.Items
 {
-    internal class starter_bow
+    internal class StarterBow : Weapon
     {
         public static Weapon Create()
         {

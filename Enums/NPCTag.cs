@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RPGFramework.Enums
 {
-    internal enum ValidTags
+    internal enum NPCTag
     {
         Wanderer,
         Shopkeep,

@@ -1,8 +1,9 @@
+using RPGFramework.Enums;
 using RPGFramework.Geography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using RPGFramework.Items;
-using RPGFramework.Enums;
+using System.Net;
 using System.Text.Json.Serialization;
 
 
@@ -39,7 +40,7 @@ namespace RPGFramework
         public int LocationId { get; set; } = 0;
         public int MaxHealth { get; protected set; } = 0;
         public string Name { get; set; } = "";
-        protected List<string> Tags { get; set; } = []; // (for scripting or special behavior)
+        public List<NPCTag> Tags { get; set; } = []; // (for scripting or special behavior)
         [JsonIgnore] public Character? Target { get; set; } = null; // (for combat or interaction)
         public int XP { get; protected set; } = 0;
         public CharacterClass Class { get; set; } = new CharacterClass();
@@ -72,6 +73,14 @@ namespace RPGFramework
             Weapon w = new Weapon()
             { Damage = 2, Description = "A fist", Name = "Fist", Value = 0, Weight = 0 };
             PrimaryWeapon = w;
+        }
+
+        public int GetDamage()
+        {
+            int baseDamage = (int)(PrimaryWeapon?.Damage ?? 1);
+
+            int damage = baseDamage + Strength;
+            return damage;
         }
         /// <summary>
         /// Get Room object of current location.
@@ -108,7 +117,10 @@ namespace RPGFramework
         {
             Charisma = Math.Clamp(value, 0, 20);
         }
-
+        #region
+        //ux team
+        public int healthBefore;
+        #endregion
         public int GetStrength()
         {
             return Strength;
@@ -165,11 +177,44 @@ namespace RPGFramework
         }
         #endregion
 
+        public void LevelUp(int amount)
+        {
+            Level += amount;
+            Random random = new Random();
+            for (int i = 0; i < amount; i++)
+            {
+                int healthIncrease = (int)(MaxHealth * 0.1);
+                SetMaxHealth(MaxHealth + healthIncrease);
+                int randomSkill = random.Next(0, 5);
+                switch (randomSkill)
+                {
+                    case 0:
+                        IncrimentStrength(1); break;
+                    case 1:
+                        IncrimentDexterity(1); break;
+                    case 2:
+                        IncrimentCharisma(1); break;
+                    case 3:
+                        IncrimentConstitution(1); break;
+                    case 4:
+                        IncrimentWisdom(1); break;
+                    case 5:
+                        IncrimentIntelligence(1); break;
+
+                }
+            }
+            // Restore health to full on level up
+            SetHealth(MaxHealth);
+        }
         public Room GetRoom()
         {
             return GameState.Instance.Areas[AreaId].Rooms[LocationId];
         }
 
+        public int GetXPtoNextLevel()
+        {
+            return Level * 100; // Example: 100 XP per level
+        }
         public Area GetArea()
         {
             return GameState.Instance.Areas[AreaId];
@@ -236,34 +281,64 @@ namespace RPGFramework
         // Remove some amount from health
         public void TakeDamage(int damage)
         {
+          
             SetHealth(Health - damage);
+            if (Health <= 0)
+            {
+                Alive = false;
+            }
+            
+            /*
+            if (HasTakenDMG(damage)) 
+            {         
+             string playerAction = $"You Took {healthBefore - Health} Damage!";
+            }
+            */
+
         }
 
+   
         // Add some amount to health
         public void Heal(int heal)
         {
             SetHealth(Health + heal);
-
+            // ux team
+            #region
+            if (heal >= MaxHealth) { string playerAction = $"You're Already At Max Health!"; }
+            if (heal >= 0) { string playerAction = $"You Healed {heal} HP!"; }
+            #endregion
         }
 
         internal void ApplyBleed(double bleedDamagePerSecond, int bleedDuration)
         {
             throw new NotImplementedException();
+            //ux team
+            #region
+            if (bleedDuration >= 0)
+            {
+                string playerStatus = $"Bleed";
+                string playerReminder = $"You're Taking {bleedDamagePerSecond} per second, for {bleedDuration}";
+            }
+            #endregion
         }
 
         //Add tags to character
         public bool AddTag(string tag)
         {
             // Accept enum names (case-insensitive) and avoid duplicates
-            if (Enum.TryParse<ValidTags>(tag, true, out _) && !Tags.Contains(tag))
+            NPCTag item;
+            Enum.TryParse<NPCTag>(tag, true, out item);
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+            if (item != null && !Tags.Contains(item))
             {
-                Tags.Add(tag);
+                Tags.Add(item);
                 return true;
             }
-                return false;
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+            return false;
         }
         //removes tags from character
-        public bool RemoveTag(string tag)
+        public bool RemoveTag(NPCTag tag)
         {
             if (Tags.Contains(tag))
             {
@@ -360,10 +435,22 @@ namespace RPGFramework
         }
         //end armor type crits
         //End critical hit
+
+        // CODE REVIEW: Shelton PR #60 - See notes on CharacterCommands / ShowNPCTags for reasoning behind this method.
         public List<string> GetTags()
         {
-            return Tags;
+            //return Tags;
+            // Look at the tags list, sort by the the string representatation and return those strings
+            return [.. this.Tags.Select(t => t.ToString()).OrderBy(t => t.ToString())];
+
         }
+
+        public static implicit operator Character(bool v)
+        {
+            throw new NotImplementedException();
+        }
+
+        
     }
 }
         

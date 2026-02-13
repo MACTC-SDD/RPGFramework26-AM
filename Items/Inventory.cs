@@ -1,4 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using RPGFramework;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Xml.Linq;
+
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 
 namespace RPGFramework.Items
@@ -17,6 +24,7 @@ namespace RPGFramework.Items
 
             Item item = GameState.Instance.ItemCatalog[value];
             InventorySlots[index] = item;
+            if (index < 0) { string playerReminder = "Inventory Is Full!"; }
         }
 
         public bool AddItem(Item item)
@@ -24,18 +32,17 @@ namespace RPGFramework.Items
             if (Items.Count >= MaxSlots) return false;
             Items.Add(item);
             return true;
+            //ux team
+            if (Items.Count >= MaxSlots) { string playeraction = $"No Space In Inventory To Add Item!"; }
         }
 
-        // CODE REVIEW: Shelton - we might want to discuss. In this case we are giving
-        // the player the actual copy from the catalog, meaning if it got degraded or modified
-        // it's modifying the catalog version, which isn't the intent. 
-        // Check out Utility.Clone which will take an object and give you a copy of it (not just a reference to the same thing)
         //Added for the sake of sell commands (remove if you hate) -Shelton
         public bool AddItem(string item)
         {
             if (InventorySlots.Count >= MaxSlots)
                 return false;
-            Item itemNew = GameState.Instance.ItemCatalog[item];
+            
+            Item itemNew = GameState.Instance.ItemCatalog[item].Clone();
             InventorySlots.Add(itemNew);
             return true;
         }
@@ -54,15 +61,20 @@ namespace RPGFramework.Items
             {
                 InventorySlots.Remove(itemToSell);
                 player.Gold += ((int) itemToSell.Value / 2);
+                //ux team
+                string playeraction = $"You Sold {itemToSell} for {itemToSell.Value}!";
             }
         }
 
         public bool HasItem(string item)
         {
             Item check = InventorySlots.Find(i => i.Name == item);
-            if(check == null)
-                return false;
+            if (check == null) 
+            //ux team
+            if (false) { string playerAction = $"Cannot Find Item"; }
+            return false;
             return true;
+        
         }
 
         //End of added NPC team methods
@@ -78,3 +90,5 @@ namespace RPGFramework.Items
     }
 
 }
+
+

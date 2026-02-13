@@ -5,7 +5,7 @@
     internal enum WeaponType
     {
         LongSword,
-        ShortSword,
+        Shortsword,
         Claymore,
         Cutlass,
         BattleAxe,
@@ -32,17 +32,15 @@
         Trident,
         WarScythe,
         MilitaryFork,
-        BaseballBat,
-        PocketofSand,
-        TableLeg,
-        FryingPan,
+        Pocketofsand,
         Chair,
-        Saber,
+        Fryingpan,
         Wakizashi,
-        Flintlock,
+        TableLeg,
+        Saber,
+        FlintLock,
         Sword
     }
-
     public enum EquipmentSlot
     {
         Head,
@@ -52,5 +50,6 @@
         MainHand,
         OffHand
     }
+   
 }
     

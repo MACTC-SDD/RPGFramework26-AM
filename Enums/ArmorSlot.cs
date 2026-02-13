@@ -5,7 +5,8 @@ namespace RPGFramework.Enums
         Head,
         Chest,
         Legs,
-        Back
+        Back,
+        Boots
     }
 }
     
