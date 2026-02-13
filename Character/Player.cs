@@ -101,12 +101,17 @@ namespace RPGFramework
         /// </summary>
         public void Logout()
         {
+            if (!IsOnline) 
+                return; // If they're already logged out, we don't need to do anything
+
             TimeSpan duration = DateTime.Now - LastLogin;
             PlayTime += duration;
             IsOnline = false;            
             Save();
 
-            WriteLine("Bye!");
+            // If we were logging out becuase of a lost connection, we likely won't be able to send this message, and that's fine, so we'll just comment it out for now.
+            // We could consider trying to send it and catching any exceptions that occur when trying to write to a lost connection, but for now, we'll just leave it out.
+            WriteLine("Bye!"); 
             Network?.Client.Close();
         }
 
