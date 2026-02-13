@@ -144,7 +144,7 @@ namespace RPGFramework
             {
                 // Log the exception or handle it as needed
                 GameState.Log(Enums.DebugLevel.Error, $"Error sending message to player {Name}: {ex.Message}");
-
+                Logout(); // Log the player out if we can't send messages to them, as this likely means their connection is lost
             }
         }
 
@@ -161,7 +161,7 @@ namespace RPGFramework
             {
                 // Log the exception or handle it as needed
                 GameState.Log(Enums.DebugLevel.Error, $"Error sending message to player {Name}: {ex.Message}");
-
+                Logout(); // Log the player out if we can't send messages to them, as this likely means their connection is lost
             }
         }
 
@@ -184,18 +184,27 @@ namespace RPGFramework
             {
                 // Log the exception or handle it as needed
                 GameState.Log(Enums.DebugLevel.Error, $"Error sending message to player {Name}: {ex.Message}");
-
+                Logout(); // Log the player out if we can't send messages to them, as this likely means their connection is lost
             }
         }
         private void WriteNewLineIfNeeded()
         {
-            if (Network == null)
-                return;
-            if (Network.TelnetConnection == null)
-                return;
-            if (Network.NeedsOutputNewline)
+            try
             {
-                Console?.Write("\r\n");
+                if (Network == null)
+                    return;
+                if (Network.TelnetConnection == null)
+                    return;
+                if (Network.NeedsOutputNewline)
+                {
+                    Console?.Write("\r\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                GameState.Log(Enums.DebugLevel.Error, $"Error sending message to player {Name}: {ex.Message}");
+                Logout(); // Log the player out if we can't send messages to them, as this likely means their connection is lost
             }
         }
 

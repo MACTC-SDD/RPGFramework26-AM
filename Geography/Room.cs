@@ -482,7 +482,8 @@ namespace RPGFramework.Geography
             Mob mob = GameState.Instance.MobCatalog[npcName];
             Comm.SendToRoom(this, $"{npcName} has appeared in the room.");
 
-            Mobs.Add(mob);
+            Mob? clone = Utility.Clone(mob);
+            if (clone != null) Mobs.Add(clone);
             return;
         }
 
