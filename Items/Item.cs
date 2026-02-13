@@ -1,7 +1,11 @@
 ﻿using RPGFramework;
+using System.Text.Json.Serialization;
 
 namespace RPGFramework
 {
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+    [JsonDerivedType(typeof(Weapon), "weapon")]
+    [JsonDerivedType(typeof(Armor), "armor")]
     internal class Item : IDescribable
     {
         internal EquipmentBase slot;
