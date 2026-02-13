@@ -25,7 +25,7 @@ namespace RPGFramework
         public string Password { get; private set; } = "SomeGarbage";
         public TimeSpan PlayTime { get; set; } = new TimeSpan();
         public PlayerRole Role { get; set; }
-      
+
         #endregion
         /*Made a small change?, undid it as it was for just testing*/
         public string DisplayName()
@@ -197,7 +197,8 @@ namespace RPGFramework
             this.WriteLine($"[green]Congratulations! You've reached level {Level}![/]");
             this.WriteLine($"[green]Your Max Health has increased by {healthIncrease} to {MaxHealth}.[/]");
             this.WriteLine($"Please select a stat to level up!: ");
-            string input = Network!.TelnetConnection!.ReadLine();
+            /*string input = Network!.TelnetConnection!.ReadLine();*/ //I commented it out because it had a warning, I used ChatGPT to make a version that used ?, so it could be null?(Just delete the line below and make this one work if needed/wanted)-Landon
+            string? input = Network?.TelnetConnection?.ReadLine();
 
             if (input != null)
             {

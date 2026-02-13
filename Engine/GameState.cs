@@ -1,6 +1,5 @@
 ﻿
 using System.Text.Json.Serialization;
-using RPGFramework.Combat;
 using RPGFramework.Enums;
 using RPGFramework.Geography;
 using RPGFramework.Interfaces;
@@ -47,6 +46,9 @@ namespace RPGFramework
         private CancellationTokenSource? _spawnMobsCts;
         private Task? _spawnMobsTask;
 
+        private CancellationTokenSource? _mobActionsCts;
+        private Task? _mobActionsTask;
+
         private int _logSuppressionSeconds = 30;
         #endregion
 
@@ -74,7 +76,7 @@ namespace RPGFramework
         [JsonIgnore] public Catalog<string, Item> ItemCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, Weapon> WeaponCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, Armor> ArmorCatalog { get; set; } = [];
-        [JsonIgnore] public Catalog<string, Shopkeep> ShopCatalog { get; set; } = [];
+        [JsonIgnore] public Catalog<string, Shopkeep> ShopkeepCatalog { get; set; } = [];
         [JsonIgnore] public Catalog<string, HelpEntry> HelpCatalog { get; set; } = [];
 
         [JsonIgnore] public TelnetServer? TelnetServer { get; private set; }
@@ -102,7 +104,7 @@ namespace RPGFramework
             Catalogs.Add(MobCatalog);
             Catalogs.Add(NPCCatalog);
             Catalogs.Add(WeaponCatalog);
-            Catalogs.Add(ShopCatalog);
+            Catalogs.Add(ShopkeepCatalog);
         }
 
         public void AddPlayer(Player player)
@@ -284,6 +286,9 @@ namespace RPGFramework
             _battleCts = new CancellationTokenSource();
             _battleTask = RunBattleManagerLoopAsync(TimeSpan.FromSeconds(5), _battleCts.Token);
 
+            _mobActionsCts = new CancellationTokenSource();
+            _mobActionsTask = RunMobActionsLoopAsync(TimeSpan.FromSeconds(15), _mobActionsCts.Token);
+
             _spawnMobsCts = new CancellationTokenSource();
             _spawnMobsTask = RunSpawnMobLoopAsync(TimeSpan.FromSeconds(30), _spawnMobsCts.Token);
             // Other threads will go here
@@ -325,10 +330,12 @@ namespace RPGFramework
             IsRunning = false;
 
             // Wait for threads to finish
-            _saveCts?.Cancel();
-            _timeOfDayCts?.Cancel();
             _battleCts?.Cancel();
+            _mobActionsCts?.Cancel();
+            _saveCts?.Cancel();
             _spawnMobsCts?.Cancel();
+            _timeOfDayCts?.Cancel();
+
             // Exit program
             Environment.Exit(0);
         }
@@ -434,7 +441,30 @@ namespace RPGFramework
                 await Task.Delay(interval, ct);
             }
         }
-        #endregion --- Thread Methods ---
+        private async Task RunMobActionsLoopAsync(TimeSpan interval, CancellationToken ct)
+        {
+            GameState.Log(DebugLevel.Alert, "NPC action thread started.");
+            while (!ct.IsCancellationRequested && IsRunning)
+            {
+                try
+                {
+                    GameState.Log(DebugLevel.Debug, "NPCs taking action...");
+                    foreach (Room r in Room.GetPopulatedRooms())
+                    {
+                        foreach (NonPlayer npc in r.Npcs)
+                        {
+                            npc.PerformBehavior();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GameState.Log(DebugLevel.Error, $"Error during NPC actions: {ex.Message}");
+                }
+                await Task.Delay(interval, ct);
+            }
+        }
+
         #region RunSpawnMobLoopAsync Method
         private async Task RunSpawnMobLoopAsync(TimeSpan interval, CancellationToken ct)
         {
@@ -462,6 +492,9 @@ namespace RPGFramework
             GameState.Log(DebugLevel.Alert, "Mobs spawn thread stopping.");
         }
         #endregion
+        
+        #endregion --- Thread Methods ---
+
 
     }
 }

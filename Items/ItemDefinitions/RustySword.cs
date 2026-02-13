@@ -1,13 +1,17 @@
-﻿using RPGFramework.Enums;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using RPGFramework.Enums;
+using RPGFramework.Items;
 
-namespace RPGFramework.Items.ItemDefinitions
+namespace RPGFramework.Items
 {
     // CODE REVIEW: Liam (PR #21)
     // We won't end up creating weapons this way, but maybe this is old code?
     // Discuss with me and we'll remove after you do.
     internal static class RustySword
     {
-        public static Weapon Create()
+        public static Weapon Create() 
         {
             return new Weapon
             {
@@ -25,6 +29,6 @@ namespace RPGFramework.Items.ItemDefinitions
                 Material = WeaponMaterial.Rusty
                 
             };
-        } 
+        }
     } 
 }

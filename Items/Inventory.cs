@@ -1,4 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using RPGFramework;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Xml.Linq;
+
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 
 namespace RPGFramework.Items
@@ -17,7 +24,7 @@ namespace RPGFramework.Items
 
             Item item = GameState.Instance.ItemCatalog[value];
             InventorySlots[index] = item;
-            if (index < 0) { string playerInvenReminder = "Inventory Is Full!"; }
+            if (index < 0) { string playerReminder = "Inventory Is Full!"; }
         }
 
         public bool AddItem(Item item)
@@ -29,16 +36,13 @@ namespace RPGFramework.Items
             if (Items.Count >= MaxSlots) { string playeraction = $"No Space In Inventory To Add Item!"; }
         }
 
-        // CODE REVIEW: Shelton - we might want to discuss. In this case we are giving
-        // the player the actual copy from the catalog, meaning if it got degraded or modified
-        // it's modifying the catalog version, which isn't the intent. 
-        // Check out Utility.Clone which will take an object and give you a copy of it (not just a reference to the same thing)
         //Added for the sake of sell commands (remove if you hate) -Shelton
         public bool AddItem(string item)
         {
             if (InventorySlots.Count >= MaxSlots)
                 return false;
-            Item itemNew = GameState.Instance.ItemCatalog[item];
+            
+            Item itemNew = GameState.Instance.ItemCatalog[item].Clone();
             InventorySlots.Add(itemNew);
             return true;
         }
@@ -72,7 +76,19 @@ namespace RPGFramework.Items
             return true;
         
         }
+
         //End of added NPC team methods
+        internal bool RemoveItem(Item itemToRemove)
+        {
+            if (Items.Contains(itemToRemove))
+            {
+                Items.Remove(itemToRemove);
+                return true;
+            }
+            return false;
+        }
     }
 
 }
+
+

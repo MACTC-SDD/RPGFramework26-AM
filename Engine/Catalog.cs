@@ -146,6 +146,7 @@ namespace RPGFramework
 
         #region TryGetValue Methods
         public bool TryGetValue(TKey key, out TValue? value) => _items.TryGetValue(key, out value);
+        //public bool TryGetValue(string key, out object value) => TryGetValue(key, out value);
         public bool TryGetValue(string key, out TValue? value)
         {
             value = default;

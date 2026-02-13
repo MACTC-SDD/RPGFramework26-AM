@@ -1,4 +1,5 @@
-﻿
+
+using static RPGFramework.Commands.TimeCommand;
 using RPGFramework.Geography;
 using RPGFramework.Display;
 using Spectre.Console;
@@ -23,14 +24,18 @@ namespace RPGFramework.Commands
                 new QuitCommand(),
                 new SayCommand(),
                 new TimeCommand(),
+                new AreaShowCommand(),
+                new StatsCommand(),
+                new RoomShowCommand(),
                 new WhoCommand(),
+                new GoldCommand(),
                 // Add other core commands here as they are implemented
             };
         }
 
 
     }
-
+    
     internal class AFKCommand : ICommand
     {
         public string Name => "afk";
@@ -77,36 +82,42 @@ namespace RPGFramework.Commands
             player.WriteLine($"[bold white]{room.Name}[/]");
             player.WriteLine(room.Description);
 
-            if (room.Items.Count > 0)
+        
+            foreach (var item in room.Items)
             {
-                foreach (var item in room.Items)
+                if (!string.IsNullOrWhiteSpace(item.Name))
                 {
-                    if (!string.IsNullOrWhiteSpace(item.Name))
-                    {
-                        player.WriteLine($"[yellow]{item.DisplayText}[/]");
-                    }
+                    string showText = item.DisplayText == "" ? item.Name : item.DisplayText;
+                    player.WriteLine($"[yellow]{showText}[/]");
                 }
-                // For now, we'll ignore the command and just show the room description
-
-                player.WriteLine($"{player.GetRoom().Description}");
-
-
-                string content = "[red]Exits[/]\n";
-                string title = " ";
-
-                foreach (var exit in player.GetRoom().GetExits())
-                {
-                    content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
-                }
-
-                Panel panel = RPGPanel.GetPanel(content, title);
-
-                panel.Border = BoxBorder.Ascii;
-                panel.BorderColor(Color.Maroon);
-                player.Write(panel);
-                return true;
             }
 
+            player.WriteLine("\n\nMobs:");
+            foreach (Mob m in player.GetRoom().Mobs)
+            {
+                player.WriteLine($"{m.Name} ");
+            }
+
+            player.WriteLine("\n\nPlayers:");
+            var people = Room.GetPlayersInRoom(player.GetRoom());
+            foreach (Player p in people)
+            {                
+                player.WriteLine(p.Name);
+            }
+
+            string content = "[red]Exits[/]\n";
+            string title = " ";
+
+            foreach (var exit in player.GetRoom().GetExits())
+            {
+                content += $"[Salmon1]{exit.Description} to the {exit.ExitDirection}[/]\n";
+            }
+
+            Panel panel = RPGPanel.GetPanel(content, title);
+
+            panel.Border = BoxBorder.Ascii;
+            panel.BorderColor(Color.Maroon);
+            player.Write(panel);
             return true;
         }
     }
@@ -178,19 +189,63 @@ namespace RPGFramework.Commands
 
             if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
             {
+                if (area == null)
+                {
+                    player.WriteLine("Area not found.");
+                    return false;
+                }
+
+
+                player.WriteLine($"Area name: {area.Name}");
+                player.WriteLine($"Area description: {area.Description}");
+                player.WriteLine($"Area Id: {area.Id}");
+
+                return true;
+            }
+            return true;
+        }
+    }
+
+    
+    internal class RoomShowCommand : ICommand
+    {
+        public string Name => "roomshow";
+        public IEnumerable<string> Aliases => new[] { "rmshow", "roominfo", "rminfo" };
+        public string Help => "Shows info for the current room and its available exits.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            var player = character as Player;
+            if (player == null)
+                return false;
+
+            if (!GameState.Instance.Areas.TryGetValue(player.AreaId, out var area))
+            {
                 player.WriteLine("Area not found.");
                 return false;
             }
 
-            player.WriteLine($"Area name: {area.Id}");
-            player.WriteLine($"Area description: {area.Description}");
-            player.WriteLine($"Area Id: {area.Id}");
-            player.WriteLine($"Rooms ({area.Rooms.Count})");
-
-            foreach (var room in area.Rooms.Values.OrderBy(r => r.Id))
+            if (!area.Rooms.TryGetValue(player.LocationId, out var room))
             {
-                player.WriteLine($"Room {room.Id}: {room.Name}");
+                player.WriteLine("Room not found.");
+                return false;
             }
+
+            player.WriteLine($"Room name: {room.Name}");
+            player.WriteLine($"Room description: {room.Description}");
+            player.WriteLine($"Room Id: {room.Id}");
+            player.WriteLine("Exits:");
+
+            foreach (var exit in room.GetExits())
+            {
+                player.WriteLine($"{exit.ExitDirection}: {exit.Description}");
+            }
+
+
+            foreach (Room r in area.Rooms.Values.OrderBy(r => r.Id))
+            {
+                player.WriteLine($"Room {r.Id}: {r.Name}");
+            }            
 
             return true;
         }
@@ -199,7 +254,7 @@ namespace RPGFramework.Commands
     internal class WhoCommand : ICommand
     {
         public string Name => "who";
-        public IEnumerable<string> Aliases => [ ];
+        public IEnumerable<string> Aliases => [];
         public string Help => "See who is online.";
         public bool Execute(Character character, List<string> parameters)
         {
@@ -211,16 +266,160 @@ namespace RPGFramework.Commands
             Table table = new Spectre.Console.Table();
             table.AddColumn(new TableColumn("Name"));
             table.AddColumn(new TableColumn("Last Login"));
-            
+
             foreach (Player p in onlinePlayers)
             {
-                table.AddRow(p.Name, p.LastLogin.ToString("g"));                
+                table.AddRow(p.Name, p.LastLogin.ToString("g"));
             }
 
             player.Write(table);
             return true;
         }
     }
+
+    internal class GoldCommand : ICommand
+    {
+        public string Name => "gold";
+        public IEnumerable<string> Aliases => new List<string> { "/gold"};//I ran into a small error where typing "/gold" wouldn't work, so I added it here to force it to work, but this way of doing it is probably wrong-Landon
+        public string Help => "/gold <player> <amount> - Add/subtract gold or show gold.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player caller)
+                return false;
+
+            if (parameters.Count < 2)
+            {
+                caller.WriteLine("Usage: /gold <player> <amount>");
+                return true;
+            }
+
+            string targetName = parameters[1];
+
+            if (!Player.TryFindPlayer(targetName, GameState.Instance.Players, out Player? target) || target == null)
+            {
+                caller.WriteLine("Player not found.");
+                return true;
+            }
+
+            // SHOW GOLD
+            if (parameters.Count == 2)
+            {
+                caller.WriteLine($"{target.Name} has {target.Gold} gold.");
+                return true;
+            }
+
+            // PARSE AMOUNT
+            if (!int.TryParse(parameters[2], out int amount))
+            {
+                caller.WriteLine("Invalid gold amount.");
+                return true;
+            }
+
+            target.Gold += amount;
+
+            caller.WriteLine($"{target.Name} now has {target.Gold} gold.");
+            target.Save(); // saves instantly
+
+            return true;
+        }
+    }
+
+    internal class StatsCommand : ICommand
+    {
+        public string Name => "stats";
+        public IEnumerable<string> Aliases => [];
+        public string Help => "Shows information about the current player stats.";
+
+        public bool Execute(Character character, List<string> parameters)
+        {
+            var player = character as Player;
+            if (player == null)
+                return false;
+            if(parameters.Count > 3 || parameters.Count < 2)
+            {
+                WriteUsage(player);
+                return false;
+            }
+            switch (parameters[1].ToLower())
+            {
+                case "atributes":
+                    ShowStats(player);
+                    break;
+                case "level":
+                    ShowLevelInformation(player, player);
+                    break;
+                case "equipment":
+                    ShowEquipment(player, player);
+                    break;
+                case "desc":
+                    ShowBasicInfo(player, player);
+                    break;
+                case "character":
+                    ShowCharacterInfo(player, parameters);
+                    break;
+            }
+
+            return true;
+        }
+
+        public static void WriteUsage(Player player)
+        {
+            player.WriteLine("stats desc");
+            player.WriteLine("stats atributes");
+            player.WriteLine("stats level");
+            player.WriteLine("stats equipment");
+            player.WriteLine("stats character '<name>'");
+        }
+
+        public static void ShowCharacterInfo(Player player, List<string> parameters)
+        {
+            string CharacterName = parameters[2].ToLower();
+            foreach(Player p in GameState.Instance.Players.Values){
+                string playerName = p.Name;
+                if (playerName.Equals(CharacterName)) { ShowBasicInfo(player, p); ShowLevelInformation(player, p);};
+            }
+            foreach(NonPlayer npc in GameState.Instance.NPCCatalog.Values)
+            {
+                string NpcName = npc.Name;
+                if (NpcName.Equals(CharacterName)) { ShowBasicInfo(player, npc); ShowLevelInformation(player, npc); }
+                ;
+            }
+        }
+        public static void ShowBasicInfo(Player player, Character target)
+        {
+            player.WriteLine($"Name: {target.Name}");
+            player.WriteLine($"Description: {target.Description}");
+        }
+        public static void ShowStats(Player player)
+        {
+            player.WriteLine($"Health: {player.Health}/{player.MaxHealth}");
+            player.WriteLine($"Strength: {player.GetStrength()}");
+            player.WriteLine($"Agility: {player.GetStrength()}");
+            player.WriteLine($"Intellect: {player.GetIntelligence()}");
+            player.WriteLine($"Wisdom: {player.GetWisdom()}");
+            player.WriteLine($"Charisma: {player.GetCharisma()}");
+            player.WriteLine($"Constitution: {player.GetConstitution()}");
+        }
+
+        public static void ShowLevelInformation(Player player, Character target)
+        {
+            player.WriteLine($"Level: {player.Level}");
+            player.WriteLine($"XP: {player.XP}");
+            player.WriteLine($"XP to next level: {player.GetXPtoNextLevel()}");
+        }
+
+        public static void ShowEquipment(Player player, Character target)
+        {
+            player.WriteLine($"Primary Weapon: {player.PrimaryWeapon.Name}");
+            player.WriteLine("Equipped Armor:");
+            foreach (var armor in player.EquippedArmor)
+            {
+                player.WriteLine($"- {armor.Name} ({armor.Slot})");
+            }
+        }
+    }
 }
+
 
 

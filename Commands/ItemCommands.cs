@@ -67,6 +67,8 @@ namespace RPGFramework.Commands
             newItem.DisplayText = template.DisplayText;
             newItem.IsGettable = template.IsGettable;
             newItem.IsDroppable = template.IsDroppable;
+            newItem.IsConsumable = template.IsConsumable;
+            newItem.HealAmount = template.HealAmount;
             return newItem;
         }
         public string Name => "/item";
@@ -152,7 +154,7 @@ namespace RPGFramework.Commands
         private static void WriteUsage(Player player)
         {
             player.WriteLine("Usage: ");
-            player.WriteLine("Usage: /item create '<name>' '<description>' '<isdroppable>' '<isgettable>' '<isstackable>' '<level>' '<value>' '<weight>'");
+            player.WriteLine("Usage: /item create '<name>' '<description>' '<isdroppable>' '<isgettable>' '<isstackable>' '<level>' '<value>' '<weight>' '<isconsumable>' '<healamount>'");
             player.WriteLine("/item description '<set item desc to this>'");
             player.WriteLine("/item name '<set item name to this>'");
             player.WriteLine("/item create '<name>' '<description>''");
@@ -169,7 +171,7 @@ namespace RPGFramework.Commands
                 player.WriteLine("Your Role is: " + player.Role.ToString());
                 return false;
             }
-
+            
             // 0: /item
             // 1: create
             // 2: name
@@ -180,7 +182,29 @@ namespace RPGFramework.Commands
             // 7: Level
             // 8: Value
             // 9: Weight
-            if (parameters.Count < 5)
+            // 10: IsConsumable?
+            // 11: HealAmount
+            if (parameters.Count == 4)
+            {
+                // Short create
+                if (GameState.Instance.ItemCatalog.TryGetValue(parameters[1], out _))
+                {
+                    player.WriteLine("This object already exists.");
+                    return false;
+                }
+
+                Item i = new()
+                {
+                    Name = parameters[2],
+                    Description = parameters[3]
+                };
+                GameState.Instance.ItemCatalog.Add(i.Name, i);
+                player.WriteLine($"New item [green]{i.Name}[/] created.");
+                return true;
+            }
+
+            // Full create (all parameters)
+            if (parameters.Count < 10)
             {
                 player.WriteLine("Usage: /item create '<name>' '<description>'");
                 return false;
@@ -215,6 +239,16 @@ namespace RPGFramework.Commands
                 player.WriteLine("Invalid weight value.");
                 return false;
             }
+            if (!bool.TryParse(parameters[10], out bool isconsumable))
+            {
+                player.WriteLine("Invalid isconsumable value.");
+                return false;
+            }
+            if (!Int32.TryParse(parameters[9], out int healamount))
+            {
+                player.WriteLine("Invalid healamount value.");
+                return false;
+            }
             Item newItem = new Item
             {
                 Name = parameters[2],
@@ -224,17 +258,19 @@ namespace RPGFramework.Commands
                 IsStackable = isstackable,
                 Level = level,
                 Value = value,
-                Weight = weight
+                Weight = weight,
+                IsConsumable = isconsumable,
+                HealAmount = healamount
             };
             if (GameState.Instance.ItemCatalog.ContainsKey(newItem.Name))
             {
-                player.WriteLine("A weapon with that name already exists.");
+                player.WriteLine("An item with that name [red]already exists[/].");
                 return false;
             }
             else
             {
                 GameState.Instance.ItemCatalog.Add(newItem.Name, newItem);
-                player.WriteLine($"Weapon '{newItem.Name}' created successfully with description: {newItem.Description}");
+                player.WriteLine($"Item [green]'{newItem.Name}'[/] created successfully with description: [green]{newItem.Description}[/]");
                 return true;
             }
         }
@@ -243,7 +279,7 @@ namespace RPGFramework.Commands
         {
             if (!Utility.CheckPermission(player, PlayerRole.Admin))
             {
-                player.WriteLine("You do not have permission to do that.");
+                player.WriteLine("[red]You do not have permission to do that.[/]");
                 return;
             }
 
@@ -261,7 +297,7 @@ namespace RPGFramework.Commands
 
             if (GameState.Instance.ItemCatalog.Remove(itemName))
             {
-                player.WriteLine($"Item '{itemName}' was successfully chucked into The Twilight Zone, never to be seen again.");
+                player.WriteLine($"Item '{itemName}' was successfully chucked into [red]The Twilight Zone[/], NEVER to be seen again.");
             }
             else
             {
@@ -1343,6 +1379,21 @@ namespace RPGFramework.Commands
         public bool Execute(Character character, List<int> parameters)
        {
             throw new NotImplementedException();
+        }
+    }
+    internal class ListRoomItemCommand : ICommand
+    {
+        public string Name => "roomitems";
+        public IEnumerable<string> Aliases => new List<string>() { "ri" };
+        public string Help => "Lists the items in the current room.";
+        public bool Execute(Character character, List<string> parameters)
+        {
+            if (character is not Player player)
+            {
+                return false;
+            }
+            player.WriteLine("");
+            return true;
         }
     }
 }

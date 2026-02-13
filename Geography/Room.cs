@@ -31,13 +31,17 @@ namespace RPGFramework.Geography
         public List<NonPlayer> Npcs{ get; set; } = [];
         public int MaxSpawnedAllowed { get; set; } = 3;
         public List<string> Tags { get; set; } = []; // (for scripting or special behavior)
-        public List<Player> Players { get; set; } = [];
-        // List of exits from the room
         public List<int> ExitIds { get; set; } = [];
-        // A list of items currently on the floor in this room.
+        public object Exits { get; internal set; }
+
         #endregion --- Properties ---
 
+        // Items in the room
+        List<Item> RoomItems = new List<Item>();
+
         #region --- Methods ---
+
+        #region AddExits Method
         /// <summary>
         /// This is for creating a new exit (and return exit), not linking existing exit items.
         /// </summary>
@@ -90,7 +94,9 @@ namespace RPGFramework.Geography
                 GameState.Instance.Areas[destinationRoom.AreaId].Exits.Add(exit1.Id, exit1);
             }
         }
+        #endregion
 
+        #region CreateRoom Methods
         /// <summary>
         /// Create a new room object in specified area and add it to GameState Area
         /// </summary>
@@ -114,6 +120,7 @@ namespace RPGFramework.Geography
         {
             return CreateRoom(area.Id, name, description);
         }
+        #endregion
 
         /// <summary>
         /// Create a copy of this room without copying exits.
@@ -226,7 +233,7 @@ namespace RPGFramework.Geography
         }
 
         /// <summary>
-        /// Return a list of player objects that are in the specified room
+        /// Return a list of online player objects that are in the specified room
         /// </summary>
         /// <param name="room"></param>
         /// <returns></returns>
@@ -246,6 +253,25 @@ namespace RPGFramework.Geography
 
             return playersInRoom;
         }
+
+        #region GetPopulatedRooms Method
+        public static List<Room> GetPopulatedRooms()
+        {
+            List<Room> output = [];
+
+            foreach (Area area in GameState.Instance.Areas.Values)
+            {
+                foreach (Room room in area.Rooms.Values)
+                {
+                    if (GetPlayersInRoom(room).Count > 0)
+                        output.Add(room);                    
+                }
+            }
+
+            return output;
+        }
+        #endregion 
+
         #endregion --- Methods ---
 
         #region --- Methods (Events) ---
@@ -263,10 +289,6 @@ namespace RPGFramework.Geography
             Comm.SendToRoomExcept(this, $"{character.Name} enters the room.", character);
             if (character is NonPlayer npc) {
                 Npcs.Add(npc);
-            }
-            else if (character is Player player)
-            {
-                Players.Add(player);
             }
             else if (character is Mob mob)
             {
@@ -306,10 +328,6 @@ namespace RPGFramework.Geography
             {
                 Npcs.Remove(npc);
             }
-            else if (character is Player player)
-            {
-                Players.Remove(player);
-            }
             else if (character is Mob mob)
             {
                 Mobs.Remove(mob);
@@ -324,7 +342,7 @@ namespace RPGFramework.Geography
         /// </summary>
         public void SpawnMobsInRoom()
         {
-            if(Players.Count <= 0)
+            if(this.GetPlayers().Count <= 0)
             {
                 // Don't spawn mobs if players aren't present
                 return;
@@ -470,7 +488,7 @@ namespace RPGFramework.Geography
 
         public void SpawnNpcsInRoom()
         {
-            if (Players.Count <= 0)
+            if (this.GetPlayers().Count <= 0)
             {
                 // Don't spawn npcs if players aren't present
                 return;
