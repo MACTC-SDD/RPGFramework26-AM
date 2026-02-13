@@ -2139,36 +2139,36 @@
       "StrengthBonus": 0,
       "DefenseBonus": 0
     },
-    "Back_Cloth": {
+    "Back_Cloth_Cape": {
       "Material": 0,
       "Slot": 3,
       "Type": 0,
-      "DamageReduction": 0.5,
-      "Durability": 20,
-      "MaxDurability": 20,
-      "DodgeChance": 0,
+      "DamageReduction": 1.0,
+      "Durability": 30,
+      "MaxDurability": 30,
+      "DodgeChance": 2,
       "HealthBonus": 0,
       "EquipmentSlot": 0,
-      "Defense": 0,
+      "Defense": 1,
       "Rarity": 0,
-      "Id": 69,
-      "Description": "A simple sack with straps.",
-      "DisplayText": "Cloth Sack",
+      "Id": 70,
+      "Description": "A simple but elegant length of fabric that drapes over the shoulders.",
+      "DisplayText": "Cloth Cape",
       "IsDroppable": true,
       "IsGettable": true,
       "IsStackable": false,
       "Level": 1,
-      "Name": "Back_Cloth",
+      "Name": "Back_Cloth_Cape",
       "Tags": [
         "Back",
-        "Light",
-        "Common"
+        "Armor",
+        "Light"
       ],
-      "UsesRemaining": 20,
-      "Value": 5,
-      "Weight": 0.5,
+      "UsesRemaining": 30,
+      "Value": 10,
+      "Weight": 0.4,
       "StrengthBonus": 0,
-      "DefenseBonus": 0
+      "DefenseBonus": 1
     },
     "Back_Bronze": {
       "Material": 1,
